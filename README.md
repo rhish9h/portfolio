@@ -1,4 +1,6 @@
-# Getting Started with Create React App
+# portfolio
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1ff07efa-c330-490d-a602-e66aa6603867/deploy-status)](https://app.netlify.com/sites/rhish/deploys)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -68,4 +70,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `yarn build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# portfolio
