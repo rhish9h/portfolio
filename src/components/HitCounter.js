@@ -1,19 +1,22 @@
 import RetroHitCounter from 'react-retro-hit-counter';
+import React, { useState, useEffect } from 'react';
+
+const backendURL = 'https://young-peak-35101.herokuapp.com'
 
 function HitCounter({ slug }) {
-//   const [hits, setHits] = React.useState(undefined);
-    const hits = 10;
+  const [hits, setHits] = useState(undefined);
+    // const hits = 10;
 
-  /** 
-  React.useEffect(() => {
+  
+  useEffect(() => {
     // Don't count hits on localhost
-    if (process.env.NODE_ENV !== 'production') {
-      return;
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   return;
+    // }
 
     // Invoke the function by making a request.
     // Update the URL to match the format of your platform.
-    fetch(`/api/register-hit?slug=${slug}`)
+    fetch(`${backendURL}/registerHit?slug=${slug}`)
       .then((res) => res.json())
       .then((json) => {
         if (typeof json.hits === 'number') {
@@ -22,7 +25,7 @@ function HitCounter({ slug }) {
       });
   }, [slug]);
 
-  */
+  
 
   if (typeof hits === 'undefined') {
     return null;
