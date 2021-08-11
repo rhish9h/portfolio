@@ -4,9 +4,9 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import CodeIcon from '@material-ui/icons/Code';
 import InstagramIcon from '@material-ui/icons/Instagram';
 
-export default function Topbar() {
+export default function Topbar({ menuOpen, setMenuOpen }) {
     return (
-        <div className='topbar active' id='topbar'>
+        <div className={"topbar " + (menuOpen && "active")} id='topbar'>
             <div className='wrapper'>
                 <div className='left'>
                     <a href="#intro" className='logo'>rhish.in</a>
@@ -26,7 +26,7 @@ export default function Topbar() {
                     </div>
                 </div>
                 <div className='right'>
-                    <div className='hamburger' id='hamburger'>
+                    <div className='hamburger' id='hamburger' onClick={()=>setMenuOpen(!menuOpen)}>
                         <span className='line1'></span>
                         <span className='line2'></span>
                         <span className='line3'></span>
