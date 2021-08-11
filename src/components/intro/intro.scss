@@ -1,3 +1,20 @@
 .intro{
     background-color: rgb(236, 246, 247);
+    display: flex;
+
+    .left {
+        flex: 0.4;
+        overflow: hidden;
+
+        .imgContainer {
+            height: 1000px;
+            width: auto;
+            overflow: hidden;
+        }
+    }
+
+    .right {
+        flex: 0.6;
+        background-color: lightpink;
+    }
 }
