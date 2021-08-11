@@ -7,8 +7,8 @@
     color: $mainFontColor;
     position: fixed;
     top: 0;
-    z-index: 2;
-    transition: all 2s ease;
+    z-index: 3;
+    transition: all 1.5s ease;
 
     .wrapper{
         padding: 10px 30px;
@@ -60,6 +60,8 @@
 
         .right {
 
+            width: 40px;
+
             .hamburger {
                 width: 32px;
                 height: 25px;
@@ -74,6 +76,11 @@
                     background-color: $mainFontColor;
                     transform-origin: left;
                     transition: all 2s ease;
+                }
+
+                &:hover {
+                    width: 34px;
+                    height: 27px;
                 }
             }
         }
