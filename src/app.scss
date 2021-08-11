@@ -1,0 +1,23 @@
+.App{
+    height: 100vh;
+
+    .sections{
+        width: 100%;
+        height: calc(100vh - 70px); // to deal with topbar
+        background-color: rgb(236, 246, 247);
+        position: relative;
+        top: 70px;
+        scroll-snap-type: y mandatory; // snappy shift to next section instead of smooth scroll
+        scrollbar-width: none; // for firefox - remove scroll bar - below for other browsers
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        // per section
+        > *{
+            width: 100vw;
+            height: calc(100vh - 70px);
+            scroll-snap-align: start;
+        }
+    }
+}
