@@ -10,6 +10,10 @@
     z-index: 3;
     transition: all 1.5s ease;
 
+    @include mobile {
+        height: 60px;
+    }
+
     .wrapper{
         padding: 10px 30px;
         display: flex;
@@ -27,6 +31,10 @@
                 text-decoration: none;
                 color: inherit;
                 margin-right: 40px;
+
+                @include mobile {
+                    font-size: 20px;
+                }
             }
             
             a {
