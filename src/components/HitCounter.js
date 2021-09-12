@@ -1,12 +1,14 @@
 import RetroHitCounter from 'react-retro-hit-counter';
 import React, { useState, useEffect } from 'react';
+import "../global.scss";
 
 const backendURL = 'https://young-peak-35101.herokuapp.com'
 
 function HitCounter({ slug }) {
-  const [hits, setHits] = useState(undefined);
-    // const hits = 10;
 
+  // const hits = 10;
+
+  const [hits, setHits] = useState(undefined);
   
   useEffect(() => {
     // Don't count hits on localhost
@@ -34,9 +36,9 @@ function HitCounter({ slug }) {
   return <RetroHitCounter 
   hits={hits}
   withBorder={false}
-  segmentActiveColor="#FFFFFF"
-  segmentInactiveColor="#454545"
-  backgroundColor="#282C34" />;
+  segmentActiveColor="#000000"
+  segmentInactiveColor="#FFFFFF"
+  backgroundColor="rgb(236, 246, 247)" />;
 }
 
 export default HitCounter;

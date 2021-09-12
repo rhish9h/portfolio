@@ -4,6 +4,7 @@ import Intro from './components/intro/Intro';
 import Projects from './components/projects/Projects';
 import Contact from './components/contact/Contact';
 import Menu from "./components/menu/Menu";
+import Hits from "./components/hits/Hits";
 import './app.scss'
 import { useState } from "react";
 
@@ -20,6 +21,7 @@ function App() {
         <Intro/>
         <Projects/>
         <Contact/>
+        <Hits/>
       </div>
 
 
