@@ -2,7 +2,7 @@ import RetroHitCounter from 'react-retro-hit-counter';
 import React, { useState, useEffect } from 'react';
 import "../global.scss";
 
-const backendURL = 'https://young-peak-35101.herokuapp.com'
+const backendURL = 'https://rhishabh-portfolio-backend.herokuapp.com/'
 
 function HitCounter({ slug }) {
 
