@@ -1,0 +1,1 @@
+export const backendURL = 'https://rhishabh-portfolio-backend.herokuapp.com/'
