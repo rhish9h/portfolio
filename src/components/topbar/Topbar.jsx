@@ -1,8 +1,8 @@
 import "./topbar.scss"
-import LinkedInIcon from '@material-ui/icons/LinkedIn';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import CodeIcon from '@material-ui/icons/Code';
-import InstagramIcon from '@material-ui/icons/Instagram';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import CodeIcon from '@mui/icons-material/Code';
+import InstagramIcon from '@mui/icons-material/Instagram';
 
 export default function Topbar({ menuOpen, setMenuOpen }) {
     return (

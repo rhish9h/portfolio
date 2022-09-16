@@ -1,5 +1,5 @@
 import "./intro.scss"
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { init } from 'ityped';
 import { useEffect, useRef } from 'react';
 
