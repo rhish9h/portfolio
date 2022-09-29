@@ -60,6 +60,8 @@
                 height: 25px;
                 padding: 8px;
                 font-size: 14px;
+                border: 1px solid;
+                border-color: rgb(193, 198, 199);
 
                 @include mobile {
                     width: 220px;
@@ -71,6 +73,8 @@
                 height: 150px;
                 padding: 8px;
                 font-size: 14px;
+                border: 1px solid;
+                border-color: rgb(193, 198, 199);
 
                 @include mobile {
                     width: 220px;
