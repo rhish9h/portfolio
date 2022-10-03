@@ -28,19 +28,6 @@ export default function Projects() {
             <h2>Projects</h2>
             
             <div className="container">
-                {/* {projects.map((d) => (
-                    <a href={d.link} target="_blank" rel="noreferrer">
-                        <div className="item">
-                            <img
-                            src={d.img}
-                            alt={d.title}
-                            />
-                            <div className="title">
-                                <h3>{d.title}</h3>
-                            </div>
-                        </div>
-                    </a>
-                ))}  */}
                 <Carousel data={projects}/>
             </div>
         </div>
