@@ -31,7 +31,9 @@ export default function Carousel ({data}) {
             
             {data.map((slide, index) => {
                 return (
-                    <Slide className={index === curSlide ? "active-slide" : "inactive-slide"} slide={slide} key={slide.id}/>
+                    <a href={slide.link} target="_blank" rel="noreferrer" key={slide.id}>
+                        <Slide className={index === curSlide ? "active-slide" : "inactive-slide"} slide={slide} />
+                    </a>
                 )
             })}
         </section>

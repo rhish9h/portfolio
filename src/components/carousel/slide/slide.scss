@@ -20,6 +20,8 @@
         }
 
         @include mobile {
+            height: 50%;
+
             img {
                 scale: 1;
             }
@@ -32,6 +34,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        text-align: center;
+        color: black;
 
         h3 {
             font-weight: 400;
