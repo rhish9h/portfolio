@@ -1,1 +1,1 @@
-export const backendURL = 'http://ec2-13-56-149-147.us-west-1.compute.amazonaws.com:9090/'
+export const backendURL = 'http://ec2-13-56-149-147.us-west-1.compute.amazonaws.com:9090'
