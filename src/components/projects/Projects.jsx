@@ -1,5 +1,6 @@
-import "./projects.scss"
-import Carousel from "../carousel/Carousel"
+import "./projects.scss";
+import EngineeringIcon from '@mui/icons-material/Engineering';
+import Carousel from "../carousel/Carousel";
 
 export default function Projects() {
     const projects = [
@@ -25,7 +26,7 @@ export default function Projects() {
 
     return (
         <div className='projects' id='projects'>
-            <h2>Projects</h2>
+            <h2><EngineeringIcon/> Projects</h2>
             
             <div className="container">
                 <Carousel data={projects}/>

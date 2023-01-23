@@ -2,11 +2,18 @@
 
 .slide {
     height: 50vh;
-    width: 70vw;
+    width: 38vw;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin: 20px;
+    box-shadow: 10px 10px 10px rgb(230, 230, 230), -10px -10px 10px rgb(230, 230, 230);
+    border-radius: 20px;
+
+    @include mobile {
+        width: 70vw;
+    }
 
     .image {
         height: 80%;
@@ -16,7 +23,7 @@
         align-items: center;
 
         img {
-            scale: 1.3;
+            scale: 1.6;
         }
 
         @include mobile {
@@ -35,7 +42,7 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        color: black;
+        color: $mainOrange;
 
         h3 {
             font-weight: 400;
@@ -45,7 +52,6 @@
 
 .active-slide {
     opacity: 1;
-    // transition-duration: 1s;
     animation-name: slideshow;
     animation-duration: 1s;
 }
@@ -61,7 +67,6 @@
 
 .inactive-slide {
     opacity: 0;
-    // transition-duration: 1s ease;
     height: 0;
     width: 0;
 }

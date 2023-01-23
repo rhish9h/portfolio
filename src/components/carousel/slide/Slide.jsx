@@ -11,6 +11,8 @@ export default function Slide({className, slide}) {
                     {slide.title}
                 </h3>
             </div>
+            <div className="technologies">
+            </div>
         </div>
     )
 }

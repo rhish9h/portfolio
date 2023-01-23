@@ -30,11 +30,15 @@ export default function Carousel ({data}) {
             <KeyboardArrowRightIcon className="arrow right-arrow" onClick={nextSlide} />
             
             {data.map((slide, index) => {
-                return (
-                    <a href={slide.link} target="_blank" rel="noreferrer" key={slide.id}>
-                        <Slide className={index === curSlide ? "active-slide" : "inactive-slide"} slide={slide} />
-                    </a>
-                )
+                if (index === curSlide) {
+                    return (
+                        <a href={slide.link} target="_blank" rel="noreferrer" key={slide.id}>
+                            <Slide className="active-slide" slide={slide} />
+                        </a>
+                    )
+                } else {
+                    return '';
+                }
             })}
         </section>
     )
