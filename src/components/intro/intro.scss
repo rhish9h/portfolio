@@ -12,23 +12,37 @@
     .left {
         flex: 0.5;
         overflow: hidden;
+        display: flex;
+        justify-content: center;
 
         .imgContainer {
             height: 100%;
-            width: 50vw;
             overflow: hidden;
             display: flex;
             align-items: flex-end;
             justify-content: center;
             float: right;
 
-            @include mobile{
-                align-items: flex-start;
+            img{
+                height: 90%;
+                object-fit: cover;
+                animation: profile 8s ease-in-out infinite 1s;
+                background: rgba(117, 235, 117, 0.85);
+                background: -webkit-linear-gradient(to bottom, rgba(117, 235, 117, 0.85), rgba(200, 235, 200, 0.4));
+                background: linear-gradient(to bottom, rgba(117, 235, 117, 0.85), rgba(200, 235, 200, 0.4));
+                border-radius: 100%;
             }
 
-            img{
-                height: 95%;
-                object-fit: cover;
+            @keyframes profile {
+                0% {
+                    border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+                }
+                50% {
+                    border-radius: 30% 60% 70% 40%/50% 60% 30% 60%;
+                }
+                100% {
+                    border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+                }
             }
         }
     }
