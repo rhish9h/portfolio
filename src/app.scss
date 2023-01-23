@@ -6,7 +6,7 @@
     .sections{
         width: 100%;
         height: calc(100vh - 70px); // to deal with topbar
-        background-color: rgb(236, 246, 247);
+        background-color: $mainBgColor;
         position: relative;
         top: 70px;
         scroll-behavior: smooth;
