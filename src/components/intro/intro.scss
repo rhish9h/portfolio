@@ -3,6 +3,7 @@
 .intro{
     background-color: $mainBgColor;
     display: flex;
+    box-shadow: inset 0 0 100px 100px $maincolor;
 
     @include mobile{
         flex-direction: column;
@@ -26,22 +27,22 @@
             img{
                 height: 90%;
                 object-fit: cover;
-                animation: profile 8s ease-in-out infinite 1s;
-                background: rgba(117, 235, 117, 0.8);
-                border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+                // animation: profile 8s ease-in-out infinite 1s;
+                // background: $maincolor;
+                // border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
             }
 
-            @keyframes profile {
-                0% {
-                    border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
-                }
-                50% {
-                    border-radius: 30% 60% 70% 40%/50% 60% 30% 60%;
-                }
-                100% {
-                    border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
-                }
-            }
+            // @keyframes profile {
+            //     0% {
+            //         border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+            //     }
+            //     50% {
+            //         border-radius: 30% 60% 70% 40%/50% 60% 30% 60%;
+            //     }
+            //     100% {
+            //         border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+            //     }
+            // }
         }
     }
 
@@ -98,7 +99,7 @@
 
                 span {
                     font-size: inherit;
-                    color: rgb(117, 235, 117);
+                    color: $mainOrange;
                 }
 
                 .ityped-cursor {

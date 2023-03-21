@@ -33,7 +33,7 @@ function HitCounter({ slug }) {
     withBorder={false}
     segmentActiveColor="#000000"
     segmentInactiveColor="#FFFFFF"
-    backgroundColor="rgb(236, 246, 247)" />;
+    backgroundColor="rgb(219, 234, 239)" />;
 }
 
 export default HitCounter;
