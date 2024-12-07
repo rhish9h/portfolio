@@ -31,21 +31,21 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen w-full bg-background text-foreground">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <Navbar />
         </header>
 
-        <main className="flex flex-col items-center justify-center">
+        <main className="flex w-full flex-1 flex-col items-center justify-center">
           {/* Hero Section */}
           <motion.section
             id="hero"
-            className="w-full py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             animate="animate"
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <HeroSection />
             </div>
           </motion.section>
@@ -53,13 +53,13 @@ function App() {
           {/* About Section */}
           <motion.section
             id="about"
-            className="w-full bg-accent/5 py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <AboutSection />
             </div>
           </motion.section>
@@ -67,13 +67,13 @@ function App() {
           {/* Experience Section */}
           <motion.section
             id="experience"
-            className="w-full py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <ExperienceSection />
             </div>
           </motion.section>
@@ -81,13 +81,13 @@ function App() {
           {/* Education Section */}
           <motion.section
             id="education"
-            className="w-full bg-accent/5 py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <EducationSection />
             </div>
           </motion.section>
@@ -95,13 +95,13 @@ function App() {
           {/* Skills Section */}
           <motion.section
             id="skills"
-            className="w-full py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <SkillsSection />
             </div>
           </motion.section>
@@ -109,13 +109,13 @@ function App() {
           {/* Certifications Section */}
           <motion.section
             id="certifications"
-            className="w-full bg-accent/5 py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <CertificationsSection />
             </div>
           </motion.section>
@@ -123,13 +123,13 @@ function App() {
           {/* Awards Section */}
           <motion.section
             id="awards"
-            className="w-full py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <AwardsSection />
             </div>
           </motion.section>
@@ -137,13 +137,13 @@ function App() {
           {/* Publications Section */}
           <motion.section
             id="publications"
-            className="w-full bg-accent/5 py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <PublicationsSection />
             </div>
           </motion.section>
@@ -151,26 +151,26 @@ function App() {
           {/* Contact Section */}
           <motion.section
             id="contact"
-            className="w-full py-20"
+            className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="container px-4">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8">
               <ContactSection />
             </div>
           </motion.section>
         </main>
 
         <motion.footer
-          className="border-t"
+          className="w-full border-t"
           initial="initial"
           whileInView="animate"
           viewport={{ once: true }}
           variants={fadeInUp}
         >
-          <div className="container mx-auto px-4 py-8 text-center">
+          <div className="container mx-auto max-w-5xl px-6 py-8 text-center md:px-8">
             <p className="mb-4 text-muted-foreground">
               Feel free to reach out for collaborations or just a friendly hello
             </p>
