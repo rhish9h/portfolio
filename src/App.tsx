@@ -40,12 +40,12 @@ function App() {
           {/* Hero Section */}
           <motion.section
             id="hero"
-            className="w-full py-12 md:py-20"
+            className="w-full pb-12 md:pb-20"
             initial="initial"
             animate="animate"
             variants={fadeInUp}
           >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
+            <div className="container max-w-none px-0">
               <HeroSection />
             </div>
           </motion.section>
