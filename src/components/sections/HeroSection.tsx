@@ -1,50 +1,92 @@
-import { profileData } from '../../data/profileData';
+import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail } from 'lucide-react';
 
 export function HeroSection() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center text-center">
-      {/* Avatar placeholder - replace src with actual image */}
-      <div className="mb-8">
-        <div className="relative h-40 w-40 overflow-hidden rounded-full bg-muted">
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8"
+      >
+        <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-primary/10">
           <img
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=rhishabh"
-            alt={profileData.name}
+            src="/avatar.jpg"
+            alt="Rhishabh Hattarki"
             className="h-full w-full object-cover"
           />
         </div>
-      </div>
+      </motion.div>
 
-      <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl">{profileData.name}</h1>
-      <p className="mb-8 max-w-2xl text-xl text-muted-foreground md:text-2xl">{profileData.tagline}</p>
+      <motion.h1
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl"
+      >
+        Rhishabh Hattarki
+      </motion.h1>
 
-      <div className="flex flex-wrap justify-center gap-4">
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="mb-8 flex flex-col space-y-2 text-lg text-muted-foreground"
+      >
+        <span>Software Engineer</span>
+        <span>Lifelong Learner</span>
+        <span>Technology Enthusiast</span>
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+        className="flex space-x-4"
+      >
         <a
-          href={`mailto:${profileData.email}`}
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          <Mail className="h-4 w-4" />
-          Email Me
-        </a>
-        <a
-          href={profileData.linkedIn}
+          href="mailto:rhishabh@example.com"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold transition-colors hover:bg-accent/90"
         >
-          <Linkedin className="h-4 w-4" />
-          LinkedIn
+          <Mail className="h-5 w-5" />
+          <span className="sr-only">Email</span>
         </a>
         <a
-          href="https://github.com/rhish9h"
+          href="https://github.com/yourusername"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold transition-colors hover:bg-accent/90"
         >
-          <Github className="h-4 w-4" />
-          GitHub
+          <Github className="h-5 w-5" />
+          <span className="sr-only">GitHub</span>
         </a>
-      </div>
+        <a
+          href="https://linkedin.com/in/yourusername"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Linkedin className="h-5 w-5" />
+          <span className="sr-only">LinkedIn</span>
+        </a>
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
+        className="mt-12"
+      >
+        <a
+          href="#about"
+          className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          Learn More
+        </a>
+      </motion.div>
     </div>
   );
 }
