@@ -1,1 +1,0 @@
-export const backendURL = 'https://ec2.rhish.in:8443'
