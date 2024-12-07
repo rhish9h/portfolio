@@ -17,14 +17,14 @@ export function HeroSection() {
   ];
 
   return (
-    <section className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden">
-      {/* Animated Background - Now outside the transformed container */}
+    <section className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden bg-background/50 backdrop-blur-[2px]">
+      {/* Background */}
       <AnimatedBackground />
 
       {/* Content Container */}
       <motion.div
         style={{ opacity: contentOpacity, scale: contentScale }}
-        className="relative z-10 flex flex-col items-center justify-center text-center"
+        className="relative z-10 flex flex-col items-center justify-center px-4 text-center"
       >
         {/* Profile Image */}
         <motion.div
@@ -34,11 +34,12 @@ export function HeroSection() {
             type: 'spring',
             stiffness: 260,
             damping: 20,
+            delay: 0.1,
           }}
           className="mb-8 group"
           whileHover={{ scale: 1.05 }}
         >
-          <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-primary/10 transition-transform duration-300 group-hover:border-primary/30">
+          <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-primary/10 shadow-xl transition-transform duration-300 group-hover:border-primary/30">
             <img
               src="/avatar.jpg"
               alt="Rhishabh Hattarki"
@@ -51,7 +52,7 @@ export function HeroSection() {
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
           className="relative mb-4 text-4xl font-bold tracking-tight sm:text-5xl"
         >
           <span className="relative">
@@ -69,7 +70,7 @@ export function HeroSection() {
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
           className="mb-8 text-lg text-muted-foreground"
         >
           <TypewriterEffect words={roles} className="font-mono" />
@@ -79,12 +80,12 @@ export function HeroSection() {
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
           className="flex space-x-4"
         >
           <motion.a
             href="mailto:rhish9h@gmail.com"
-            className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-all hover:bg-primary/20"
+            className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-lg transition-all hover:bg-primary/20"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             target="_blank"
@@ -95,7 +96,7 @@ export function HeroSection() {
           </motion.a>
           <motion.a
             href="https://github.com/rhish9h"
-            className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-all hover:bg-primary/20"
+            className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-lg transition-all hover:bg-primary/20"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             target="_blank"
@@ -106,7 +107,7 @@ export function HeroSection() {
           </motion.a>
           <motion.a
             href="https://www.linkedin.com/in/rhishabh-hattarki"
-            className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-all hover:bg-primary/20"
+            className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-lg transition-all hover:bg-primary/20"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             target="_blank"
@@ -121,12 +122,12 @@ export function HeroSection() {
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
+          transition={{ duration: 0.5, delay: 0.9 }}
           className="mt-12"
         >
           <motion.a
             href="#about"
-            className="group relative inline-flex items-center justify-center overflow-hidden rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
+            className="group relative inline-flex items-center justify-center overflow-hidden rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
