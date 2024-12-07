@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './dropdown-menu';
+} from './DropdownMenu';
 
 // Primary navigation items shown directly in the navbar
 const primaryNavItems = [
