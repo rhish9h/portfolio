@@ -41,7 +41,7 @@ export function HeroSection() {
         >
           <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-primary/10 shadow-xl transition-transform duration-300 group-hover:border-primary/30">
             <img
-              src="/avatar.jpg"
+              src="/profile.jpeg"
               alt="Rhishabh Hattarki"
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
@@ -57,12 +57,6 @@ export function HeroSection() {
         >
           <span className="relative">
             Rhishabh Hattarki
-            <motion.span
-              className="absolute -inset-1 -z-10 rounded-lg bg-primary/10"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.5 }}
-            />
           </span>
         </motion.h1>
 
