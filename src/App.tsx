@@ -2,6 +2,14 @@ import { useState } from 'react'
 import './styles/globals.css'
 import { Navbar } from './components/ui/Navbar'
 import { HeroSection } from './components/sections/HeroSection'
+import { AboutSection } from './components/sections/AboutSection'
+import { ExperienceSection } from './components/sections/ExperienceSection'
+import { EducationSection } from './components/sections/EducationSection'
+import { SkillsSection } from './components/sections/SkillsSection'
+import { CertificationsSection } from './components/sections/CertificationsSection'
+import { AwardsSection } from './components/sections/AwardsSection'
+import { PublicationsSection } from './components/sections/PublicationsSection'
+import { ContactSection } from './components/sections/ContactSection'
 
 function App() {
   return (
@@ -10,50 +18,68 @@ function App() {
         <Navbar />
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex flex-col items-center justify-center">
         {/* Hero Section */}
-        <section id="hero" className="py-12">
-          <HeroSection />
+        <section id="hero" className="w-full py-20">
+          <div className="container px-4">
+            <HeroSection />
+          </div>
         </section>
 
         {/* About Section */}
-        <section id="about" className="py-12">
-          {/* About content will go here */}
+        <section id="about" className="w-full bg-accent/10 py-20">
+          <div className="container px-4">
+            <AboutSection />
+          </div>
         </section>
 
         {/* Experience Section */}
-        <section id="experience" className="py-12">
-          {/* Experience content will go here */}
+        <section id="experience" className="w-full py-20">
+          <div className="container px-4">
+            <ExperienceSection />
+          </div>
         </section>
 
         {/* Education Section */}
-        <section id="education" className="py-12">
-          {/* Education content will go here */}
+        <section id="education" className="w-full bg-accent/10 py-20">
+          <div className="container px-4">
+            <EducationSection />
+          </div>
         </section>
 
         {/* Skills Section */}
-        <section id="skills" className="py-12">
-          {/* Skills content will go here */}
+        <section id="skills" className="w-full py-20">
+          <div className="container px-4">
+            <SkillsSection />
+          </div>
         </section>
 
         {/* Certifications Section */}
-        <section id="certifications" className="py-12">
-          {/* Certifications content will go here */}
+        <section id="certifications" className="w-full bg-accent/10 py-20">
+          <div className="container px-4">
+            <CertificationsSection />
+          </div>
         </section>
 
         {/* Awards Section */}
-        <section id="awards" className="py-12">
-          {/* Awards content will go here */}
+        <section id="awards" className="w-full py-20">
+          <div className="container px-4">
+            <AwardsSection />
+          </div>
         </section>
 
         {/* Publications Section */}
-        <section id="publications" className="py-12">
-          {/* Publications content will go here */}
+        <section id="publications" className="w-full bg-accent/10 py-20">
+          <div className="container px-4">
+            <PublicationsSection />
+          </div>
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="py-12">
-          {/* Contact content will go here */}
+        <section id="contact" className="w-full py-20">
+          <div className="container px-4">
+            <ContactSection />
+          </div>
         </section>
       </main>
 
