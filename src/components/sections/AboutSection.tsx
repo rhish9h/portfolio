@@ -5,7 +5,7 @@ export function AboutSection() {
     <div className="mx-auto max-w-3xl">
       <h2 className="mb-6 text-3xl font-bold">About Me</h2>
       <div className="prose prose-slate dark:prose-invert">
-        <p className="text-lg leading-relaxed text-muted-foreground">
+        <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap">
           {profileData.summary}
         </p>
       </div>

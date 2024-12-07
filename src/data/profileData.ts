@@ -55,7 +55,13 @@ export const profileData: ProfileData = {
   tagline: "Software Engineer | Lifelong Learner | Technology Enthusiast",
   email: "rhish9h@gmail.com",
   linkedIn: "https://www.linkedin.com/in/rhishabh-hattarki",
-  summary: "Experienced software engineer with a strong background in full-stack development and identity access management. Currently pursuing a Master's in Software Engineering at Arizona State University while working as an IAM Engineer at EmpowerID.",
+  summary: `"I’m a builder of solutions, driven by a relentless curiosity to turn complex challenges into impactful innovations."
+
+At EmpowerID, I thrive at the intersection of cybersecurity and software engineering, creating seamless, secure solutions in Identity and Access Management (IAM) and Identity Governance and Administration (IGA). It’s not just about code—it’s about crafting systems that safeguard identities and enable organizations to thrive. Every project pushes me to think deeper, design smarter, and make an impact that matters.
+
+One project that exemplifies my drive for innovation is CycleSafe, a mobile app that enhances cyclist safety. Partnering with the University of Arizona and the Rob Dollar Foundation, we created a solution that connects to a handlebar-mounted device, detects approaching vehicles, captures license plates, and enforces Arizona’s three-foot passing law. The result? Safer roads and empowered cyclists. It was more than a technical achievement—it was a mission to make a difference.
+
+What excites me most is what’s ahead. We’re living in an era where AI, autonomous systems, and generative technologies are reshaping industries. I’m inspired to be part of this transformation—leveraging innovation to solve meaningful problems, connect people, and drive progress. Let’s connect and explore what we can build together.`,
   experiences: [
     {
       company: "EmpowerID",
