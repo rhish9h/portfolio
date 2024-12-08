@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import './styles/globals.css'
 import { ThemeProvider } from './components/ThemeProvider'
 import { Navbar } from './components/ui/Navbar'
