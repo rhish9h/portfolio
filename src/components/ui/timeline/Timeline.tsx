@@ -96,7 +96,7 @@ export const Timeline: React.FC<TimelineProps> = ({ experiences, education }) =>
   return (
     <div 
       ref={containerRef} 
-      className="w-full h-[600px] relative bg-gradient-to-b from-background/50 to-background/30 rounded-lg overflow-hidden"
+      className="w-full h-[500px] relative bg-gradient-to-b from-background/50 to-background/30 rounded-lg overflow-hidden"
     >
       {/* Background particles */}
       <motion.div

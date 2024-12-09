@@ -7,7 +7,7 @@ export const TimelineSection: React.FC = () => {
   return (
     <motion.section
       id="timeline"
-      className="w-full py-20 bg-background"
+      className="w-full py-8 bg-background"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -17,12 +17,12 @@ export const TimelineSection: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center mb-12"
+          className="text-center mb-2"
         >
           <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-foreground">
             My Journey
           </h2>
-          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+          <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
             Explore my professional journey and educational background through this interactive timeline.
             Click on any event to learn more about my experiences and achievements.
           </p>

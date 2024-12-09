@@ -64,13 +64,15 @@ export const calculatePathPoints = (
   }
 
   const points: Point[] = [];
-  const horizontalSpacing = containerWidth / Math.max(numPoints - 1, 1);
+  const padding = 60; // Add padding for nodes
+  const usableWidth = containerWidth - (padding * 2);
+  const horizontalSpacing = usableWidth / Math.max(numPoints - 1, 1);
   const verticalCenter = containerHeight / 2;
   const amplitude = containerHeight * 0.15; // Reduced wave height
   const frequency = 2; // Controls how many waves appear
 
   for (let i = 0; i < numPoints; i++) {
-    const x = i * horizontalSpacing;
+    const x = padding + (i * horizontalSpacing);
     const progress = i / (numPoints - 1);
     // Create a gentler wave pattern
     const y = verticalCenter + 
