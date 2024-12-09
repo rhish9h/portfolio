@@ -5,7 +5,7 @@ import re
 DEFAULT_FOLDER_PATH = r"/Users/rhishabhhattarki/Documents/code/portfolio"
 DEFAULT_EXTENSIONS = {".js", ".jsx", ".ts", ".tsx", ".css", ".html", ".txt", ".json", ".yaml", ".config", ".md", ".py"}
 DEFAULT_TOKEN_LIMIT = 2_000_000  # ChatGPT-4 token limit approximation
-DEFAULT_IGNORED_FOLDERS = {"node_modules", "venv", "__pycache__", ".git", "file_dumps"}  # Add any folder names to be ignored
+DEFAULT_IGNORED_FOLDERS = {"node_modules", "venv", "__pycache__", ".git", "file_dumps", "dist"}  # Add any folder names to be ignored
 DEFAULT_IGNORED_FILES = {"package-lock.json", "LICENSE"}  # Add any file names to be ignored
 
 def count_tokens(text):
