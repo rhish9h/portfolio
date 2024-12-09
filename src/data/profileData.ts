@@ -10,7 +10,9 @@ export interface Experience {
 export interface Education {
   school: string;
   degree: string;
-  duration: string;
+  startDate: string;
+  endDate: string;
+  bullets?: string[];
 }
 
 export interface Certification {
@@ -145,12 +147,22 @@ What excites me most is what’s ahead. We’re living in an era where AI, auton
     {
       school: "Arizona State University",
       degree: "MS in Software Engineering",
-      duration: "August 2022 – April 2024"
+      startDate: "August 2022",
+      endDate: "April 2024",
+      bullets: [
+        "Specialized in Software Engineering",
+        "Relevant Coursework: Software Design, Software Agility, Web Development, Data Mining"
+      ]
     },
     {
       school: "Savitribai Phule Pune University",
       degree: "BE in Computer Engineering",
-      duration: "2016 – 2020"
+      startDate: "August 2016",
+      endDate: "May 2020",
+      bullets: [
+        "First Class with Distinction",
+        "Relevant Coursework: Data Structures, Algorithms, Database Management Systems, Operating Systems"
+      ]
     }
   ],
   skills: {

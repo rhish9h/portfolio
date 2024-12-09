@@ -4,8 +4,7 @@ import { ThemeProvider } from './components/ThemeProvider'
 import { Navbar } from './components/ui/Navbar'
 import { HeroSection } from './components/sections/HeroSection'
 import { AboutSection } from './components/sections/AboutSection'
-import { ExperienceSection } from './components/sections/ExperienceSection'
-import { EducationSection } from './components/sections/EducationSection'
+import { TimelineSection } from './components/sections/TimelineSection'
 import { SkillsSection } from './components/sections/SkillsSection'
 import { CertificationsSection } from './components/sections/CertificationsSection'
 import { AwardsSection } from './components/sections/AwardsSection'
@@ -64,9 +63,9 @@ function App() {
             </div>
           </motion.section>
 
-          {/* Experience Section */}
+          {/* Timeline Section */}
           <motion.section
-            id="experience"
+            id="timeline"
             className="w-full py-12 md:py-20"
             initial="initial"
             whileInView="animate"
@@ -74,21 +73,7 @@ function App() {
             variants={fadeInUp}
           >
             <div className="container mx-auto max-w-5xl px-6 md:px-8">
-              <ExperienceSection />
-            </div>
-          </motion.section>
-
-          {/* Education Section */}
-          <motion.section
-            id="education"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
-              <EducationSection />
+              <TimelineSection />
             </div>
           </motion.section>
 

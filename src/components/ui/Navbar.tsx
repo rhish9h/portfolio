@@ -17,8 +17,7 @@ const primaryNavItems = [
 
 // Secondary navigation items shown in the dropdown menu
 const secondaryNavItems = [
-  { label: 'Experience', href: '#experience' },
-  { label: 'Education', href: '#education' },
+  { label: 'Journey', href: '#timeline' },
   { label: 'Skills', href: '#skills' },
   { label: 'Certifications', href: '#certifications' },
   { label: 'Awards', href: '#awards' },
