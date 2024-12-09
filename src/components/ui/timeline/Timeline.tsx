@@ -1,130 +1,187 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TimelineProps, TimelineEvent } from './types';
-import { mergeAndSortEvents, calculatePosition } from './utils';
-import { FaGraduationCap, FaBriefcase, FaCar } from 'react-icons/fa';
+import { Experience, Education } from '../../../data/profileData';
+import { TimelineEvent } from './types';
+import { mergeAndSortEvents } from './utils';
+import { generateSmoothPath, calculatePathPoints, getPointAtPercentage, getRotationAtPercentage, Point } from './pathUtils';
+import TimelineCharacter from './TimelineCharacter';
+import TimelineNode from './TimelineNode';
 
-const Timeline: React.FC<TimelineProps> = ({ experiences, education }) => {
-  const [events, setEvents] = useState<TimelineEvent[]>([]);
-  const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+interface TimelineProps {
+  experiences: Experience[];
+  education: Education[];
+}
+
+export const Timeline: React.FC<TimelineProps> = ({ experiences, education }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isHorizontal = containerDimensions.width >= 768; // Switch to vertical on mobile
+  const pathRef = useRef<SVGPathElement>(null);
+  const [events] = useState<TimelineEvent[]>(() => mergeAndSortEvents(experiences, education));
+  const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
+  const [characterPosition, setCharacterPosition] = useState<Point>({ x: 0, y: 0 });
+  const [characterRotation, setCharacterRotation] = useState(0);
+  const [isMoving, setIsMoving] = useState(false);
+  const [pathString, setPathString] = useState('');
+  const [eventPositions, setEventPositions] = useState<Point[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const sortedEvents = mergeAndSortEvents(experiences, education);
-    setEvents(sortedEvents);
-    setSelectedEvent(sortedEvents[0]);
-  }, [experiences, education]);
+    // Set initial selected event
+    if (events.length > 0 && !selectedEvent) {
+      setSelectedEvent(events[0]);
+    }
+  }, [events, selectedEvent]);
 
+  // Calculate path and positions when container size changes
   useEffect(() => {
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        setContainerDimensions({
-          width: containerRef.current.offsetWidth,
-          height: containerRef.current.offsetHeight,
-        });
+    const updatePath = () => {
+      if (!containerRef.current || !events.length) return;
+
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      if (width === 0 || height === 0) return;
+
+      const points = calculatePathPoints(width, height, events.length);
+      const path = generateSmoothPath(points);
+      
+      setPathString(path);
+      setEventPositions(points);
+      
+      // Set initial character position
+      if (pathRef.current && !isInitialized) {
+        const initialPoint = getPointAtPercentage(pathRef.current, 0);
+        if (initialPoint) {
+          setCharacterPosition(initialPoint);
+          setCharacterRotation(getRotationAtPercentage(pathRef.current, 0));
+          setIsInitialized(true);
+        }
       }
     };
 
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
+    // Initial delay to ensure DOM is ready
+    const timer = setTimeout(updatePath, 100);
 
-  const getEventIcon = (type: 'education' | 'experience') => {
-    return type === 'education' ? (
-      <FaGraduationCap className="w-6 h-6" />
-    ) : (
-      <FaBriefcase className="w-6 h-6" />
-    );
-  };
+    const resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(updatePath);
+    });
+    
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
 
-  const getCharacterPosition = (event: TimelineEvent) => {
-    const index = events.findIndex(e => e.id === event.id);
-    return calculatePosition(
-      index,
-      events.length,
-      containerDimensions.width,
-      containerDimensions.height,
-      isHorizontal
-    );
+    return () => {
+      clearTimeout(timer);
+      resizeObserver.disconnect();
+    };
+  }, [events.length, isInitialized]);
+
+  // Handle event selection
+  const handleEventSelect = (event: TimelineEvent, index: number) => {
+    if (!pathRef.current || events.length === 0) return;
+    
+    setSelectedEvent(event);
+    setIsMoving(true);
+
+    const targetPercent = index / (events.length - 1);
+    const targetPoint = getPointAtPercentage(pathRef.current, targetPercent);
+    const targetRotation = getRotationAtPercentage(pathRef.current, targetPercent);
+
+    if (targetPoint) {
+      setCharacterPosition(targetPoint);
+      setCharacterRotation(targetRotation);
+    }
+
+    // Reset moving state after animation
+    setTimeout(() => setIsMoving(false), 1000);
   };
 
   return (
     <div 
-      ref={containerRef}
-      className="relative w-full h-[600px] bg-background/50 rounded-lg p-8"
+      ref={containerRef} 
+      className="w-full h-[600px] relative bg-gradient-to-b from-background/50 to-background/30 rounded-lg overflow-hidden"
     >
-      {/* Timeline Track */}
-      <div 
-        className={`absolute ${
-          isHorizontal ? 'w-[90%] h-1 top-1/2' : 'w-1 h-[90%] left-1/2'
-        } bg-primary/30 rounded-full transform ${
-          isHorizontal ? '-translate-y-1/2 left-[5%]' : '-translate-x-1/2 top-[5%]'
-        }`}
-      />
-
-      {/* Events */}
-      {events.map((event, index) => {
-        const position = calculatePosition(
-          index,
-          events.length,
-          containerDimensions.width,
-          containerDimensions.height,
-          isHorizontal
-        );
-
-        return (
+      {/* Background particles */}
+      <motion.div
+        className="absolute inset-0 overflow-hidden pointer-events-none"
+        initial={false}
+      >
+        {[...Array(20)].map((_, i) => (
           <motion.div
-            key={event.id}
-            className="absolute"
-            style={{
-              left: position.x,
-              top: position.y,
-              transform: 'translate(-50%, -50%)',
+            key={i}
+            className="absolute w-2 h-2 rounded-full bg-primary/10"
+            animate={{
+              x: [
+                Math.random() * window.innerWidth,
+                Math.random() * window.innerWidth
+              ],
+              y: [
+                Math.random() * 600,
+                Math.random() * 600
+              ],
+              scale: [0.5, 1, 0.5],
+              opacity: [0.3, 0.6, 0.3]
             }}
-          >
-            <button
-              onClick={() => setSelectedEvent(event)}
-              className={`relative p-3 rounded-full bg-background border-2 ${
-                selectedEvent?.id === event.id
-                  ? 'border-primary scale-110'
-                  : 'border-primary/50 hover:border-primary hover:scale-105'
-              } transition-all duration-300`}
-            >
-              {getEventIcon(event.type)}
-            </button>
-          </motion.div>
-        );
-      })}
+            transition={{
+              duration: Math.random() * 10 + 10,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        ))}
+      </motion.div>
 
-      {/* Animated Character */}
-      {selectedEvent && (
-        <motion.div
-          className="absolute"
-          initial={false}
-          animate={getCharacterPosition(selectedEvent)}
-          transition={{
-            type: 'spring',
-            stiffness: 100,
-            damping: 20,
-          }}
-          style={{ transform: 'translate(-50%, -50%)' }}
-        >
-          <FaCar className="w-8 h-8 text-primary animate-bounce" />
-        </motion.div>
-      )}
+      {/* Timeline SVG */}
+      <svg className="w-full h-full absolute inset-0">
+        <defs>
+          <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="rgb(79, 70, 229)" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="rgb(139, 92, 246)" stopOpacity="0.2" />
+          </linearGradient>
+        </defs>
 
-      {/* Event Details */}
+        {/* Path */}
+        <motion.path
+          ref={pathRef}
+          d={pathString}
+          fill="none"
+          stroke="url(#pathGradient)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          className="drop-shadow-md"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 2 }}
+        />
+
+        {/* Event nodes */}
+        {events.map((event, index) => (
+          eventPositions[index] && (
+            <TimelineNode
+              key={event.id}
+              event={event}
+              x={eventPositions[index].x}
+              y={eventPositions[index].y}
+              isSelected={selectedEvent?.id === event.id}
+              onClick={() => handleEventSelect(event, index)}
+            />
+          )
+        ))}
+
+        {/* Animated character */}
+        <TimelineCharacter
+          x={characterPosition.x}
+          y={characterPosition.y}
+          rotation={characterRotation}
+          isMoving={isMoving}
+        />
+      </svg>
+
+      {/* Event details */}
       <AnimatePresence mode="wait">
         {selectedEvent && (
           <motion.div
-            key={selectedEvent.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute bottom-8 left-8 right-8 bg-background/80 backdrop-blur p-6 rounded-lg border border-primary/20"
+            exit={{ opacity: 0, y: 20 }}
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-card/80 backdrop-blur-sm p-6 rounded-lg shadow-lg max-w-md w-full border border-primary/20"
           >
             <h3 className="text-xl font-bold">{selectedEvent.title}</h3>
             <p className="text-muted-foreground">{selectedEvent.subtitle}</p>
@@ -134,13 +191,16 @@ const Timeline: React.FC<TimelineProps> = ({ experiences, education }) => {
               }`}
             </p>
             {selectedEvent.location && (
-              <p className="text-sm text-muted-foreground mt-1">{selectedEvent.location}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                📍 {selectedEvent.location}
+              </p>
             )}
-            {selectedEvent.bullets && (
+            {selectedEvent.bullets && selectedEvent.bullets.length > 0 && (
               <ul className="mt-4 space-y-2">
                 {selectedEvent.bullets.map((bullet, index) => (
-                  <li key={index} className="text-sm">
-                    • {bullet}
+                  <li key={index} className="text-sm flex items-start">
+                    <span className="mr-2">•</span>
+                    {bullet}
                   </li>
                 ))}
               </ul>
@@ -151,5 +211,3 @@ const Timeline: React.FC<TimelineProps> = ({ experiences, education }) => {
     </div>
   );
 };
-
-export default Timeline;
