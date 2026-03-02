@@ -13,14 +13,11 @@ import { PublicationsSection } from './components/sections/PublicationsSection'
 import { ContactSection } from './components/sections/ContactSection'
 import { ScrollProgress } from './components/ui/ScrollProgress'
 import { WaveDivider } from './components/ui/WaveDivider'
-import { JourneyTraveler } from './components/ui/JourneyTraveler'
-import { Journey3DScene } from './components/ui/Journey3D'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { WorldScene } from './components/ui/WorldScene'
+import { motion } from 'framer-motion'
 
 function App() {
   const mainRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll();
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = 'smooth';
@@ -31,25 +28,18 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen w-full bg-background text-foreground relative overflow-x-hidden">
+      <div className="relative min-h-screen w-full overflow-x-hidden bg-background text-foreground">
         <ScrollProgress />
         
-        {/* Journey Visual Elements */}
-        <Journey3DScene />
-        <JourneyTraveler />
         
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65">
           <Navbar />
         </header>
 
-        <main ref={mainRef} className="relative flex w-full flex-1 flex-col items-center justify-center">
-          {/* Parallax background layer */}
-          <motion.div
-            className="fixed inset-0 z-0 pointer-events-none"
-            style={{ y: backgroundY }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/30 to-background opacity-50" />
-          </motion.div>
+        <main ref={mainRef} className="relative z-10 flex w-full flex-1 flex-col items-center justify-center pb-16">
+          {/* 3D World with winding road, cyclist, trees, huts */}
+          <WorldScene />
+          {/* Content sections float above the 3D world */}
 
           {/* Hero Section - Full height introduction */}
           <section id="hero" className="relative w-full">
@@ -62,41 +52,47 @@ function App() {
           </div>
 
           {/* About Section - The story begins */}
-          <section id="about" className="relative w-full py-24 md:py-32 journey-gradient-1">
+          <section id="about" className="journey-gradient-1 relative w-full py-24 md:py-32">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8 }}
-              className="container mx-auto max-w-5xl px-6 md:px-8"
+              className="container mx-auto max-w-6xl px-6 md:px-8"
             >
-              <AboutSection />
+              <div className="journey-shell p-8 md:p-12">
+                <AboutSection />
+              </div>
             </motion.div>
           </section>
 
           {/* Education Journey Section */}
-          <section id="education" className="relative w-full py-24 md:py-32 journey-gradient-2">
+          <section id="education" className="journey-gradient-2 relative w-full py-24 md:py-32">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8 }}
-              className="container mx-auto max-w-5xl px-6 md:px-8"
+              className="container mx-auto max-w-6xl px-6 md:px-8"
             >
-              <EducationJourney />
+              <div className="journey-shell p-8 md:p-12">
+                <EducationJourney />
+              </div>
             </motion.div>
           </section>
 
           {/* Career Journey Timeline */}
-          <section id="experience" className="relative w-full py-24 md:py-32 journey-gradient-3">
+          <section id="experience" className="journey-gradient-3 relative w-full py-24 md:py-32">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8 }}
-              className="container mx-auto max-w-5xl px-6 md:px-8"
+              className="container mx-auto max-w-6xl px-6 md:px-8"
             >
-              <JourneyTimeline />
+              <div className="journey-shell p-8 md:p-12">
+                <JourneyTimeline />
+              </div>
             </motion.div>
           </section>
 
@@ -107,22 +103,26 @@ function App() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
-              className="container mx-auto max-w-5xl px-6 md:px-8"
+              className="container mx-auto max-w-6xl px-6 md:px-8"
             >
-              <SkillsSection />
+              <div className="journey-shell p-8 md:p-12">
+                <SkillsSection />
+              </div>
             </motion.div>
           </section>
 
           {/* Achievements Section - Combining Awards, Publications, Certifications */}
-          <section id="achievements" className="relative w-full py-24 md:py-32 bg-gradient-to-b from-background via-muted/20 to-background">
-            <div className="container mx-auto max-w-5xl px-6 md:px-8 space-y-20">
+          <section id="achievements" className="relative w-full bg-gradient-to-b from-background via-muted/20 to-background py-24 md:py-32">
+            <div className="container mx-auto max-w-6xl space-y-12 px-6 md:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6 }}
               >
-                <CertificationsSection />
+                <div className="journey-shell p-8 md:p-10">
+                  <CertificationsSection />
+                </div>
               </motion.div>
 
               <motion.div
@@ -131,7 +131,9 @@ function App() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.1 }}
               >
-                <AwardsSection />
+                <div className="journey-shell p-8 md:p-10">
+                  <AwardsSection />
+                </div>
               </motion.div>
 
               <motion.div
@@ -140,7 +142,9 @@ function App() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <PublicationsSection />
+                <div className="journey-shell p-8 md:p-10">
+                  <PublicationsSection />
+                </div>
               </motion.div>
             </div>
           </section>
@@ -152,21 +156,23 @@ function App() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
-              className="container mx-auto max-w-5xl px-6 md:px-8"
+              className="container mx-auto max-w-6xl px-6 md:px-8"
             >
-              <ContactSection />
+              <div className="journey-shell p-8 md:p-12">
+                <ContactSection />
+              </div>
             </motion.div>
           </section>
         </main>
 
         <motion.footer
-          className="w-full border-t relative z-10"
+          className="w-full border-t relative z-10 bg-background/85 backdrop-blur-xl"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="container mx-auto max-w-5xl px-6 py-8 text-center md:px-8">
+          <div className="container mx-auto max-w-6xl px-6 py-8 text-center md:px-8">
             <p className="mb-4 text-muted-foreground">
               Let's continue the journey together
             </p>

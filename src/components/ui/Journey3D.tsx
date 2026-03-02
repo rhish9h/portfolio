@@ -1,324 +1,341 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, PerspectiveCamera, Environment, Sky, ContactShadows, Stars, Sparkles, Cloud } from '@react-three/drei';
-import { useRef, useMemo, Suspense } from 'react';
+import { Cloud, ContactShadows, Environment, Float, PerspectiveCamera, Sky } from '@react-three/drei';
+import { Suspense, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
-// --- Assets & Geometries ---
-
-const LowPolyCyclist = () => {
-  const group = useRef<THREE.Group>(null);
-  const frontWheel = useRef<THREE.Group>(null);
-  const backWheel = useRef<THREE.Group>(null);
-  const pedals = useRef<THREE.Group>(null);
-  
-  // Animation state
-  useFrame((state) => {
-    if (!group.current) return;
-    
-    // Gentle sway
-    const t = state.clock.getElapsedTime();
-    group.current.rotation.z = Math.sin(t * 2) * 0.05;
-    group.current.position.y = Math.sin(t * 4) * 0.02 + 0.1; // Bobbing
-    
-    // Calculate speed based on scroll delta would be ideal, but for now constant "moving" animation
-    // when the user scrolls is hard to detect perfectly without noise.
-    // So we'll keep a constant slow idle rotation and speed it up if we could detect scroll.
-    // For this visual, a constant rotation makes it feel "alive" even when still.
-    
-    const rotationSpeed = 0.15;
-    if (frontWheel.current) frontWheel.current.rotation.x -= rotationSpeed;
-    if (backWheel.current) backWheel.current.rotation.x -= rotationSpeed;
-    if (pedals.current) pedals.current.rotation.x -= rotationSpeed;
-  });
-
-  const frameColor = "#3b82f6"; // Primary blue
-  const tireColor = "#1f2937";
-  const rimColor = "#e5e7eb";
-  const skinColor = "#fcd34d";
-  const shirtColor = "#ffffff";
-  const shortsColor = "#1f2937";
-
-  return (
-    <group ref={group} scale={0.4} position={[0, 0, 0]}>
-      {/* Bicycle Frame */}
-      <group>
-        {/* Main Frame */}
-        <mesh position={[0, 1.2, 0]} rotation={[0, 0, 0.2]}>
-            <capsuleGeometry args={[0.08, 2.2, 4, 8]} />
-            <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.8} />
-        </mesh>
-        <mesh position={[-0.8, 1.2, 0]} rotation={[0, 0, -0.2]}>
-            <capsuleGeometry args={[0.07, 2, 4, 8]} />
-            <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.8} />
-        </mesh>
-         <mesh position={[0.8, 1.2, 0]} rotation={[0, 0, -0.2]}>
-            <capsuleGeometry args={[0.07, 2, 4, 8]} />
-            <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.8} />
-        </mesh>
-         <mesh position={[0, 0.4, 0]} rotation={[0, 0, 1.57]}>
-            <capsuleGeometry args={[0.08, 1.6, 4, 8]} />
-            <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.8} />
-        </mesh>
-        
-        {/* Handlebars */}
-        <mesh position={[1.2, 2.1, 0]} rotation={[0, 1.57, 0]}>
-            <capsuleGeometry args={[0.06, 1.2, 4, 8]} />
-            <meshStandardMaterial color="#9ca3af" roughness={0.5} metalness={0.9} />
-        </mesh>
-        
-        {/* Seat */}
-        <mesh position={[-0.6, 2.3, 0]} rotation={[0, 0, 0.1]}>
-            <boxGeometry args={[0.6, 0.1, 0.4]} />
-            <meshStandardMaterial color="#111827" />
-        </mesh>
-      </group>
-
-      {/* Wheels */}
-      <group position={[1.5, 0.7, 0]} ref={frontWheel}>
-        <mesh rotation={[1.57, 0, 0]}>
-            <torusGeometry args={[0.7, 0.08, 16, 32]} />
-            <meshStandardMaterial color={tireColor} />
-        </mesh>
-        <mesh rotation={[1.57, 0, 0]}>
-            <torusGeometry args={[0.6, 0.02, 16, 16]} />
-            <meshStandardMaterial color={rimColor} metalness={0.8} />
-        </mesh>
-        {/* Spokes */}
-        {[0, 1.57, 0.78, -0.78].map((rot, i) => (
-            <mesh key={i} rotation={[0, 0, rot]}>
-                <cylinderGeometry args={[0.01, 0.01, 1.4]} />
-                <meshStandardMaterial color={rimColor} />
-            </mesh>
-        ))}
-      </group>
-
-      <group position={[-1.5, 0.7, 0]} ref={backWheel}>
-        <mesh rotation={[1.57, 0, 0]}>
-            <torusGeometry args={[0.7, 0.08, 16, 32]} />
-            <meshStandardMaterial color={tireColor} />
-        </mesh>
-        <mesh rotation={[1.57, 0, 0]}>
-            <torusGeometry args={[0.6, 0.02, 16, 16]} />
-            <meshStandardMaterial color={rimColor} metalness={0.8} />
-        </mesh>
-         {/* Spokes */}
-        {[0, 1.57, 0.78, -0.78].map((rot, i) => (
-            <mesh key={i} rotation={[0, 0, rot]}>
-                <cylinderGeometry args={[0.01, 0.01, 1.4]} />
-                <meshStandardMaterial color={rimColor} />
-            </mesh>
-        ))}
-      </group>
-
-       {/* Pedals */}
-       <group position={[0, 0.7, 0]} ref={pedals}>
-         <mesh rotation={[0, 0, 1.57]} position={[0.2, 0, 0.3]}>
-            <cylinderGeometry args={[0.02, 0.02, 0.4]} />
-            <meshStandardMaterial color="#9ca3af" />
-         </mesh>
-         <mesh rotation={[0, 0, 1.57]} position={[-0.2, 0, -0.3]}>
-            <cylinderGeometry args={[0.02, 0.02, 0.4]} />
-            <meshStandardMaterial color="#9ca3af" />
-         </mesh>
-       </group>
-
-      {/* Rider (Simplified Low Poly) */}
-      <group>
-        {/* Torso */}
-        <mesh position={[-0.2, 2.8, 0]} rotation={[0, 0, 0.3]}>
-            <boxGeometry args={[0.5, 1.2, 0.7]} />
-            <meshStandardMaterial color={shirtColor} roughness={0.9} />
-        </mesh>
-        {/* Head */}
-        <mesh position={[0.1, 3.6, 0]} rotation={[0, 0, 0.2]}>
-            <sphereGeometry args={[0.25, 16, 16]} />
-            <meshStandardMaterial color={skinColor} roughness={0.5} />
-        </mesh>
-        {/* Helmet */}
-        <mesh position={[0.1, 3.75, 0]} rotation={[0, 0, 0.2]}>
-            <sphereGeometry args={[0.26, 16, 16, 0, 6.28, 0, 1.5]} />
-            <meshStandardMaterial color={frameColor} roughness={0.4} />
-        </mesh>
-        
-        {/* Legs (Static for now, but positioned to look like biking) */}
-        <mesh position={[-0.3, 1.8, 0.3]} rotation={[0.5, 0, 0.2]}>
-             <capsuleGeometry args={[0.12, 1.5, 4, 8]} />
-             <meshStandardMaterial color={shortsColor} />
-        </mesh>
-        <mesh position={[-0.3, 1.8, -0.3]} rotation={[-0.5, 0, 0.2]}>
-             <capsuleGeometry args={[0.12, 1.5, 4, 8]} />
-             <meshStandardMaterial color={shortsColor} />
-        </mesh>
-
-        {/* Arms */}
-        <mesh position={[0.4, 2.8, 0.35]} rotation={[0, 0, -0.8]}>
-             <capsuleGeometry args={[0.08, 1.4, 4, 8]} />
-             <meshStandardMaterial color={skinColor} />
-        </mesh>
-         <mesh position={[0.4, 2.8, -0.35]} rotation={[0, 0, -0.8]}>
-             <capsuleGeometry args={[0.08, 1.4, 4, 8]} />
-             <meshStandardMaterial color={skinColor} />
-        </mesh>
-      </group>
-    </group>
-  );
+type TubeProps = {
+  start: THREE.Vector3;
+  end: THREE.Vector3;
+  radius: number;
+  material: THREE.Material;
 };
 
-// --- Environment Elements ---
+const FrameTube = ({ start, end, radius, material }: TubeProps) => {
+  const direction = useMemo(() => new THREE.Vector3().subVectors(end, start), [end, start]);
+  const midpoint = useMemo(() => new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5), [end, start]);
+  const quaternion = useMemo(() => {
+    const axis = new THREE.Vector3(0, 1, 0);
+    const target = direction.clone().normalize();
+    return new THREE.Quaternion().setFromUnitVectors(axis, target);
+  }, [direction]);
 
-const Tree = ({ position, scale = 1, color = "#10b981" }: { position: [number, number, number], scale?: number, color?: string }) => {
   return (
-    <group position={position} scale={scale}>
-      <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.1, 0.2, 1]} />
-        <meshStandardMaterial color="#78350f" />
-      </mesh>
-      <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
-        <coneGeometry args={[0.8, 1.5, 8]} />
-        <meshStandardMaterial color={color} roughness={0.8} />
-      </mesh>
-      <mesh position={[0, 2.2, 0]} castShadow receiveShadow>
-        <coneGeometry args={[0.6, 1.2, 8]} />
-        <meshStandardMaterial color={color} roughness={0.8} />
-      </mesh>
-    </group>
-  );
-};
-
-const Rock = ({ position, scale = 1 }: { position: [number, number, number], scale?: number }) => {
-  return (
-    <mesh position={position} scale={scale} castShadow receiveShadow rotation={[Math.random() * Math.PI, Math.random() * Math.PI, 0]}>
-      <dodecahedronGeometry args={[0.5, 0]} />
-      <meshStandardMaterial color="#6b7280" flatShading />
+    <mesh position={midpoint} quaternion={quaternion} castShadow>
+      <cylinderGeometry args={[radius, radius, direction.length(), 14]} />
+      <primitive object={material} />
     </mesh>
   );
 };
 
-function Landscape() {
-    const group = useRef<THREE.Group>(null);
-    
-    // Generate landscape items once
-    const items = useMemo(() => {
-        const _items = [];
-        // Creates a long corridor of items
-        for (let i = 0; i < 100; i++) {
-            const z = -i * 3; // Space them out along Z
-            // Left side
-            _items.push({
-                x: -5 - Math.random() * 15,
-                z,
-                scale: 0.5 + Math.random(),
-                type: Math.random() > 0.7 ? 'rock' : 'tree',
-                color: Math.random() > 0.5 ? '#10b981' : '#059669'
-            });
-            // Right side
-            _items.push({
-                x: 5 + Math.random() * 15,
-                z,
-                scale: 0.5 + Math.random(),
-                type: Math.random() > 0.7 ? 'rock' : 'tree',
-                color: Math.random() > 0.5 ? '#10b981' : '#059669'
-            });
-        }
-        return _items;
-    }, []);
+const Wheel = ({ position }: { position: [number, number, number] }) => {
+  const wheelRef = useRef<THREE.Group>(null);
 
-    useFrame((_state, delta) => {
-        if (!group.current) return;
-        
-        // Move the entire group towards camera based on scroll
-        const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPos = window.scrollY;
-        const progress = scrollMax > 0 ? scrollPos / scrollMax : 0;
-        
-        // Map progress (0-1) to Z distance (0-250)
-        const targetZ = progress * 250;
-        
-        // Smoothly interpolate current Z to target Z
-        // Using lerp for smooth camera follow feel
-        group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, targetZ, delta * 5);
-    });
+  useFrame((_, delta) => {
+    if (!wheelRef.current) return;
+    wheelRef.current.rotation.z -= delta * 7.5;
+  });
 
-    return (
-        <group ref={group}>
-            {/* Ground Plane - Infinite illusion by being large */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -100]} receiveShadow>
-                <planeGeometry args={[100, 400]} />
-                <meshStandardMaterial color="#ecfccb" roughness={1} />
-            </mesh>
-            
-            {/* Road */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, -100]} receiveShadow>
-                <planeGeometry args={[4, 400]} />
-                <meshStandardMaterial color="#374151" roughness={0.8} />
-            </mesh>
-            
-             {/* Road Stripes */}
-             {Array.from({ length: 100 }).map((_, i) => (
-                <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, -i * 4]} receiveShadow>
-                    <planeGeometry args={[0.2, 2]} />
-                    <meshStandardMaterial color="white" />
-                </mesh>
-             ))}
+  return (
+    <group ref={wheelRef} position={position}>
+      <mesh castShadow>
+        <torusGeometry args={[0.72, 0.055, 18, 56]} />
+        <meshStandardMaterial color="#111827" roughness={0.75} />
+      </mesh>
+      <mesh>
+        <torusGeometry args={[0.66, 0.03, 16, 48]} />
+        <meshStandardMaterial color="#cbd5e1" metalness={0.9} roughness={0.2} />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.035, 0.035, 0.14, 16]} />
+        <meshStandardMaterial color="#475569" />
+      </mesh>
+      {Array.from({ length: 12 }).map((_, index) => {
+        const angle = (Math.PI * 2 * index) / 12;
+        return (
+          <mesh key={`spoke-front-${index}`} position={[Math.cos(angle) * 0.29, Math.sin(angle) * 0.29, 0.025]} rotation={[0, 0, angle]}>
+            <boxGeometry args={[0.58, 0.008, 0.008]} />
+            <meshStandardMaterial color="#94a3b8" metalness={0.65} roughness={0.28} />
+          </mesh>
+        );
+      })}
+      {Array.from({ length: 12 }).map((_, index) => {
+        const angle = (Math.PI * 2 * index) / 12 + Math.PI / 12;
+        return (
+          <mesh key={`spoke-back-${index}`} position={[Math.cos(angle) * 0.29, Math.sin(angle) * 0.29, -0.025]} rotation={[0, 0, angle]}>
+            <boxGeometry args={[0.58, 0.008, 0.008]} />
+            <meshStandardMaterial color="#94a3b8" metalness={0.65} roughness={0.28} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+};
 
-            {/* Scenery Items */}
-            {items.map((item, i) => (
-                <group key={i} position={[item.x, 0, item.z]}>
-                   {item.type === 'tree' ? 
-                     <Tree position={[0,0,0]} scale={item.scale} color={item.color} /> : 
-                     <Rock position={[0,0.3,0]} scale={item.scale} />
-                   }
-                </group>
-            ))}
+const BikeAndRider = () => {
+  const leftThigh = useRef<THREE.Group>(null);
+  const leftCalf = useRef<THREE.Group>(null);
+  const rightThigh = useRef<THREE.Group>(null);
+  const rightCalf = useRef<THREE.Group>(null);
+  const crankRef = useRef<THREE.Group>(null);
+  const torsoRef = useRef<THREE.Group>(null);
+
+  const frameMaterial = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#0f766e', roughness: 0.3, metalness: 0.65 }),
+    [],
+  );
+
+  const rearAxle = useMemo(() => new THREE.Vector3(-1.45, 0.75, 0), []);
+  const frontAxle = useMemo(() => new THREE.Vector3(1.55, 0.75, 0), []);
+  const bottomBracket = useMemo(() => new THREE.Vector3(-0.3, 0.8, 0), []);
+  const seatTop = useMemo(() => new THREE.Vector3(-0.45, 1.72, 0), []);
+  const headTop = useMemo(() => new THREE.Vector3(1.02, 1.72, 0), []);
+  const headBottom = useMemo(() => new THREE.Vector3(0.98, 1.35, 0), []);
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    const cadence = 5.8;
+
+    if (crankRef.current) {
+      crankRef.current.rotation.z = -t * cadence;
+    }
+
+    if (leftThigh.current && leftCalf.current && rightThigh.current && rightCalf.current) {
+      leftThigh.current.rotation.z = Math.sin(t * cadence) * 0.48 + 0.14;
+      leftCalf.current.rotation.z = Math.sin(t * cadence - 1.2) * 0.62 - 0.42;
+
+      rightThigh.current.rotation.z = Math.sin(t * cadence + Math.PI) * 0.48 + 0.14;
+      rightCalf.current.rotation.z = Math.sin(t * cadence + Math.PI - 1.2) * 0.62 - 0.42;
+    }
+
+    if (torsoRef.current) {
+      torsoRef.current.rotation.z = -0.58 + Math.sin(t * cadence * 0.55) * 0.02;
+      torsoRef.current.position.y = 1.75 + Math.sin(t * cadence * 0.55) * 0.01;
+    }
+  });
+
+  return (
+    <group scale={0.52} position={[0, 0.68, 0]}>
+      <Wheel position={[-1.45, 0.75, 0]} />
+      <Wheel position={[1.55, 0.75, 0]} />
+
+      <FrameTube start={seatTop} end={headTop} radius={0.035} material={frameMaterial} />
+      <FrameTube start={bottomBracket} end={headBottom} radius={0.04} material={frameMaterial} />
+      <FrameTube start={seatTop} end={bottomBracket} radius={0.034} material={frameMaterial} />
+      <FrameTube start={headTop} end={headBottom} radius={0.035} material={frameMaterial} />
+
+      <FrameTube start={seatTop} end={new THREE.Vector3(rearAxle.x, rearAxle.y, 0.08)} radius={0.016} material={frameMaterial} />
+      <FrameTube start={seatTop} end={new THREE.Vector3(rearAxle.x, rearAxle.y, -0.08)} radius={0.016} material={frameMaterial} />
+      <FrameTube start={bottomBracket} end={new THREE.Vector3(rearAxle.x, rearAxle.y, 0.09)} radius={0.02} material={frameMaterial} />
+      <FrameTube start={bottomBracket} end={new THREE.Vector3(rearAxle.x, rearAxle.y, -0.09)} radius={0.02} material={frameMaterial} />
+
+      <FrameTube start={headBottom} end={new THREE.Vector3(frontAxle.x, frontAxle.y, 0.08)} radius={0.02} material={frameMaterial} />
+      <FrameTube start={headBottom} end={new THREE.Vector3(frontAxle.x, frontAxle.y, -0.08)} radius={0.02} material={frameMaterial} />
+
+      <mesh position={[-0.47, 1.92, 0]} rotation={[0, 0, -0.08]} castShadow>
+        <cylinderGeometry args={[0.022, 0.022, 0.32, 16]} />
+        <meshStandardMaterial color="#0f172a" />
+      </mesh>
+      <mesh position={[-0.58, 2.08, 0]} rotation={[0, 0, 0.04]} castShadow>
+        <boxGeometry args={[0.46, 0.08, 0.2]} />
+        <meshStandardMaterial color="#111827" roughness={0.4} />
+      </mesh>
+
+      <mesh position={[1.08, 1.84, 0]} rotation={[0, 0, 1.05]} castShadow>
+        <cylinderGeometry args={[0.026, 0.026, 0.42, 14]} />
+        <meshStandardMaterial color="#111827" metalness={0.35} roughness={0.45} />
+      </mesh>
+      <mesh position={[1.25, 1.95, 0]} rotation={[0, 0, 0.05]} castShadow>
+        <cylinderGeometry args={[0.023, 0.023, 0.74, 14]} />
+        <meshStandardMaterial color="#111827" />
+      </mesh>
+      <mesh position={[1.56, 1.92, 0.3]} rotation={[0, 0, -0.6]} castShadow>
+        <capsuleGeometry args={[0.028, 0.24, 6, 10]} />
+        <meshStandardMaterial color="#111827" />
+      </mesh>
+      <mesh position={[1.56, 1.92, -0.3]} rotation={[0, 0, -0.6]} castShadow>
+        <capsuleGeometry args={[0.028, 0.24, 6, 10]} />
+        <meshStandardMaterial color="#111827" />
+      </mesh>
+
+      <group position={[-0.3, 0.8, 0]} ref={crankRef}>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.15, 0.016, 12, 28]} />
+          <meshStandardMaterial color="#e2e8f0" metalness={0.9} roughness={0.22} />
+        </mesh>
+        <mesh position={[0.02, 0.28, 0.11]} castShadow>
+          <boxGeometry args={[0.045, 0.56, 0.03]} />
+          <meshStandardMaterial color="#1e293b" />
+        </mesh>
+        <mesh position={[-0.02, -0.28, -0.11]} castShadow>
+          <boxGeometry args={[0.045, 0.56, 0.03]} />
+          <meshStandardMaterial color="#1e293b" />
+        </mesh>
+      </group>
+
+      <group ref={torsoRef} position={[-0.37, 1.75, 0]}>
+        <mesh position={[0, 0, 0]} castShadow>
+          <capsuleGeometry args={[0.14, 0.24, 8, 16]} />
+          <meshStandardMaterial color="#0f172a" />
+        </mesh>
+        <mesh position={[0.5, 0.14, 0]} rotation={[0, 0, -0.58]} castShadow>
+          <capsuleGeometry args={[0.17, 0.8, 10, 20]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.36} />
+        </mesh>
+        <group position={[0.96, 0.28, 0]}>
+          <mesh castShadow>
+            <sphereGeometry args={[0.15, 24, 24]} />
+            <meshStandardMaterial color="#fbbf24" />
+          </mesh>
+          <mesh position={[0.02, 0.08, 0]} scale={[1.06, 0.74, 1]} castShadow>
+            <sphereGeometry args={[0.165, 24, 24]} />
+            <meshStandardMaterial color="#ef4444" roughness={0.3} />
+          </mesh>
         </group>
-    );
+        <mesh position={[0.92, 0.07, 0.18]} rotation={[0, 0, -0.94]} castShadow>
+          <capsuleGeometry args={[0.052, 0.58, 8, 14]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+        <mesh position={[0.92, 0.07, -0.18]} rotation={[0, 0, -0.94]} castShadow>
+          <capsuleGeometry args={[0.052, 0.58, 8, 14]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+      </group>
+
+      <group position={[-0.34, 1.68, 0.11]} ref={leftThigh}>
+        <mesh position={[0.08, -0.3, 0]} rotation={[0, 0, 0.04]} castShadow>
+          <capsuleGeometry args={[0.09, 0.62, 8, 16]} />
+          <meshStandardMaterial color="#0f172a" />
+        </mesh>
+        <group position={[0.16, -0.64, 0]} ref={leftCalf}>
+          <mesh position={[0.05, -0.28, 0]} castShadow>
+            <capsuleGeometry args={[0.07, 0.56, 8, 16]} />
+            <meshStandardMaterial color="#fbbf24" />
+          </mesh>
+          <mesh position={[0.12, -0.62, 0]} rotation={[0, 0, 1.2]} castShadow>
+            <boxGeometry args={[0.16, 0.06, 0.12]} />
+            <meshStandardMaterial color="#0f172a" />
+          </mesh>
+        </group>
+      </group>
+
+      <group position={[-0.34, 1.68, -0.11]} ref={rightThigh}>
+        <mesh position={[0.08, -0.3, 0]} rotation={[0, 0, 0.04]} castShadow>
+          <capsuleGeometry args={[0.09, 0.62, 8, 16]} />
+          <meshStandardMaterial color="#0f172a" />
+        </mesh>
+        <group position={[0.16, -0.64, 0]} ref={rightCalf}>
+          <mesh position={[0.05, -0.28, 0]} castShadow>
+            <capsuleGeometry args={[0.07, 0.56, 8, 16]} />
+            <meshStandardMaterial color="#fbbf24" />
+          </mesh>
+          <mesh position={[0.12, -0.62, 0]} rotation={[0, 0, 1.2]} castShadow>
+            <boxGeometry args={[0.16, 0.06, 0.12]} />
+            <meshStandardMaterial color="#0f172a" />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  );
+};
+
+const Tree = ({ position, scale = 1, color = '#15803d' }: { position: [number, number, number]; scale?: number; color?: string }) => (
+  <group position={position} scale={scale}>
+    <mesh position={[0, 0.45, 0]} castShadow receiveShadow>
+      <cylinderGeometry args={[0.1, 0.24, 0.9, 12]} />
+      <meshStandardMaterial color="#7c2d12" roughness={0.85} />
+    </mesh>
+    <mesh position={[0, 1.25, 0]} castShadow receiveShadow>
+      <coneGeometry args={[0.78, 1.45, 10]} />
+      <meshStandardMaterial color={color} roughness={0.84} />
+    </mesh>
+  </group>
+);
+
+function Landscape() {
+  const groupRef = useRef<THREE.Group>(null);
+  const roadside = useMemo(() => {
+    const features: Array<{ x: number; z: number; scale: number; color: string }> = [];
+    for (let i = 0; i < 120; i += 1) {
+      const z = -i * 3.2;
+      features.push({ x: -7 - (i % 5) * 2.5, z, scale: 0.7 + (i % 3) * 0.14, color: i % 2 ? '#166534' : '#15803d' });
+      features.push({ x: 7 + (i % 6) * 2.3, z, scale: 0.68 + (i % 4) * 0.12, color: i % 2 ? '#15803d' : '#166534' });
+    }
+    return features;
+  }, []);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+    const targetZ = progress * 300;
+    groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, targetZ, delta * 4.8);
+  });
+
+  return (
+    <group ref={groupRef}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, -105]} receiveShadow>
+        <planeGeometry args={[130, 520]} />
+        <meshStandardMaterial color="#dcfce7" roughness={1} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, -105]} receiveShadow>
+        <planeGeometry args={[5.5, 520]} />
+        <meshStandardMaterial color="#1f2937" roughness={0.86} />
+      </mesh>
+      {Array.from({ length: 120 }).map((_, index) => (
+        <mesh key={index} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, -index * 4.2]} receiveShadow>
+          <planeGeometry args={[0.24, 2]} />
+          <meshStandardMaterial color="#f8fafc" />
+        </mesh>
+      ))}
+      {roadside.map((feature, index) => (
+        <Tree key={index} position={[feature.x, 0, feature.z]} scale={feature.scale} color={feature.color} />
+      ))}
+    </group>
+  );
 }
 
 function Scene() {
-    return (
-        <>
-             <PerspectiveCamera makeDefault position={[0, 3, 8]} fov={50} />
-             
-             {/* Lighting & Environment */}
-             <ambientLight intensity={0.5} />
-             <directionalLight 
-                position={[10, 20, 10]} 
-                intensity={1.2} 
-                castShadow 
-                shadow-mapSize={[2048, 2048]} 
-                shadow-camera-left={-20}
-                shadow-camera-right={20}
-                shadow-camera-top={20}
-                shadow-camera-bottom={-20}
-             />
-             <Sky sunPosition={[100, 20, 100]} turbidity={0.3} rayleigh={0.5} mieCoefficient={0.005} mieDirectionalG={0.8} />
-             <Environment preset="city" />
-             <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-             <Cloud opacity={0.5} speed={0.4} bounds={[10, 2, 2]} segments={20} position={[0, 10, -20]} />
-             <Cloud opacity={0.5} speed={0.4} bounds={[10, 2, 2]} segments={20} position={[10, 12, -40]} />
-             
-             <group position={[0, -1, 0]}>
-                <Landscape />
-                {/* Cyclist stays in relative view but floats */}
-                <Float speed={2} rotationIntensity={0.2} floatIntensity={0.2} floatingRange={[0, 0.2]}>
-                    <LowPolyCyclist />
-                </Float>
-             </group>
-             
-             <ContactShadows resolution={1024} scale={10} blur={2} opacity={0.5} far={10} color="#000000" />
-             <Sparkles count={80} scale={12} size={4} speed={0.4} opacity={0.5} color="#fbbf24" position={[0, 2, 0]} />
-        </>
-    );
+  return (
+    <>
+      <PerspectiveCamera makeDefault position={[0, 3.1, 8.2]} fov={48} />
+      <fog attach="fog" args={['#fef3c7', 9, 52]} />
+      <ambientLight intensity={0.58} />
+      <directionalLight
+        position={[18, 26, 18]}
+        intensity={1.4}
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-26}
+        shadow-camera-right={26}
+        shadow-camera-top={26}
+        shadow-camera-bottom={-26}
+        shadow-bias={-0.00015}
+      />
+      <Sky sunPosition={[90, 22, 120]} turbidity={1.5} rayleigh={0.8} mieCoefficient={0.007} mieDirectionalG={0.82} />
+      <Environment preset="sunset" />
+      <Cloud opacity={0.45} speed={0.14} bounds={[16, 2, 2]} segments={24} position={[0, 10, -22]} color="#fff7ed" />
+      <Cloud opacity={0.4} speed={0.1} bounds={[14, 2, 2]} segments={20} position={[10, 12, -36]} color="#fff7ed" />
+
+      <group position={[0, -1.02, 0]}>
+        <Landscape />
+        <Float speed={1.4} rotationIntensity={0.02} floatIntensity={0.02} floatingRange={[0, 0.03]}>
+          <BikeAndRider />
+        </Float>
+      </group>
+
+      <ContactShadows resolution={1024} scale={15} blur={2.2} opacity={0.55} far={2} color="#111827" position={[0, -1.01, 0]} />
+    </>
+  );
 }
 
 export function Journey3DScene() {
-    return (
-        <div className="fixed inset-0 z-0 pointer-events-none">
-            <Canvas shadows dpr={[1, 2]} gl={{ antialias: true }}>
-                <Suspense fallback={null}>
-                    <Scene />
-                </Suspense>
-            </Canvas>
-        </div>
-    );
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0">
+      <Canvas shadows dpr={[1, 2]} gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}>
+        <Suspense fallback={null}>
+          <Scene />
+        </Suspense>
+      </Canvas>
+    </div>
+  );
 }

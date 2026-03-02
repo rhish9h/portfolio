@@ -1,6 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Github, Linkedin, Mail } from 'lucide-react';
-import { AnimatedBackground } from '../ui/AnimatedBackground';
 import { TypewriterEffect } from '../ui/TypewriterEffect';
 
 export function HeroSection() {
@@ -17,14 +16,11 @@ export function HeroSection() {
   ];
 
   return (
-    <section className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden bg-background/50 backdrop-blur-[2px]">
-      {/* Background */}
-      <AnimatedBackground />
-
+    <section className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden">
       {/* Content Container */}
       <motion.div
         style={{ opacity: contentOpacity, scale: contentScale }}
-        className="relative z-10 flex flex-col items-center justify-center px-4 text-center"
+        className="relative z-10 flex flex-col items-center justify-center px-8 py-10 text-center rounded-3xl bg-background/60 backdrop-blur-md shadow-xl"
       >
         {/* Profile Image */}
         <motion.div
