@@ -1,28 +1,27 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import './styles/globals.css'
 import { ThemeProvider } from './components/ThemeProvider'
 import { Navbar } from './components/ui/Navbar'
 import { HeroSection } from './components/sections/HeroSection'
 import { AboutSection } from './components/sections/AboutSection'
-import { ExperienceSection } from './components/sections/ExperienceSection'
-import { EducationSection } from './components/sections/EducationSection'
+import { JourneyTimeline } from './components/sections/JourneyTimeline'
+import { EducationJourney } from './components/sections/EducationJourney'
 import { SkillsSection } from './components/sections/SkillsSection'
 import { CertificationsSection } from './components/sections/CertificationsSection'
 import { AwardsSection } from './components/sections/AwardsSection'
 import { PublicationsSection } from './components/sections/PublicationsSection'
 import { ContactSection } from './components/sections/ContactSection'
-import { motion } from 'framer-motion'
-
-// Fade in animation for sections
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-}
+import { ScrollProgress } from './components/ui/ScrollProgress'
+import { FloatingParticles } from './components/ui/FloatingParticles'
+import { WaveDivider } from './components/ui/WaveDivider'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 function App() {
+  const mainRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll();
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+
   useEffect(() => {
-    // Add smooth scrolling behavior
     document.documentElement.style.scrollBehavior = 'smooth';
     return () => {
       document.documentElement.style.scrollBehavior = 'auto';
@@ -31,148 +30,141 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen w-full bg-background text-foreground">
+      <div className="min-h-screen w-full bg-background text-foreground relative overflow-x-hidden">
+        <ScrollProgress />
+        <FloatingParticles />
+        
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <Navbar />
         </header>
 
-        <main className="flex w-full flex-1 flex-col items-center justify-center">
-          {/* Hero Section */}
-          <motion.section
-            id="hero"
-            className="w-full pb-12 md:pb-20"
-            initial="initial"
-            animate="animate"
-            variants={fadeInUp}
+        <main ref={mainRef} className="relative flex w-full flex-1 flex-col items-center justify-center">
+          {/* Parallax background layer */}
+          <motion.div
+            className="fixed inset-0 z-0 pointer-events-none"
+            style={{ y: backgroundY }}
           >
-            <div className="container max-w-none px-0">
-              <HeroSection />
-            </div>
-          </motion.section>
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/30 to-background opacity-50" />
+          </motion.div>
 
-          {/* About Section */}
-          <motion.section
-            id="about"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
+          {/* Hero Section - Full height introduction */}
+          <section id="hero" className="relative w-full">
+            <HeroSection />
+          </section>
+
+          {/* Wave divider */}
+          <div className="relative w-full h-20 overflow-hidden">
+            <WaveDivider />
+          </div>
+
+          {/* About Section - The story begins */}
+          <section id="about" className="relative w-full py-24 md:py-32 journey-gradient-1">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              className="container mx-auto max-w-5xl px-6 md:px-8"
+            >
               <AboutSection />
-            </div>
-          </motion.section>
+            </motion.div>
+          </section>
 
-          {/* Experience Section */}
-          <motion.section
-            id="experience"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
-              <ExperienceSection />
-            </div>
-          </motion.section>
+          {/* Education Journey Section */}
+          <section id="education" className="relative w-full py-24 md:py-32 journey-gradient-2">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              className="container mx-auto max-w-5xl px-6 md:px-8"
+            >
+              <EducationJourney />
+            </motion.div>
+          </section>
 
-          {/* Education Section */}
-          <motion.section
-            id="education"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
-              <EducationSection />
-            </div>
-          </motion.section>
+          {/* Career Journey Timeline */}
+          <section id="experience" className="relative w-full py-24 md:py-32 journey-gradient-3">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              className="container mx-auto max-w-5xl px-6 md:px-8"
+            >
+              <JourneyTimeline />
+            </motion.div>
+          </section>
 
           {/* Skills Section */}
-          <motion.section
-            id="skills"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
+          <section id="skills" className="relative w-full py-24 md:py-32">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+              className="container mx-auto max-w-5xl px-6 md:px-8"
+            >
               <SkillsSection />
-            </div>
-          </motion.section>
+            </motion.div>
+          </section>
 
-          {/* Certifications Section */}
-          <motion.section
-            id="certifications"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
-              <CertificationsSection />
-            </div>
-          </motion.section>
+          {/* Achievements Section - Combining Awards, Publications, Certifications */}
+          <section id="achievements" className="relative w-full py-24 md:py-32 bg-gradient-to-b from-background via-muted/20 to-background">
+            <div className="container mx-auto max-w-5xl px-6 md:px-8 space-y-20">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6 }}
+              >
+                <CertificationsSection />
+              </motion.div>
 
-          {/* Awards Section */}
-          <motion.section
-            id="awards"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
-              <AwardsSection />
-            </div>
-          </motion.section>
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                <AwardsSection />
+              </motion.div>
 
-          {/* Publications Section */}
-          <motion.section
-            id="publications"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
-              <PublicationsSection />
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <PublicationsSection />
+              </motion.div>
             </div>
-          </motion.section>
+          </section>
 
-          {/* Contact Section */}
-          <motion.section
-            id="contact"
-            className="w-full py-12 md:py-20"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <div className="container mx-auto max-w-5xl px-6 md:px-8">
+          {/* Contact Section - The journey continues */}
+          <section id="contact" className="relative w-full py-24 md:py-32">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+              className="container mx-auto max-w-5xl px-6 md:px-8"
+            >
               <ContactSection />
-            </div>
-          </motion.section>
+            </motion.div>
+          </section>
         </main>
 
         <motion.footer
-          className="w-full border-t"
-          initial="initial"
-          whileInView="animate"
+          className="w-full border-t relative z-10"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          variants={fadeInUp}
+          transition={{ duration: 0.6 }}
         >
           <div className="container mx-auto max-w-5xl px-6 py-8 text-center md:px-8">
             <p className="mb-4 text-muted-foreground">
-              Feel free to reach out for collaborations or just a friendly hello
+              Let's continue the journey together
             </p>
             <p className="text-sm text-muted-foreground">
               {new Date().getFullYear()} Rhishabh Hattarki. All rights reserved.

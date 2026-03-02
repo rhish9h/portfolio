@@ -178,3 +178,147 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Journey gradient backgrounds */
+.journey-gradient-1 {
+  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 50%, hsl(var(--background)) 100%);
+}
+
+.journey-gradient-2 {
+  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--accent) / 0.3) 50%, hsl(var(--background)) 100%);
+}
+
+.journey-gradient-3 {
+  background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--primary) / 0.05) 50%, hsl(var(--background)) 100%);
+}
+
+/* Section dividers with wave effect */
+.wave-divider {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave-divider svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 60px;
+}
+
+.wave-divider .shape-fill {
+  fill: hsl(var(--background));
+}
+
+/* Journey timeline line */
+.journey-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    hsl(var(--primary) / 0.3) 10%,
+    hsl(var(--primary) / 0.3) 90%,
+    transparent 100%
+  );
+  transform: translateX(-50%);
+}
+
+.journey-line-glow {
+  position: absolute;
+  left: 50%;
+  width: 4px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    hsl(var(--primary)),
+    transparent
+  );
+  transform: translateX(-50%);
+  filter: blur(4px);
+  animation: journeyGlow 3s ease-in-out infinite;
+}
+
+@keyframes journeyGlow {
+  0%, 100% {
+    opacity: 0.5;
+    height: 100px;
+  }
+  50% {
+    opacity: 1;
+    height: 200px;
+  }
+}
+
+/* Timeline node */
+.timeline-node {
+  position: relative;
+}
+
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  background: hsl(var(--primary));
+  border: 3px solid hsl(var(--background));
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  box-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+}
+
+/* Floating particles */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.6;
+  }
+}
+
+.floating-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: hsl(var(--primary) / 0.3);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Parallax layers */
+.parallax-layer {
+  will-change: transform;
+}
+
+/* Card hover effects */
+.journey-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.journey-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -12px hsl(var(--primary) / 0.25);
+}
+
+/* Scroll progress indicator */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
+  z-index: 9999;
+  transform-origin: left;
+}
