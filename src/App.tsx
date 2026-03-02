@@ -14,6 +14,9 @@ import { ContactSection } from './components/sections/ContactSection'
 import { ScrollProgress } from './components/ui/ScrollProgress'
 import { FloatingParticles } from './components/ui/FloatingParticles'
 import { WaveDivider } from './components/ui/WaveDivider'
+import { JourneyTraveler, JourneyScenery } from './components/ui/JourneyTraveler'
+import { JourneyPath } from './components/ui/JourneyPath'
+import { JourneyLandmarks } from './components/ui/JourneyLandmarks'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 function App() {
@@ -33,6 +36,12 @@ function App() {
       <div className="min-h-screen w-full bg-background text-foreground relative overflow-x-hidden">
         <ScrollProgress />
         <FloatingParticles />
+        
+        {/* Journey Visual Elements */}
+        <JourneyScenery />
+        <JourneyLandmarks />
+        <JourneyPath />
+        <JourneyTraveler />
         
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <Navbar />
