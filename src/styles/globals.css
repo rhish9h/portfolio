@@ -181,15 +181,15 @@
 
 /* Journey gradient backgrounds */
 .journey-gradient-1 {
-  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 50%, hsl(var(--background)) 100%);
+  background: linear-gradient(135deg, hsl(var(--background) / 0.8) 0%, hsl(var(--muted) / 0.8) 50%, hsl(var(--background) / 0.8) 100%);
 }
 
 .journey-gradient-2 {
-  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--accent) / 0.3) 50%, hsl(var(--background)) 100%);
+  background: linear-gradient(135deg, hsl(var(--background) / 0.8) 0%, hsl(var(--accent) / 0.3) 50%, hsl(var(--background) / 0.8) 100%);
 }
 
 .journey-gradient-3 {
-  background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--primary) / 0.05) 50%, hsl(var(--background)) 100%);
+  background: linear-gradient(180deg, hsl(var(--background) / 0.8) 0%, hsl(var(--primary) / 0.05) 50%, hsl(var(--background) / 0.8) 100%);
 }
 
 /* Section dividers with wave effect */
