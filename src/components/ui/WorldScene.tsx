@@ -158,16 +158,20 @@ function MagnifyingGlassIcon({ onClick }: { onClick: () => void }) {
   return (
     <group 
       position={[0, 0, 0.2]} 
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
+      onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
+      onPointerOut={(e) => { e.stopPropagation(); setHovered(false); }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
     >
       <mesh position={[0, 0, 0]}>
         <circleGeometry args={[0.3, 32]} />
         <meshBasicMaterial color={hovered ? "#3b82f6" : "#ffffff"} transparent opacity={0.8} />
       </mesh>
-      <Html position={[0, 0, 0.01]} center transform>
-        <div className={`p-2 rounded-full ${hovered ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'} transition-colors shadow-lg cursor-pointer`}>
+      {/* We add pointerEvents="none" to Html so it doesn't block the mesh click */}
+      <Html position={[0, 0, 0.01]} center transform style={{ pointerEvents: 'none' }}>
+        <div className={`p-2 rounded-full ${hovered ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'} transition-colors shadow-lg`}>
           <Search size={24} />
         </div>
       </Html>
@@ -467,17 +471,27 @@ function Environment({ curve, onOpenSection }: { curve: THREE.CatmullRomCurve3, 
     
     const pos = pt.clone().add(right.multiplyScalar(sideOffset));
     // Calculate rotation to face the road roughly
-    const angle = Math.atan2(tangent.x, tangent.z) + rotOffset;
+    // Modify rotation so it generally faces the camera coming down the road
+    // The camera comes from the negative Z direction relative to the path.
+    // We want the text to generally point towards positive Z and somewhat inward.
+    
+    // Instead of using just tangent, we'll aim the object slightly towards the center of the road and back up the road
+    const aimDir = pt.clone().sub(pos).normalize(); // Point towards road
+    const backwardDir = tangent.clone().negate().normalize(); // Point back up the road
+    
+    // Mix the two directions
+    const facingDir = aimDir.add(backwardDir.multiplyScalar(0.8)).normalize();
+    const angle = Math.atan2(facingDir.x, facingDir.z) + rotOffset;
     
     return { pos: [pos.x, pos.y, pos.z] as [number, number, number], rot: [0, angle, 0] as [number, number, number] };
   };
 
-  const l1 = getPosAndRot(0.05, 4, Math.PI/2); // Hero/About
-  const l2 = getPosAndRot(0.2, -5, -Math.PI/2); // Education
-  const l3 = getPosAndRot(0.4, 6, Math.PI/2); // Experience
-  const l4 = getPosAndRot(0.6, -5, -Math.PI/2); // Skills
-  const l5 = getPosAndRot(0.8, 5, Math.PI/2); // Achievements
-  const l6 = getPosAndRot(0.95, -3, -Math.PI/2); // Contact
+  const l1 = getPosAndRot(0.05, 4, 0); // Hero/About
+  const l2 = getPosAndRot(0.2, -5, 0); // Education
+  const l3 = getPosAndRot(0.4, 6, 0); // Experience
+  const l4 = getPosAndRot(0.6, -5, 0); // Skills
+  const l5 = getPosAndRot(0.8, 5, 0); // Achievements
+  const l6 = getPosAndRot(0.95, -3, 0); // Contact
 
   return (
     <group>

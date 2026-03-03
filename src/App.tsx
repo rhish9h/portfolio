@@ -62,7 +62,7 @@ function App() {
 
         <main ref={mainRef} className="fixed inset-0 z-10 flex w-full flex-1 flex-col items-center justify-center pointer-events-none">
           {/* 3D World with interactive elements */}
-          <div className="pointer-events-auto w-full h-full">
+          <div className="pointer-events-auto w-full h-full relative z-20">
             <WorldScene onOpenSection={setActiveSection} />
           </div>
         </main>
