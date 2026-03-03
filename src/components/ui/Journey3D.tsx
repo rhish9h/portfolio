@@ -3,234 +3,319 @@ import { Cloud, ContactShadows, Environment, Float, PerspectiveCamera, Sky } fro
 import { Suspense, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
-type TubeProps = {
-  start: THREE.Vector3;
-  end: THREE.Vector3;
-  radius: number;
-  material: THREE.Material;
-};
-
-const FrameTube = ({ start, end, radius, material }: TubeProps) => {
-  const direction = useMemo(() => new THREE.Vector3().subVectors(end, start), [end, start]);
-  const midpoint = useMemo(() => new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5), [end, start]);
-  const quaternion = useMemo(() => {
-    const axis = new THREE.Vector3(0, 1, 0);
-    const target = direction.clone().normalize();
-    return new THREE.Quaternion().setFromUnitVectors(axis, target);
-  }, [direction]);
+// ─── Helpers ───
+function TubeBetweenPoints({ start, end, radius = 0.02, material }: { start: THREE.Vector3, end: THREE.Vector3, radius?: number, material: THREE.Material }) {
+  const distance = start.distanceTo(end);
+  const position = start.clone().lerp(end, 0.5);
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),
+    end.clone().sub(start).normalize()
+  );
 
   return (
-    <mesh position={midpoint} quaternion={quaternion} castShadow>
-      <cylinderGeometry args={[radius, radius, direction.length(), 14]} />
-      <primitive object={material} />
+    <mesh position={position} quaternion={quaternion} castShadow receiveShadow>
+      <cylinderGeometry args={[radius, radius, distance, 12]} />
+      <primitive object={material} attach="material" />
     </mesh>
   );
-};
+}
 
-const Wheel = ({ position }: { position: [number, number, number] }) => {
-  const wheelRef = useRef<THREE.Group>(null);
-
-  useFrame((_, delta) => {
-    if (!wheelRef.current) return;
-    wheelRef.current.rotation.z -= delta * 7.5;
-  });
+function CapsuleBetweenPoints({ start, end, radius = 0.02, material }: { start: THREE.Vector3, end: THREE.Vector3, radius?: number, material: THREE.Material }) {
+  const distance = start.distanceTo(end);
+  const position = start.clone().lerp(end, 0.5);
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),
+    end.clone().sub(start).normalize()
+  );
 
   return (
-    <group ref={wheelRef} position={position}>
-      <mesh castShadow>
-        <torusGeometry args={[0.72, 0.055, 18, 56]} />
-        <meshStandardMaterial color="#111827" roughness={0.75} />
-      </mesh>
-      <mesh>
-        <torusGeometry args={[0.66, 0.03, 16, 48]} />
-        <meshStandardMaterial color="#cbd5e1" metalness={0.9} roughness={0.2} />
-      </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.035, 0.035, 0.14, 16]} />
-        <meshStandardMaterial color="#475569" />
-      </mesh>
-      {Array.from({ length: 12 }).map((_, index) => {
-        const angle = (Math.PI * 2 * index) / 12;
-        return (
-          <mesh key={`spoke-front-${index}`} position={[Math.cos(angle) * 0.29, Math.sin(angle) * 0.29, 0.025]} rotation={[0, 0, angle]}>
-            <boxGeometry args={[0.58, 0.008, 0.008]} />
-            <meshStandardMaterial color="#94a3b8" metalness={0.65} roughness={0.28} />
-          </mesh>
-        );
-      })}
-      {Array.from({ length: 12 }).map((_, index) => {
-        const angle = (Math.PI * 2 * index) / 12 + Math.PI / 12;
-        return (
-          <mesh key={`spoke-back-${index}`} position={[Math.cos(angle) * 0.29, Math.sin(angle) * 0.29, -0.025]} rotation={[0, 0, angle]}>
-            <boxGeometry args={[0.58, 0.008, 0.008]} />
-            <meshStandardMaterial color="#94a3b8" metalness={0.65} roughness={0.28} />
-          </mesh>
-        );
-      })}
-    </group>
+    <mesh position={position} quaternion={quaternion} castShadow receiveShadow>
+      <capsuleGeometry args={[radius, distance, 16, 16]} />
+      <primitive object={material} attach="material" />
+    </mesh>
   );
-};
+}
 
 const BikeAndRider = () => {
-  const leftThigh = useRef<THREE.Group>(null);
-  const leftCalf = useRef<THREE.Group>(null);
-  const rightThigh = useRef<THREE.Group>(null);
-  const rightCalf = useRef<THREE.Group>(null);
-  const crankRef = useRef<THREE.Group>(null);
-  const torsoRef = useRef<THREE.Group>(null);
+  const group = useRef<THREE.Group>(null);
+  const crankGroup = useRef<THREE.Group>(null);
+  const rearWheelRef = useRef<THREE.Group>(null);
+  const frontWheelRef = useRef<THREE.Group>(null);
+  
+  // Rider refs for animation
+  const leftThighRef = useRef<THREE.Group>(null);
+  const leftCalfRef = useRef<THREE.Group>(null);
+  const rightThighRef = useRef<THREE.Group>(null);
+  const rightCalfRef = useRef<THREE.Group>(null);
+  const leftFootRef = useRef<THREE.Group>(null);
+  const rightFootRef = useRef<THREE.Group>(null);
 
-  const frameMaterial = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: '#0f766e', roughness: 0.3, metalness: 0.65 }),
-    [],
-  );
-
-  const rearAxle = useMemo(() => new THREE.Vector3(-1.45, 0.75, 0), []);
-  const frontAxle = useMemo(() => new THREE.Vector3(1.55, 0.75, 0), []);
-  const bottomBracket = useMemo(() => new THREE.Vector3(-0.3, 0.8, 0), []);
-  const seatTop = useMemo(() => new THREE.Vector3(-0.45, 1.72, 0), []);
-  const headTop = useMemo(() => new THREE.Vector3(1.02, 1.72, 0), []);
-  const headBottom = useMemo(() => new THREE.Vector3(0.98, 1.35, 0), []);
+  // Bike Geometry Points
+  const rearAxle = useMemo(() => new THREE.Vector3(-0.5, 0.35, 0), []);
+  const frontAxle = useMemo(() => new THREE.Vector3(0.55, 0.35, 0), []);
+  const bb = useMemo(() => new THREE.Vector3(-0.1, 0.3, 0), []); // Bottom bracket
+  const seatTop = useMemo(() => new THREE.Vector3(-0.25, 0.95, 0), []);
+  const headTop = useMemo(() => new THREE.Vector3(0.38, 0.92, 0), []);
+  const headBottom = useMemo(() => new THREE.Vector3(0.42, 0.7, 0), []);
+  
+  // Crank length
+  const crankLength = 0.17;
+  
+  // Rider Geometry Points
+  const hipPosition = useMemo(() => new THREE.Vector3(-0.25, 1.05, 0), []);
+  const shoulderPosition = useMemo(() => new THREE.Vector3(0.28, 1.25, 0), []);
+  
+  // Leg segments lengths
+  const thighLength = 0.42;
+  const calfLength = 0.42;
 
   useFrame((state) => {
+    if (!group.current) return;
     const t = state.clock.getElapsedTime();
-    const cadence = 5.8;
+    const cadence = 6;
+    const angle = t * cadence;
 
-    if (crankRef.current) {
-      crankRef.current.rotation.z = -t * cadence;
+    // Bounce effect
+    group.current.position.y = 0.68 + Math.sin(t * cadence * 2) * 0.01;
+    
+    // Spin wheels
+    if (rearWheelRef.current) rearWheelRef.current.rotation.z = -angle;
+    if (frontWheelRef.current) frontWheelRef.current.rotation.z = -angle;
+    
+    // Spin crank
+    if (crankGroup.current) crankGroup.current.rotation.z = -angle;
+
+    // Inverse Kinematics for legs
+    const updateLeg = (thighGroup: THREE.Group, calfGroup: THREE.Group, footGroup: THREE.Group, isRight: boolean) => {
+      const phase = isRight ? angle : angle + Math.PI;
+      const pedalX = bb.x + Math.cos(phase) * crankLength;
+      const pedalY = bb.y + Math.sin(phase) * crankLength;
+      const pedalZ = isRight ? 0.14 : -0.14;
+      
+      const pedalPos = new THREE.Vector3(pedalX, pedalY + 0.02, pedalZ);
+      const hipPos = new THREE.Vector3(hipPosition.x, hipPosition.y, isRight ? 0.08 : -0.08);
+      
+      const legVec = pedalPos.clone().sub(hipPos);
+      const dist = Math.min(legVec.length(), thighLength + calfLength - 0.001);
+      
+      let cosAngle = (thighLength*thighLength + dist*dist - calfLength*calfLength) / (2 * thighLength * dist);
+      cosAngle = Math.max(-1, Math.min(1, cosAngle));
+      const angleHipToKnee = Math.acos(cosAngle);
+      
+      const hipAngleZ = Math.atan2(legVec.y, legVec.x);
+      const thighAngle = hipAngleZ + angleHipToKnee;
+      
+      const kneeX = hipPos.x + Math.cos(thighAngle) * thighLength;
+      const kneeY = hipPos.y + Math.sin(thighAngle) * thighLength;
+      const kneePos = new THREE.Vector3(kneeX, kneeY, isRight ? 0.12 : -0.12);
+      
+      thighGroup.position.copy(hipPos.clone().lerp(kneePos, 0.5));
+      thighGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), kneePos.clone().sub(hipPos).normalize());
+      
+      calfGroup.position.copy(kneePos.clone().lerp(pedalPos, 0.5));
+      calfGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), pedalPos.clone().sub(kneePos).normalize());
+      
+      const ankleAngle = Math.sin(phase) * 0.2;
+      footGroup.position.copy(pedalPos);
+      footGroup.rotation.set(0, 0, ankleAngle);
+    };
+
+    if (leftThighRef.current && leftCalfRef.current && leftFootRef.current) {
+      updateLeg(leftThighRef.current, leftCalfRef.current, leftFootRef.current, false);
     }
-
-    if (leftThigh.current && leftCalf.current && rightThigh.current && rightCalf.current) {
-      leftThigh.current.rotation.z = Math.sin(t * cadence) * 0.48 + 0.14;
-      leftCalf.current.rotation.z = Math.sin(t * cadence - 1.2) * 0.62 - 0.42;
-
-      rightThigh.current.rotation.z = Math.sin(t * cadence + Math.PI) * 0.48 + 0.14;
-      rightCalf.current.rotation.z = Math.sin(t * cadence + Math.PI - 1.2) * 0.62 - 0.42;
-    }
-
-    if (torsoRef.current) {
-      torsoRef.current.rotation.z = -0.58 + Math.sin(t * cadence * 0.55) * 0.02;
-      torsoRef.current.position.y = 1.75 + Math.sin(t * cadence * 0.55) * 0.01;
+    if (rightThighRef.current && rightCalfRef.current && rightFootRef.current) {
+      updateLeg(rightThighRef.current, rightCalfRef.current, rightFootRef.current, true);
     }
   });
 
+  const frameMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#0f766e', roughness: 0.2, metalness: 0.8 }), []);
+  const blackMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#111827', roughness: 0.6, metalness: 0.4 }), []);
+  const metalMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#9ca3af', roughness: 0.3, metalness: 0.9 }), []);
+  const tireMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#1f2937', roughness: 0.9, metalness: 0.1 }), []);
+  const skinMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#fca5a5', roughness: 0.5 }), []);
+  const jerseyMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#fbbf24', roughness: 0.7 }), []);
+  const shortsMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#111827', roughness: 0.8 }), []);
+  const shoeMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8 }), []);
+  const helmetMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ef4444', roughness: 0.2 }), []);
+
+  const renderWheel = (ref: any, position: THREE.Vector3) => (
+    <group position={position} ref={ref}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.33, 0.025, 16, 48]} />
+        <primitive object={tireMat} attach="material" />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.31, 0.015, 8, 48]} />
+        <primitive object={blackMat} attach="material" />
+      </mesh>
+      {[...Array(12)].map((_, i) => (
+        <mesh key={i} rotation={[0, 0, (i * Math.PI) / 6]}>
+          <cylinderGeometry args={[0.002, 0.002, 0.62, 4]} />
+          <primitive object={metalMat} attach="material" />
+        </mesh>
+      ))}
+    </group>
+  );
+
   return (
-    <group scale={0.52} position={[0, 0.68, 0]}>
-      <Wheel position={[-1.45, 0.75, 0]} />
-      <Wheel position={[1.55, 0.75, 0]} />
+    <group ref={group} scale={1.8} position={[0, 0.68, 0]}>
+      {/* Wheels */}
+      {renderWheel(rearWheelRef, rearAxle)}
+      {renderWheel(frontWheelRef, frontAxle)}
 
-      <FrameTube start={seatTop} end={headTop} radius={0.035} material={frameMaterial} />
-      <FrameTube start={bottomBracket} end={headBottom} radius={0.04} material={frameMaterial} />
-      <FrameTube start={seatTop} end={bottomBracket} radius={0.034} material={frameMaterial} />
-      <FrameTube start={headTop} end={headBottom} radius={0.035} material={frameMaterial} />
+      {/* Bike Frame */}
+      <group>
+        <TubeBetweenPoints start={bb} end={seatTop} radius={0.02} material={frameMat} />
+        <TubeBetweenPoints start={seatTop} end={headTop} radius={0.018} material={frameMat} />
+        <TubeBetweenPoints start={headTop} end={bb} radius={0.025} material={frameMat} />
+        <TubeBetweenPoints start={headTop} end={headBottom} radius={0.02} material={frameMat} />
+        
+        <TubeBetweenPoints start={seatTop} end={new THREE.Vector3(rearAxle.x, rearAxle.y, 0.05)} radius={0.008} material={frameMat} />
+        <TubeBetweenPoints start={seatTop} end={new THREE.Vector3(rearAxle.x, rearAxle.y, -0.05)} radius={0.008} material={frameMat} />
+        
+        <TubeBetweenPoints start={bb} end={new THREE.Vector3(rearAxle.x, rearAxle.y, 0.05)} radius={0.012} material={frameMat} />
+        <TubeBetweenPoints start={bb} end={new THREE.Vector3(rearAxle.x, rearAxle.y, -0.05)} radius={0.012} material={frameMat} />
+        
+        <TubeBetweenPoints start={headBottom} end={new THREE.Vector3(frontAxle.x, frontAxle.y, 0.05)} radius={0.015} material={frameMat} />
+        <TubeBetweenPoints start={headBottom} end={new THREE.Vector3(frontAxle.x, frontAxle.y, -0.05)} radius={0.015} material={frameMat} />
 
-      <FrameTube start={seatTop} end={new THREE.Vector3(rearAxle.x, rearAxle.y, 0.08)} radius={0.016} material={frameMaterial} />
-      <FrameTube start={seatTop} end={new THREE.Vector3(rearAxle.x, rearAxle.y, -0.08)} radius={0.016} material={frameMaterial} />
-      <FrameTube start={bottomBracket} end={new THREE.Vector3(rearAxle.x, rearAxle.y, 0.09)} radius={0.02} material={frameMaterial} />
-      <FrameTube start={bottomBracket} end={new THREE.Vector3(rearAxle.x, rearAxle.y, -0.09)} radius={0.02} material={frameMaterial} />
-
-      <FrameTube start={headBottom} end={new THREE.Vector3(frontAxle.x, frontAxle.y, 0.08)} radius={0.02} material={frameMaterial} />
-      <FrameTube start={headBottom} end={new THREE.Vector3(frontAxle.x, frontAxle.y, -0.08)} radius={0.02} material={frameMaterial} />
-
-      <mesh position={[-0.47, 1.92, 0]} rotation={[0, 0, -0.08]} castShadow>
-        <cylinderGeometry args={[0.022, 0.022, 0.32, 16]} />
-        <meshStandardMaterial color="#0f172a" />
-      </mesh>
-      <mesh position={[-0.58, 2.08, 0]} rotation={[0, 0, 0.04]} castShadow>
-        <boxGeometry args={[0.46, 0.08, 0.2]} />
-        <meshStandardMaterial color="#111827" roughness={0.4} />
-      </mesh>
-
-      <mesh position={[1.08, 1.84, 0]} rotation={[0, 0, 1.05]} castShadow>
-        <cylinderGeometry args={[0.026, 0.026, 0.42, 14]} />
-        <meshStandardMaterial color="#111827" metalness={0.35} roughness={0.45} />
-      </mesh>
-      <mesh position={[1.25, 1.95, 0]} rotation={[0, 0, 0.05]} castShadow>
-        <cylinderGeometry args={[0.023, 0.023, 0.74, 14]} />
-        <meshStandardMaterial color="#111827" />
-      </mesh>
-      <mesh position={[1.56, 1.92, 0.3]} rotation={[0, 0, -0.6]} castShadow>
-        <capsuleGeometry args={[0.028, 0.24, 6, 10]} />
-        <meshStandardMaterial color="#111827" />
-      </mesh>
-      <mesh position={[1.56, 1.92, -0.3]} rotation={[0, 0, -0.6]} castShadow>
-        <capsuleGeometry args={[0.028, 0.24, 6, 10]} />
-        <meshStandardMaterial color="#111827" />
-      </mesh>
-
-      <group position={[-0.3, 0.8, 0]} ref={crankRef}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.15, 0.016, 12, 28]} />
-          <meshStandardMaterial color="#e2e8f0" metalness={0.9} roughness={0.22} />
+        <TubeBetweenPoints start={seatTop} end={new THREE.Vector3(-0.28, 1.05, 0)} radius={0.012} material={blackMat} />
+        <mesh position={[-0.30, 1.05, 0]} rotation={[0, 0, 0.05]}>
+          <boxGeometry args={[0.2, 0.03, 0.1]} />
+          <primitive object={blackMat} attach="material" />
         </mesh>
-        <mesh position={[0.02, 0.28, 0.11]} castShadow>
-          <boxGeometry args={[0.045, 0.56, 0.03]} />
-          <meshStandardMaterial color="#1e293b" />
+
+        <TubeBetweenPoints start={headTop} end={new THREE.Vector3(0.44, 0.95, 0)} radius={0.012} material={blackMat} />
+        <mesh position={[0.44, 0.95, 0]} rotation={[Math.PI/2, 0, 0]}>
+          <cylinderGeometry args={[0.012, 0.012, 0.36, 8]} />
+          <primitive object={blackMat} attach="material" />
         </mesh>
-        <mesh position={[-0.02, -0.28, -0.11]} castShadow>
-          <boxGeometry args={[0.045, 0.56, 0.03]} />
-          <meshStandardMaterial color="#1e293b" />
-        </mesh>
+        
+        <TubeBetweenPoints start={new THREE.Vector3(0.44, 0.95, 0.18)} end={new THREE.Vector3(0.52, 0.95, 0.18)} radius={0.014} material={blackMat} />
+        <TubeBetweenPoints start={new THREE.Vector3(0.52, 0.95, 0.18)} end={new THREE.Vector3(0.52, 0.85, 0.18)} radius={0.014} material={blackMat} />
+        <TubeBetweenPoints start={new THREE.Vector3(0.44, 0.95, -0.18)} end={new THREE.Vector3(0.52, 0.95, -0.18)} radius={0.014} material={blackMat} />
+        <TubeBetweenPoints start={new THREE.Vector3(0.52, 0.95, -0.18)} end={new THREE.Vector3(0.52, 0.85, -0.18)} radius={0.014} material={blackMat} />
       </group>
 
-      <group ref={torsoRef} position={[-0.37, 1.75, 0]}>
-        <mesh position={[0, 0, 0]} castShadow>
-          <capsuleGeometry args={[0.14, 0.24, 8, 16]} />
-          <meshStandardMaterial color="#0f172a" />
+      {/* Drivetrain */}
+      <group position={bb.toArray()}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.04]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.005, 24]} />
+          <primitive object={blackMat} attach="material" />
         </mesh>
-        <mesh position={[0.5, 0.14, 0]} rotation={[0, 0, -0.58]} castShadow>
-          <capsuleGeometry args={[0.17, 0.8, 10, 20]} />
-          <meshStandardMaterial color="#f8fafc" roughness={0.36} />
-        </mesh>
-        <group position={[0.96, 0.28, 0]}>
-          <mesh castShadow>
-            <sphereGeometry args={[0.15, 24, 24]} />
-            <meshStandardMaterial color="#fbbf24" />
+        
+        <group ref={crankGroup}>
+          <mesh position={[crankLength/2, 0, 0.06]}>
+            <boxGeometry args={[crankLength, 0.02, 0.01]} />
+            <primitive object={metalMat} attach="material" />
           </mesh>
-          <mesh position={[0.02, 0.08, 0]} scale={[1.06, 0.74, 1]} castShadow>
-            <sphereGeometry args={[0.165, 24, 24]} />
-            <meshStandardMaterial color="#ef4444" roughness={0.3} />
+          <mesh position={[crankLength, 0, 0.09]} rotation={[Math.PI/2, 0, 0]}>
+            <cylinderGeometry args={[0.015, 0.015, 0.06, 8]} />
+            <primitive object={blackMat} attach="material" />
           </mesh>
-        </group>
-        <mesh position={[0.92, 0.07, 0.18]} rotation={[0, 0, -0.94]} castShadow>
-          <capsuleGeometry args={[0.052, 0.58, 8, 14]} />
-          <meshStandardMaterial color="#fbbf24" />
-        </mesh>
-        <mesh position={[0.92, 0.07, -0.18]} rotation={[0, 0, -0.94]} castShadow>
-          <capsuleGeometry args={[0.052, 0.58, 8, 14]} />
-          <meshStandardMaterial color="#fbbf24" />
-        </mesh>
-      </group>
 
-      <group position={[-0.34, 1.68, 0.11]} ref={leftThigh}>
-        <mesh position={[0.08, -0.3, 0]} rotation={[0, 0, 0.04]} castShadow>
-          <capsuleGeometry args={[0.09, 0.62, 8, 16]} />
-          <meshStandardMaterial color="#0f172a" />
-        </mesh>
-        <group position={[0.16, -0.64, 0]} ref={leftCalf}>
-          <mesh position={[0.05, -0.28, 0]} castShadow>
-            <capsuleGeometry args={[0.07, 0.56, 8, 16]} />
-            <meshStandardMaterial color="#fbbf24" />
+          <mesh position={[-crankLength/2, 0, -0.06]}>
+            <boxGeometry args={[crankLength, 0.02, 0.01]} />
+            <primitive object={metalMat} attach="material" />
           </mesh>
-          <mesh position={[0.12, -0.62, 0]} rotation={[0, 0, 1.2]} castShadow>
-            <boxGeometry args={[0.16, 0.06, 0.12]} />
-            <meshStandardMaterial color="#0f172a" />
+          <mesh position={[-crankLength, 0, -0.09]} rotation={[Math.PI/2, 0, 0]}>
+            <cylinderGeometry args={[0.015, 0.015, 0.06, 8]} />
+            <primitive object={blackMat} attach="material" />
           </mesh>
         </group>
       </group>
 
-      <group position={[-0.34, 1.68, -0.11]} ref={rightThigh}>
-        <mesh position={[0.08, -0.3, 0]} rotation={[0, 0, 0.04]} castShadow>
-          <capsuleGeometry args={[0.09, 0.62, 8, 16]} />
-          <meshStandardMaterial color="#0f172a" />
-        </mesh>
-        <group position={[0.16, -0.64, 0]} ref={rightCalf}>
-          <mesh position={[0.05, -0.28, 0]} castShadow>
-            <capsuleGeometry args={[0.07, 0.56, 8, 16]} />
-            <meshStandardMaterial color="#fbbf24" />
+      {/* Rider */}
+      <group>
+        <CapsuleBetweenPoints start={hipPosition} end={shoulderPosition} radius={0.12} material={jerseyMat} />
+        
+        <group position={[shoulderPosition.x + 0.1, shoulderPosition.y + 0.2, 0]} rotation={[0, 0, -0.2]}>
+          <mesh position={[-0.05, -0.1, 0]} rotation={[0, 0, 0.2]}>
+            <cylinderGeometry args={[0.04, 0.05, 0.1]} />
+            <primitive object={skinMat} attach="material" />
           </mesh>
-          <mesh position={[0.12, -0.62, 0]} rotation={[0, 0, 1.2]} castShadow>
-            <boxGeometry args={[0.16, 0.06, 0.12]} />
-            <meshStandardMaterial color="#0f172a" />
+          <mesh>
+            <sphereGeometry args={[0.08, 16, 16]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+          <mesh position={[0.01, 0.04, 0]} rotation={[0, 0, -0.1]}>
+            <capsuleGeometry args={[0.085, 0.08, 16, 16]} />
+            <primitive object={helmetMat} attach="material" />
+          </mesh>
+        </group>
+
+        {/* Right Arm */}
+        <group>
+          <CapsuleBetweenPoints 
+            start={new THREE.Vector3(shoulderPosition.x, shoulderPosition.y, 0.14)} 
+            end={new THREE.Vector3(0.4, 1.1, 0.18)} 
+            radius={0.04} material={jerseyMat} 
+          />
+          <CapsuleBetweenPoints 
+            start={new THREE.Vector3(0.4, 1.1, 0.18)} 
+            end={new THREE.Vector3(0.5, 0.97, 0.18)} 
+            radius={0.035} material={skinMat} 
+          />
+          <mesh position={[0.5, 0.97, 0.18]} rotation={[0, 0, -Math.PI/4]}>
+            <boxGeometry args={[0.05, 0.06, 0.04]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+        </group>
+        
+        {/* Left Arm */}
+        <group>
+          <CapsuleBetweenPoints 
+            start={new THREE.Vector3(shoulderPosition.x, shoulderPosition.y, -0.14)} 
+            end={new THREE.Vector3(0.4, 1.1, -0.18)} 
+            radius={0.04} material={jerseyMat} 
+          />
+          <CapsuleBetweenPoints 
+            start={new THREE.Vector3(0.4, 1.1, -0.18)} 
+            end={new THREE.Vector3(0.5, 0.97, -0.18)} 
+            radius={0.035} material={skinMat} 
+          />
+          <mesh position={[0.5, 0.97, -0.18]} rotation={[0, 0, -Math.PI/4]}>
+            <boxGeometry args={[0.05, 0.06, 0.04]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+        </group>
+
+        {/* Legs (Animated) */}
+        <group ref={leftThighRef}>
+          <mesh>
+            <capsuleGeometry args={[0.065, thighLength, 8, 16]} />
+            <primitive object={shortsMat} attach="material" />
+          </mesh>
+        </group>
+        <group ref={leftCalfRef}>
+          <mesh>
+            <capsuleGeometry args={[0.045, calfLength, 8, 16]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+        </group>
+        <group ref={leftFootRef}>
+          <mesh position={[0.02, 0, 0]}>
+            <boxGeometry args={[0.14, 0.04, 0.06]} />
+            <primitive object={shoeMat} attach="material" />
+          </mesh>
+        </group>
+
+        <group ref={rightThighRef}>
+          <mesh>
+            <capsuleGeometry args={[0.065, thighLength, 8, 16]} />
+            <primitive object={shortsMat} attach="material" />
+          </mesh>
+        </group>
+        <group ref={rightCalfRef}>
+          <mesh>
+            <capsuleGeometry args={[0.045, calfLength, 8, 16]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+        </group>
+        <group ref={rightFootRef}>
+          <mesh position={[0.02, 0, 0]}>
+            <boxGeometry args={[0.14, 0.04, 0.06]} />
+            <primitive object={shoeMat} attach="material" />
           </mesh>
         </group>
       </group>

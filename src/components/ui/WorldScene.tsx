@@ -3,6 +3,39 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from 'framer-motion';
 import * as THREE from 'three';
 
+// ─── Helpers ───
+function TubeBetweenPoints({ start, end, radius = 0.02, material }: { start: THREE.Vector3, end: THREE.Vector3, radius?: number, material: THREE.Material }) {
+  const distance = start.distanceTo(end);
+  const position = start.clone().lerp(end, 0.5);
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),
+    end.clone().sub(start).normalize()
+  );
+
+  return (
+    <mesh position={position} quaternion={quaternion} castShadow receiveShadow>
+      <cylinderGeometry args={[radius, radius, distance, 12]} />
+      <primitive object={material} attach="material" />
+    </mesh>
+  );
+}
+
+function CapsuleBetweenPoints({ start, end, radius = 0.02, material }: { start: THREE.Vector3, end: THREE.Vector3, radius?: number, material: THREE.Material }) {
+  const distance = start.distanceTo(end);
+  const position = start.clone().lerp(end, 0.5);
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),
+    end.clone().sub(start).normalize()
+  );
+
+  return (
+    <mesh position={position} quaternion={quaternion} castShadow receiveShadow>
+      <capsuleGeometry args={[radius, distance, 16, 16]} />
+      <primitive object={material} attach="material" />
+    </mesh>
+  );
+}
+
 // ─── Road Path Definition ───
 // Zigzag from left to right across the "world", going downhill (negative Z)
 function createRoadCurve() {
@@ -167,9 +200,36 @@ function Hut({ position, rotation = 0 }: { position: [number, number, number]; r
 // ─── 3D Bicycle + Rider ───
 function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scrollProgress: number }) {
   const group = useRef<THREE.Group>(null);
-  const crankRef = useRef<THREE.Group>(null);
-  const wheelFrontRef = useRef<THREE.Group>(null);
-  const wheelRearRef = useRef<THREE.Group>(null);
+  const crankGroup = useRef<THREE.Group>(null);
+  const rearWheelRef = useRef<THREE.Group>(null);
+  const frontWheelRef = useRef<THREE.Group>(null);
+  
+  // Rider refs for animation
+  const leftThighRef = useRef<THREE.Group>(null);
+  const leftCalfRef = useRef<THREE.Group>(null);
+  const rightThighRef = useRef<THREE.Group>(null);
+  const rightCalfRef = useRef<THREE.Group>(null);
+  const leftFootRef = useRef<THREE.Group>(null);
+  const rightFootRef = useRef<THREE.Group>(null);
+
+  // Bike Geometry Points
+  const rearAxle = useMemo(() => new THREE.Vector3(-0.5, 0.35, 0), []);
+  const frontAxle = useMemo(() => new THREE.Vector3(0.55, 0.35, 0), []);
+  const bb = useMemo(() => new THREE.Vector3(-0.1, 0.3, 0), []); // Bottom bracket
+  const seatTop = useMemo(() => new THREE.Vector3(-0.25, 0.95, 0), []);
+  const headTop = useMemo(() => new THREE.Vector3(0.38, 0.92, 0), []);
+  const headBottom = useMemo(() => new THREE.Vector3(0.42, 0.7, 0), []);
+  
+  // Crank length
+  const crankLength = 0.17;
+  
+  // Rider Geometry Points
+  const hipPosition = useMemo(() => new THREE.Vector3(-0.25, 1.05, 0), []);
+  const shoulderPosition = useMemo(() => new THREE.Vector3(0.28, 1.25, 0), []);
+  
+  // Leg segments lengths
+  const thighLength = 0.42;
+  const calfLength = 0.42;
 
   useFrame(() => {
     if (!group.current) return;
@@ -185,164 +245,253 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
     lookAt.y = group.current.position.y;
     group.current.lookAt(lookAt);
 
-    // Spin wheels and cranks
-    const speed = 4;
-    if (crankRef.current) crankRef.current.rotation.z += 0.06 * speed;
-    if (wheelFrontRef.current) wheelFrontRef.current.rotation.z += 0.1 * speed;
-    if (wheelRearRef.current) wheelRearRef.current.rotation.z += 0.1 * speed;
+    // Speed calculation could be based on scroll delta, but for now we'll just keep it spinning
+    // Using a simple time-based animation for wheels and legs
+    const time = Date.now() * 0.001;
+    const speed = 6;
+    const angle = time * speed;
+    
+    // Spin wheels
+    if (rearWheelRef.current) rearWheelRef.current.rotation.z = -angle;
+    if (frontWheelRef.current) frontWheelRef.current.rotation.z = -angle;
+    
+    // Spin crank
+    if (crankGroup.current) crankGroup.current.rotation.z = -angle;
+
+    // Inverse Kinematics for legs
+    const updateLeg = (thighGroup: THREE.Group, calfGroup: THREE.Group, footGroup: THREE.Group, isRight: boolean) => {
+      const phase = isRight ? angle : angle + Math.PI;
+      const pedalX = bb.x + Math.cos(phase) * crankLength;
+      const pedalY = bb.y + Math.sin(phase) * crankLength;
+      const pedalZ = isRight ? 0.14 : -0.14;
+      
+      const pedalPos = new THREE.Vector3(pedalX, pedalY + 0.02, pedalZ);
+      const hipPos = new THREE.Vector3(hipPosition.x, hipPosition.y, isRight ? 0.08 : -0.08);
+      
+      const legVec = pedalPos.clone().sub(hipPos);
+      const dist = Math.min(legVec.length(), thighLength + calfLength - 0.001);
+      
+      let cosAngle = (thighLength*thighLength + dist*dist - calfLength*calfLength) / (2 * thighLength * dist);
+      cosAngle = Math.max(-1, Math.min(1, cosAngle));
+      const angleHipToKnee = Math.acos(cosAngle);
+      
+      const hipAngleZ = Math.atan2(legVec.y, legVec.x);
+      const thighAngle = hipAngleZ + angleHipToKnee;
+      
+      const kneeX = hipPos.x + Math.cos(thighAngle) * thighLength;
+      const kneeY = hipPos.y + Math.sin(thighAngle) * thighLength;
+      const kneePos = new THREE.Vector3(kneeX, kneeY, isRight ? 0.12 : -0.12);
+      
+      thighGroup.position.copy(hipPos.clone().lerp(kneePos, 0.5));
+      thighGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), kneePos.clone().sub(hipPos).normalize());
+      
+      calfGroup.position.copy(kneePos.clone().lerp(pedalPos, 0.5));
+      calfGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), pedalPos.clone().sub(kneePos).normalize());
+      
+      const ankleAngle = Math.sin(phase) * 0.2;
+      footGroup.position.copy(pedalPos);
+      footGroup.rotation.set(0, 0, ankleAngle);
+    };
+
+    if (leftThighRef.current && leftCalfRef.current && leftFootRef.current) {
+      updateLeg(leftThighRef.current, leftCalfRef.current, leftFootRef.current, false);
+    }
+    if (rightThighRef.current && rightCalfRef.current && rightFootRef.current) {
+      updateLeg(rightThighRef.current, rightCalfRef.current, rightFootRef.current, true);
+    }
   });
 
-  const frameMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#0f766e', roughness: 0.3, metalness: 0.6 }), []);
-  const metalMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#374151', roughness: 0.4, metalness: 0.8 }), []);
-  const skinMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#fbbf24', roughness: 0.6 }), []);
-  const clothMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#1e40af', roughness: 0.7 }), []);
-  const helmetMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ef4444', roughness: 0.4 }), []);
+  const frameMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#2563eb', roughness: 0.2, metalness: 0.8 }), []);
+  const blackMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#111827', roughness: 0.6, metalness: 0.4 }), []);
+  const metalMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#9ca3af', roughness: 0.3, metalness: 0.9 }), []);
+  const tireMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#1f2937', roughness: 0.9, metalness: 0.1 }), []);
+  const skinMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#fca5a5', roughness: 0.5 }), []);
+  const jerseyMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.7 }), []);
+  const shortsMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#111827', roughness: 0.8 }), []);
+  const shoeMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8 }), []);
+  const helmetMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ef4444', roughness: 0.2 }), []);
+
+  const renderWheel = (ref: any, position: THREE.Vector3) => (
+    <group position={position} ref={ref}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.33, 0.025, 16, 48]} />
+        <primitive object={tireMat} attach="material" />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.31, 0.015, 8, 48]} />
+        <primitive object={blackMat} attach="material" />
+      </mesh>
+      {[...Array(12)].map((_, i) => (
+        <mesh key={i} rotation={[0, 0, (i * Math.PI) / 6]}>
+          <cylinderGeometry args={[0.002, 0.002, 0.62, 4]} />
+          <primitive object={metalMat} attach="material" />
+        </mesh>
+      ))}
+    </group>
+  );
 
   return (
-    <group ref={group} scale={0.5}>
-      {/* Rear wheel */}
-      <group position={[-1.2, 0, 0]} ref={wheelRearRef}>
-        <mesh>
-          <torusGeometry args={[0.5, 0.04, 8, 24]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.6} />
+    <group ref={group} scale={1.8}>
+      {/* Wheels */}
+      {renderWheel(rearWheelRef, rearAxle)}
+      {renderWheel(frontWheelRef, frontAxle)}
+
+      {/* Bike Frame */}
+      <group>
+        <TubeBetweenPoints start={bb} end={seatTop} radius={0.02} material={frameMat} />
+        <TubeBetweenPoints start={seatTop} end={headTop} radius={0.018} material={frameMat} />
+        <TubeBetweenPoints start={headTop} end={bb} radius={0.025} material={frameMat} />
+        <TubeBetweenPoints start={headTop} end={headBottom} radius={0.02} material={frameMat} />
+        
+        <TubeBetweenPoints start={seatTop} end={new THREE.Vector3(rearAxle.x, rearAxle.y, 0.05)} radius={0.008} material={frameMat} />
+        <TubeBetweenPoints start={seatTop} end={new THREE.Vector3(rearAxle.x, rearAxle.y, -0.05)} radius={0.008} material={frameMat} />
+        
+        <TubeBetweenPoints start={bb} end={new THREE.Vector3(rearAxle.x, rearAxle.y, 0.05)} radius={0.012} material={frameMat} />
+        <TubeBetweenPoints start={bb} end={new THREE.Vector3(rearAxle.x, rearAxle.y, -0.05)} radius={0.012} material={frameMat} />
+        
+        <TubeBetweenPoints start={headBottom} end={new THREE.Vector3(frontAxle.x, frontAxle.y, 0.05)} radius={0.015} material={frameMat} />
+        <TubeBetweenPoints start={headBottom} end={new THREE.Vector3(frontAxle.x, frontAxle.y, -0.05)} radius={0.015} material={frameMat} />
+
+        <TubeBetweenPoints start={seatTop} end={new THREE.Vector3(-0.28, 1.05, 0)} radius={0.012} material={blackMat} />
+        <mesh position={[-0.30, 1.05, 0]} rotation={[0, 0, 0.05]}>
+          <boxGeometry args={[0.2, 0.03, 0.1]} />
+          <primitive object={blackMat} attach="material" />
         </mesh>
-        {/* Hub */}
-        <mesh>
-          <cylinderGeometry args={[0.06, 0.06, 0.1, 8]} />
-          <primitive object={metalMat} attach="material" />
+
+        <TubeBetweenPoints start={headTop} end={new THREE.Vector3(0.44, 0.95, 0)} radius={0.012} material={blackMat} />
+        <mesh position={[0.44, 0.95, 0]} rotation={[Math.PI/2, 0, 0]}>
+          <cylinderGeometry args={[0.012, 0.012, 0.36, 8]} />
+          <primitive object={blackMat} attach="material" />
         </mesh>
+        
+        <TubeBetweenPoints start={new THREE.Vector3(0.44, 0.95, 0.18)} end={new THREE.Vector3(0.52, 0.95, 0.18)} radius={0.014} material={blackMat} />
+        <TubeBetweenPoints start={new THREE.Vector3(0.52, 0.95, 0.18)} end={new THREE.Vector3(0.52, 0.85, 0.18)} radius={0.014} material={blackMat} />
+        <TubeBetweenPoints start={new THREE.Vector3(0.44, 0.95, -0.18)} end={new THREE.Vector3(0.52, 0.95, -0.18)} radius={0.014} material={blackMat} />
+        <TubeBetweenPoints start={new THREE.Vector3(0.52, 0.95, -0.18)} end={new THREE.Vector3(0.52, 0.85, -0.18)} radius={0.014} material={blackMat} />
       </group>
 
-      {/* Front wheel */}
-      <group position={[1.2, 0, 0]} ref={wheelFrontRef}>
-        <mesh>
-          <torusGeometry args={[0.5, 0.04, 8, 24]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.6} />
+      {/* Drivetrain */}
+      <group position={bb.toArray()}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.04]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.005, 24]} />
+          <primitive object={blackMat} attach="material" />
         </mesh>
-        {/* Hub */}
-        <mesh>
-          <cylinderGeometry args={[0.06, 0.06, 0.1, 8]} />
-          <primitive object={metalMat} attach="material" />
-        </mesh>
+        
+        <group ref={crankGroup}>
+          <mesh position={[crankLength/2, 0, 0.06]}>
+            <boxGeometry args={[crankLength, 0.02, 0.01]} />
+            <primitive object={metalMat} attach="material" />
+          </mesh>
+          <mesh position={[crankLength, 0, 0.09]} rotation={[Math.PI/2, 0, 0]}>
+            <cylinderGeometry args={[0.015, 0.015, 0.06, 8]} />
+            <primitive object={blackMat} attach="material" />
+          </mesh>
+
+          <mesh position={[-crankLength/2, 0, -0.06]}>
+            <boxGeometry args={[crankLength, 0.02, 0.01]} />
+            <primitive object={metalMat} attach="material" />
+          </mesh>
+          <mesh position={[-crankLength, 0, -0.09]} rotation={[Math.PI/2, 0, 0]}>
+            <cylinderGeometry args={[0.015, 0.015, 0.06, 8]} />
+            <primitive object={blackMat} attach="material" />
+          </mesh>
+        </group>
       </group>
 
-      {/* Frame - main triangle */}
-      {/* Bottom bracket to head tube (down tube) */}
-      <mesh position={[0.3, 0.3, 0]} rotation={[0, 0, -0.35]}>
-        <cylinderGeometry args={[0.03, 0.03, 1.4, 8]} />
-        <primitive object={frameMat} attach="material" />
-      </mesh>
-      {/* Bottom bracket to seat (seat tube) */}
-      <mesh position={[-0.3, 0.6, 0]} rotation={[0, 0, 0.1]}>
-        <cylinderGeometry args={[0.03, 0.03, 1.0, 8]} />
-        <primitive object={frameMat} attach="material" />
-      </mesh>
-      {/* Seat tube to head tube (top tube) */}
-      <mesh position={[0, 1.0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.03, 0.03, 1.2, 8]} />
-        <primitive object={frameMat} attach="material" />
-      </mesh>
-      {/* Seat stays */}
-      <mesh position={[-0.8, 0.6, 0]} rotation={[0, 0, 0.5]}>
-        <cylinderGeometry args={[0.025, 0.025, 0.8, 6]} />
-        <primitive object={frameMat} attach="material" />
-      </mesh>
-      <mesh position={[-0.8, 0.6, 0]} rotation={[0, 0, -0.5]}>
-        <cylinderGeometry args={[0.025, 0.025, 0.8, 6]} />
-        <primitive object={frameMat} attach="material" />
-      </mesh>
-      {/* Chain stays */}
-      <mesh position={[-0.6, 0.1, 0]} rotation={[0, 0, 0.2]}>
-        <cylinderGeometry args={[0.025, 0.025, 0.9, 6]} />
-        <primitive object={frameMat} attach="material" />
-      </mesh>
-      <mesh position={[-0.6, 0.1, 0]} rotation={[0, 0, -0.2]}>
-        <cylinderGeometry args={[0.025, 0.025, 0.9, 6]} />
-        <primitive object={frameMat} attach="material" />
-      </mesh>
+      {/* Rider */}
+      <group>
+        <CapsuleBetweenPoints start={hipPosition} end={shoulderPosition} radius={0.12} material={jerseyMat} />
+        
+        <group position={[shoulderPosition.x + 0.1, shoulderPosition.y + 0.2, 0]} rotation={[0, 0, -0.2]}>
+          <mesh position={[-0.05, -0.1, 0]} rotation={[0, 0, 0.2]}>
+            <cylinderGeometry args={[0.04, 0.05, 0.1]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+          <mesh>
+            <sphereGeometry args={[0.08, 16, 16]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+          <mesh position={[0.01, 0.04, 0]} rotation={[0, 0, -0.1]}>
+            <capsuleGeometry args={[0.085, 0.08, 16, 16]} />
+            <primitive object={helmetMat} attach="material" />
+          </mesh>
+        </group>
 
-      {/* Fork */}
-      <mesh position={[0.9, 0.4, 0]} rotation={[0, 0, -0.25]}>
-        <cylinderGeometry args={[0.025, 0.025, 0.8, 6]} />
-        <primitive object={metalMat} attach="material" />
-      </mesh>
-      <mesh position={[0.9, 0.4, 0]} rotation={[0, 0, 0.25]}>
-        <cylinderGeometry args={[0.025, 0.025, 0.8, 6]} />
-        <primitive object={metalMat} attach="material" />
-      </mesh>
+        {/* Right Arm */}
+        <group>
+          <CapsuleBetweenPoints 
+            start={new THREE.Vector3(shoulderPosition.x, shoulderPosition.y, 0.14)} 
+            end={new THREE.Vector3(0.4, 1.1, 0.18)} 
+            radius={0.04} material={jerseyMat} 
+          />
+          <CapsuleBetweenPoints 
+            start={new THREE.Vector3(0.4, 1.1, 0.18)} 
+            end={new THREE.Vector3(0.5, 0.97, 0.18)} 
+            radius={0.035} material={skinMat} 
+          />
+          <mesh position={[0.5, 0.97, 0.18]} rotation={[0, 0, -Math.PI/4]}>
+            <boxGeometry args={[0.05, 0.06, 0.04]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+        </group>
+        
+        {/* Left Arm */}
+        <group>
+          <CapsuleBetweenPoints 
+            start={new THREE.Vector3(shoulderPosition.x, shoulderPosition.y, -0.14)} 
+            end={new THREE.Vector3(0.4, 1.1, -0.18)} 
+            radius={0.04} material={jerseyMat} 
+          />
+          <CapsuleBetweenPoints 
+            start={new THREE.Vector3(0.4, 1.1, -0.18)} 
+            end={new THREE.Vector3(0.5, 0.97, -0.18)} 
+            radius={0.035} material={skinMat} 
+          />
+          <mesh position={[0.5, 0.97, -0.18]} rotation={[0, 0, -Math.PI/4]}>
+            <boxGeometry args={[0.05, 0.06, 0.04]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+        </group>
 
-      {/* Handlebars */}
-      <mesh position={[1.0, 1.0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.02, 0.02, 0.5, 6]} />
-        <primitive object={metalMat} attach="material" />
-      </mesh>
-      {/* Stem */}
-      <mesh position={[0.8, 0.9, 0]} rotation={[0, 0, -0.3]}>
-        <cylinderGeometry args={[0.02, 0.02, 0.3, 6]} />
-        <primitive object={metalMat} attach="material" />
-      </mesh>
+        {/* Legs (Animated) */}
+        <group ref={leftThighRef}>
+          <mesh>
+            <capsuleGeometry args={[0.065, thighLength, 8, 16]} />
+            <primitive object={shortsMat} attach="material" />
+          </mesh>
+        </group>
+        <group ref={leftCalfRef}>
+          <mesh>
+            <capsuleGeometry args={[0.045, calfLength, 8, 16]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+        </group>
+        <group ref={leftFootRef}>
+          <mesh position={[0.02, 0, 0]}>
+            <boxGeometry args={[0.14, 0.04, 0.06]} />
+            <primitive object={shoeMat} attach="material" />
+          </mesh>
+        </group>
 
-      {/* Seat */}
-      <mesh position={[-0.5, 1.15, 0]}>
-        <boxGeometry args={[0.3, 0.05, 0.15]} />
-        <meshStandardMaterial color="#1f2937" roughness={0.5} />
-      </mesh>
-      {/* Seat post */}
-      <mesh position={[-0.5, 0.9, 0]}>
-        <cylinderGeometry args={[0.02, 0.02, 0.4, 6]} />
-        <primitive object={metalMat} attach="material" />
-      </mesh>
-
-      {/* Cranks */}
-      <group position={[0, 0.15, 0]} ref={crankRef}>
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <torusGeometry args={[0.12, 0.015, 8, 20]} />
-          <primitive object={metalMat} attach="material" />
-        </mesh>
-        <mesh position={[0, 0.2, 0.08]}>
-          <boxGeometry args={[0.04, 0.4, 0.02]} />
-          <primitive object={metalMat} attach="material" />
-        </mesh>
-        <mesh position={[0, -0.2, -0.08]}>
-          <boxGeometry args={[0.04, 0.4, 0.02]} />
-          <primitive object={metalMat} attach="material" />
-        </mesh>
+        <group ref={rightThighRef}>
+          <mesh>
+            <capsuleGeometry args={[0.065, thighLength, 8, 16]} />
+            <primitive object={shortsMat} attach="material" />
+          </mesh>
+        </group>
+        <group ref={rightCalfRef}>
+          <mesh>
+            <capsuleGeometry args={[0.045, calfLength, 8, 16]} />
+            <primitive object={skinMat} attach="material" />
+          </mesh>
+        </group>
+        <group ref={rightFootRef}>
+          <mesh position={[0.02, 0, 0]}>
+            <boxGeometry args={[0.14, 0.04, 0.06]} />
+            <primitive object={shoeMat} attach="material" />
+          </mesh>
+        </group>
       </group>
-
-      {/* ─── Rider ─── */}
-      {/* Torso */}
-      <mesh position={[0, 1.7, 0]} rotation={[0, 0, -0.4]} castShadow>
-        <capsuleGeometry args={[0.15, 0.55, 6, 12]} />
-        <primitive object={clothMat} attach="material" />
-      </mesh>
-      {/* Head */}
-      <mesh position={[0.35, 2.25, 0]} castShadow>
-        <sphereGeometry args={[0.16, 12, 12]} />
-        <primitive object={skinMat} attach="material" />
-      </mesh>
-      {/* Helmet */}
-      <mesh position={[0.35, 2.35, 0]} castShadow>
-        <sphereGeometry args={[0.18, 12, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <primitive object={helmetMat} attach="material" />
-      </mesh>
-      {/* Arms */}
-      <mesh position={[0.6, 1.65, 0.15]} rotation={[0, 0, -1.1]} castShadow>
-        <capsuleGeometry args={[0.05, 0.55, 4, 8]} />
-        <primitive object={skinMat} attach="material" />
-      </mesh>
-      <mesh position={[0.6, 1.65, -0.15]} rotation={[0, 0, -1.1]} castShadow>
-        <capsuleGeometry args={[0.05, 0.55, 4, 8]} />
-        <primitive object={skinMat} attach="material" />
-      </mesh>
-      {/* Legs */}
-      <mesh position={[-0.2, 0.9, 0.1]} rotation={[0, 0, 0.3]} castShadow>
-        <capsuleGeometry args={[0.07, 0.6, 4, 8]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.7} />
-      </mesh>
-      <mesh position={[-0.2, 0.9, -0.1]} rotation={[0, 0, -0.1]} castShadow>
-        <capsuleGeometry args={[0.07, 0.6, 4, 8]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.7} />
-      </mesh>
     </group>
   );
 }
@@ -410,9 +559,9 @@ function CameraRig({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; s
     const t = Math.min(Math.max(scrollProgress, 0), 0.995);
     const pt = curve.getPointAt(t);
 
-    // Camera follows slightly above and behind the cyclist
-    targetPos.current.set(pt.x * 0.3, pt.y + 14, pt.z + 16);
-    targetLook.current.set(pt.x, pt.y, pt.z - 4);
+    // Camera follows closer and lower to the cyclist
+    targetPos.current.set(pt.x * 0.3, pt.y + 8, pt.z + 10);
+    targetLook.current.set(pt.x, pt.y, pt.z - 2);
 
     camera.position.lerp(targetPos.current, 0.05);
     const currentLook = new THREE.Vector3();
