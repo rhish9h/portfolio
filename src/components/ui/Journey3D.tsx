@@ -78,6 +78,15 @@ const BikeAndRider = () => {
     // Bounce effect
     group.current.position.y = 0.68 + Math.sin(t * cadence * 2) * 0.01;
     
+    // In Journey3D, the cyclist is static in place.
+    // If it needs to be rotated to face a certain way relative to the camera/scene,
+    // we can set its rotation here. Assuming it should face right (+X) or away (-Z).
+    // Let's set it to face slightly towards the camera or purely sideways.
+    // By default it was facing +X. If it was perpendicular, let's turn it.
+    // Just leaving rotation as default means it faces +X. 
+    // If it needs to face -Z (away from camera):
+    group.current.rotation.y = -Math.PI / 2;
+    
     // Spin wheels
     if (rearWheelRef.current) rearWheelRef.current.rotation.z = -angle;
     if (frontWheelRef.current) frontWheelRef.current.rotation.z = -angle;

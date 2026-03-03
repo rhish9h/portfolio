@@ -240,10 +240,14 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
     group.current.position.copy(pos);
     group.current.position.y += 0.45;
 
-    // Face direction of travel
+    // The lookAt function makes the object's local Z-axis point towards the target.
+    // However, our cyclist is built along the X-axis (facing positive X).
+    // So after calling lookAt, we need to rotate by -Math.PI / 2 around the Y-axis
+    // to align the local X-axis with the tangent direction.
     const lookAt = pos.clone().add(tangent);
     lookAt.y = group.current.position.y;
     group.current.lookAt(lookAt);
+    group.current.rotateY(-Math.PI / 2);
 
     // Speed calculation could be based on scroll delta, but for now we'll just keep it spinning
     // Using a simple time-based animation for wheels and legs
