@@ -2,7 +2,7 @@ import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from 'framer-motion';
 import * as THREE from 'three';
-import { Html, Text, useCursor } from '@react-three/drei';
+import { Html, Text } from '@react-three/drei';
 import { Search } from 'lucide-react';
 
 // ─── Helpers ───
@@ -153,27 +153,29 @@ function Road({ curve }: { curve: THREE.CatmullRomCurve3 }) {
 // Magnifying Glass Icon for click hints
 function MagnifyingGlassIcon({ onClick }: { onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
-  useCursor(hovered, 'pointer', 'auto');
   
   return (
-    <group 
-      position={[0, 0, 0.2]} 
-      onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
-      onPointerOut={(e) => { e.stopPropagation(); setHovered(false); }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-    >
-      <mesh position={[0, 0, 0]}>
-        <circleGeometry args={[0.3, 32]} />
-        <meshBasicMaterial color={hovered ? "#3b82f6" : "#ffffff"} transparent opacity={0.8} />
-      </mesh>
-      {/* We add pointerEvents="none" to Html so it doesn't block the mesh click */}
-      <Html position={[0, 0, 0.01]} center transform style={{ pointerEvents: 'none' }}>
-        <div className={`p-2 rounded-full ${hovered ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'} transition-colors shadow-lg`}>
+    <group position={[0, 0, 0.2]}>
+      {/* We use purely DOM for interaction to ensure it works flawlessly */}
+      <Html position={[0, 0, 0]} center zIndexRange={[100, 0]}>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick();
+          }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={`p-3 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl cursor-pointer pointer-events-auto border-2 ${
+            hovered 
+              ? 'bg-blue-500 text-white border-blue-400 scale-110' 
+              : 'bg-white text-blue-500 border-white hover:scale-110'
+          }`}
+          style={{ width: '50px', height: '50px' }}
+          aria-label="View Details"
+        >
           <Search size={24} />
-        </div>
+        </button>
       </Html>
     </group>
   );
