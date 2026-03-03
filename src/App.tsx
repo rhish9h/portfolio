@@ -166,7 +166,7 @@ function App() {
         </main>
 
         <motion.footer
-          className="w-full border-t relative z-10 bg-background/85 backdrop-blur-xl"
+          className="w-full border-t relative z-10 bg-background/10 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}

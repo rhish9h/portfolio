@@ -186,10 +186,10 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
     group.current.lookAt(lookAt);
 
     // Spin wheels and cranks
-    const speed = 8;
-    if (crankRef.current) crankRef.current.rotation.x += 0.06 * speed * 0.016;
-    if (wheelFrontRef.current) wheelFrontRef.current.rotation.x += 0.1 * speed * 0.016;
-    if (wheelRearRef.current) wheelRearRef.current.rotation.x += 0.1 * speed * 0.016;
+    const speed = 4;
+    if (crankRef.current) crankRef.current.rotation.z += 0.06 * speed;
+    if (wheelFrontRef.current) wheelFrontRef.current.rotation.z += 0.1 * speed;
+    if (wheelRearRef.current) wheelRearRef.current.rotation.z += 0.1 * speed;
   });
 
   const frameMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#0f766e', roughness: 0.3, metalness: 0.6 }), []);
@@ -201,79 +201,96 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
   return (
     <group ref={group} scale={0.5}>
       {/* Rear wheel */}
-      <group position={[-1.4, 0, 0]} ref={wheelRearRef}>
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <torusGeometry args={[0.55, 0.05, 8, 24]} />
+      <group position={[-1.2, 0, 0]} ref={wheelRearRef}>
+        <mesh>
+          <torusGeometry args={[0.5, 0.04, 8, 24]} />
           <meshStandardMaterial color="#1f2937" roughness={0.6} />
         </mesh>
-        {/* Spokes */}
-        {[0, 60, 120].map(d => (
-          <mesh key={d} rotation={[0, 0, (d * Math.PI) / 180]}>
-            <cylinderGeometry args={[0.01, 0.01, 1.0, 4]} />
-            <primitive object={metalMat} attach="material" />
-          </mesh>
-        ))}
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.06, 0.06, 0.12, 8]} />
+        {/* Hub */}
+        <mesh>
+          <cylinderGeometry args={[0.06, 0.06, 0.1, 8]} />
           <primitive object={metalMat} attach="material" />
         </mesh>
       </group>
 
       {/* Front wheel */}
-      <group position={[1.4, 0, 0]} ref={wheelFrontRef}>
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <torusGeometry args={[0.55, 0.05, 8, 24]} />
+      <group position={[1.2, 0, 0]} ref={wheelFrontRef}>
+        <mesh>
+          <torusGeometry args={[0.5, 0.04, 8, 24]} />
           <meshStandardMaterial color="#1f2937" roughness={0.6} />
         </mesh>
-        {[0, 60, 120].map(d => (
-          <mesh key={d} rotation={[0, 0, (d * Math.PI) / 180]}>
-            <cylinderGeometry args={[0.01, 0.01, 1.0, 4]} />
-            <primitive object={metalMat} attach="material" />
-          </mesh>
-        ))}
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.06, 0.06, 0.12, 8]} />
+        {/* Hub */}
+        <mesh>
+          <cylinderGeometry args={[0.06, 0.06, 0.1, 8]} />
           <primitive object={metalMat} attach="material" />
         </mesh>
       </group>
 
-      {/* Frame tubes */}
-      {/* Down tube */}
-      <mesh position={[0.2, 0.5, 0]} rotation={[0, 0, -0.4]}>
-        <cylinderGeometry args={[0.04, 0.04, 1.6, 8]} />
+      {/* Frame - main triangle */}
+      {/* Bottom bracket to head tube (down tube) */}
+      <mesh position={[0.3, 0.3, 0]} rotation={[0, 0, -0.35]}>
+        <cylinderGeometry args={[0.03, 0.03, 1.4, 8]} />
         <primitive object={frameMat} attach="material" />
       </mesh>
-      {/* Seat tube */}
-      <mesh position={[-0.4, 0.6, 0]} rotation={[0, 0, 0.15]}>
-        <cylinderGeometry args={[0.04, 0.04, 1.3, 8]} />
+      {/* Bottom bracket to seat (seat tube) */}
+      <mesh position={[-0.3, 0.6, 0]} rotation={[0, 0, 0.1]}>
+        <cylinderGeometry args={[0.03, 0.03, 1.0, 8]} />
         <primitive object={frameMat} attach="material" />
       </mesh>
-      {/* Top tube */}
-      <mesh position={[0, 1.1, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.035, 0.035, 1.4, 8]} />
+      {/* Seat tube to head tube (top tube) */}
+      <mesh position={[0, 1.0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.03, 0.03, 1.2, 8]} />
         <primitive object={frameMat} attach="material" />
       </mesh>
-      {/* Seat stay */}
-      <mesh position={[-0.9, 0.5, 0]} rotation={[0, 0, 0.6]}>
-        <cylinderGeometry args={[0.025, 0.025, 1.2, 6]} />
+      {/* Seat stays */}
+      <mesh position={[-0.8, 0.6, 0]} rotation={[0, 0, 0.5]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.8, 6]} />
         <primitive object={frameMat} attach="material" />
       </mesh>
+      <mesh position={[-0.8, 0.6, 0]} rotation={[0, 0, -0.5]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.8, 6]} />
+        <primitive object={frameMat} attach="material" />
+      </mesh>
+      {/* Chain stays */}
+      <mesh position={[-0.6, 0.1, 0]} rotation={[0, 0, 0.2]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.9, 6]} />
+        <primitive object={frameMat} attach="material" />
+      </mesh>
+      <mesh position={[-0.6, 0.1, 0]} rotation={[0, 0, -0.2]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.9, 6]} />
+        <primitive object={frameMat} attach="material" />
+      </mesh>
+
       {/* Fork */}
-      <mesh position={[1.1, 0.5, 0]} rotation={[0, 0, -0.3]}>
-        <cylinderGeometry args={[0.03, 0.03, 1.1, 6]} />
+      <mesh position={[0.9, 0.4, 0]} rotation={[0, 0, -0.25]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.8, 6]} />
+        <primitive object={metalMat} attach="material" />
+      </mesh>
+      <mesh position={[0.9, 0.4, 0]} rotation={[0, 0, 0.25]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.8, 6]} />
         <primitive object={metalMat} attach="material" />
       </mesh>
 
       {/* Handlebars */}
-      <mesh position={[1.0, 1.2, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.02, 0.02, 0.6, 6]} />
+      <mesh position={[1.0, 1.0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.02, 0.02, 0.5, 6]} />
+        <primitive object={metalMat} attach="material" />
+      </mesh>
+      {/* Stem */}
+      <mesh position={[0.8, 0.9, 0]} rotation={[0, 0, -0.3]}>
+        <cylinderGeometry args={[0.02, 0.02, 0.3, 6]} />
         <primitive object={metalMat} attach="material" />
       </mesh>
 
       {/* Seat */}
-      <mesh position={[-0.5, 1.3, 0]}>
-        <boxGeometry args={[0.35, 0.06, 0.18]} />
+      <mesh position={[-0.5, 1.15, 0]}>
+        <boxGeometry args={[0.3, 0.05, 0.15]} />
         <meshStandardMaterial color="#1f2937" roughness={0.5} />
+      </mesh>
+      {/* Seat post */}
+      <mesh position={[-0.5, 0.9, 0]}>
+        <cylinderGeometry args={[0.02, 0.02, 0.4, 6]} />
+        <primitive object={metalMat} attach="material" />
       </mesh>
 
       {/* Cranks */}

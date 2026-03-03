@@ -20,7 +20,7 @@ export function HeroSection() {
       {/* Content Container */}
       <motion.div
         style={{ opacity: contentOpacity, scale: contentScale }}
-        className="relative z-10 flex flex-col items-center justify-center px-8 py-10 text-center rounded-3xl bg-background/60 backdrop-blur-md shadow-xl"
+        className="relative z-10 flex flex-col items-center justify-center px-8 py-10 text-center rounded-3xl bg-background/10 backdrop-blur-sm shadow-md"
       >
         {/* Profile Image */}
         <motion.div
