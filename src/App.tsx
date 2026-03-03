@@ -18,6 +18,18 @@ import { AwardsSection } from './components/sections/AwardsSection'
 import { PublicationsSection } from './components/sections/PublicationsSection'
 import { ContactSection } from './components/sections/ContactSection'
 
+export const SECTION_POSITIONS: Record<string, number> = {
+  about: 0.05,
+  education: 0.2,
+  experience: 0.4,
+  skills: 0.6,
+  achievements: 0.8,
+  awards: 0.8,
+  publications: 0.8,
+  certifications: 0.8,
+  contact: 0.95,
+};
+
 function App() {
   const mainRef = useRef<HTMLDivElement>(null);
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -28,6 +40,17 @@ function App() {
       document.documentElement.style.scrollBehavior = 'auto';
     };
   }, []);
+
+  const scrollToSection = (sectionId: string) => {
+    const progress = SECTION_POSITIONS[sectionId];
+    if (progress !== undefined) {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      window.scrollTo({
+        top: progress * scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const renderPopupContent = () => {
     switch (activeSection) {
@@ -54,7 +77,7 @@ function App() {
         <ScrollProgress />
         
         <header className="fixed top-0 z-50 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65">
-          <Navbar />
+          <Navbar onNavigate={scrollToSection} />
         </header>
 
         {/* The tall container to allow scrolling */}

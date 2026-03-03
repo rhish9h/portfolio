@@ -2,8 +2,9 @@ import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from 'framer-motion';
 import * as THREE from 'three';
-import { Html, Text } from '@react-three/drei';
+import { Html, Text, Stars } from '@react-three/drei';
 import { Search } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 // ─── Helpers ───
 function TubeBetweenPoints({ start, end, radius = 0.02, material }: { start: THREE.Vector3, end: THREE.Vector3, radius?: number, material: THREE.Material }) {
@@ -757,7 +758,7 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
 }
 
 // ─── Ground Plane ───
-function Ground({ curve }: { curve: THREE.CatmullRomCurve3 }) {
+function Ground({ curve, isDarkMode }: { curve: THREE.CatmullRomCurve3, isDarkMode?: boolean }) {
   const endPt = curve.getPointAt(1);
   const startPt = curve.getPointAt(0);
   const centerZ = (startPt.z + endPt.z) / 2;
@@ -765,7 +766,7 @@ function Ground({ curve }: { curve: THREE.CatmullRomCurve3 }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, centerZ]} receiveShadow>
       <planeGeometry args={[100, length]} />
-      <meshStandardMaterial color="#86efac" roughness={1} />
+      <meshStandardMaterial color={isDarkMode ? '#064e3b' : '#86efac'} roughness={1} />
     </mesh>
   );
 }
@@ -800,16 +801,19 @@ function CameraRig({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; s
 }
 
 // ─── Main Scene (inside Canvas) ───
-function Scene({ scrollProgress, onOpenSection }: { scrollProgress: number, onOpenSection: (section: string) => void }) {
+function Scene({ scrollProgress, onOpenSection, isDarkMode }: { scrollProgress: number, onOpenSection: (section: string) => void, isDarkMode: boolean }) {
   const curve = useMemo(() => createRoadCurve(), []);
+  
+  const skyColor = isDarkMode ? '#0f172a' : '#e0f2fe';
+  const fogColor = isDarkMode ? '#0f172a' : '#e0f2fe';
 
   return (
     <>
       {/* Lighting */}
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={isDarkMode ? 0.2 : 0.5} />
       <directionalLight
         position={[15, 25, 10]}
-        intensity={1.2}
+        intensity={isDarkMode ? 0.5 : 1.2}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -819,14 +823,17 @@ function Scene({ scrollProgress, onOpenSection }: { scrollProgress: number, onOp
         shadow-camera-top={50}
         shadow-camera-bottom={-100}
       />
-      <hemisphereLight args={['#87ceeb', '#86efac', 0.4]} />
+      <hemisphereLight args={isDarkMode ? ['#1e293b', '#064e3b', 0.2] : ['#87ceeb', '#86efac', 0.4]} />
 
-      {/* Sky color */}
-      <color attach="background" args={['#e0f2fe']} />
-      <fog attach="fog" args={['#e0f2fe', 40, 100]} />
+      {/* Sky color and Stars */}
+      <color attach="background" args={[skyColor]} />
+      {isDarkMode && (
+        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+      )}
+      <fog attach="fog" args={[fogColor, 40, 100]} />
 
       <CameraRig curve={curve} scrollProgress={scrollProgress} />
-      <Ground curve={curve} />
+      <Ground curve={curve} isDarkMode={isDarkMode} />
       <Road curve={curve} />
       <Environment curve={curve} onOpenSection={onOpenSection} />
       <Cyclist curve={curve} scrollProgress={scrollProgress} />
@@ -838,11 +845,18 @@ function Scene({ scrollProgress, onOpenSection }: { scrollProgress: number, onOp
 export function WorldScene({ onOpenSection }: { onOpenSection: (section: string) => void }) {
   const { scrollYProgress } = useScroll();
   const [progress, setProgress] = useState(0);
+  const { theme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const unsub = scrollYProgress.on('change', v => setProgress(v));
     return unsub;
   }, [scrollYProgress]);
+
+  // Determine current theme
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const isDarkMode = mounted ? currentTheme === 'dark' : false;
 
   return (
     <div className="absolute inset-0 z-0">
@@ -851,7 +865,7 @@ export function WorldScene({ onOpenSection }: { onOpenSection: (section: string)
         camera={{ fov: 50, near: 0.1, far: 300, position: [0, 14, 16] }}
         gl={{ antialias: true, alpha: false }}
       >
-        <Scene scrollProgress={progress} onOpenSection={onOpenSection} />
+        <Scene scrollProgress={progress} onOpenSection={onOpenSection} isDarkMode={isDarkMode} />
       </Canvas>
     </div>
   );

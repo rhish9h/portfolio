@@ -1,25 +1,32 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
+  const { theme, setTheme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const currentTheme = theme === "system" ? systemTheme : theme;
+  const isDark = currentTheme === "dark";
 
   return (
     <motion.button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      // Use classes that adjust background based on theme:
-      // Default (light): bg-zinc-100/90 and hover:bg-zinc-200/90
-      // Dark mode: bg-zinc-800/90 and hover:bg-zinc-700/90
-      className="relative h-10 w-10 rounded-lg bg-zinc-100/90 p-2 ring-1 ring-zinc-900/5 transition-all hover:bg-zinc-200/90 dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:bg-zinc-700/90"
+      className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-200/50 dark:bg-zinc-800/50 p-2 ring-1 ring-border transition-all hover:bg-zinc-300/50 dark:hover:bg-zinc-700/50 focus:outline-none focus:ring-2 focus:ring-ring"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       aria-label="Toggle theme"
     >
       {/* Sun Icon Container */}
       <motion.div
-        className="relative flex h-full w-full items-center justify-center"
+        className="absolute inset-0 flex h-full w-full items-center justify-center text-zinc-800 dark:text-zinc-200"
         initial={false}
         animate={{
           scale: isDark ? 0 : 1,
@@ -28,12 +35,12 @@ export function ThemeToggle() {
         }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
-        <Sun className="h-full w-full stroke-amber-500" strokeWidth={2.5} />
+        <Sun className="h-5 w-5" strokeWidth={2.5} />
       </motion.div>
 
       {/* Moon Icon Container */}
       <motion.div
-        className="absolute inset-0 flex h-full w-full items-center justify-center"
+        className="absolute inset-0 flex h-full w-full items-center justify-center text-zinc-800 dark:text-zinc-200"
         initial={false}
         animate={{
           scale: isDark ? 1 : 0,
@@ -42,7 +49,7 @@ export function ThemeToggle() {
         }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
-        <Moon className="h-full w-full fill-sky-100" strokeWidth={0} />
+        <Moon className="h-5 w-5" strokeWidth={2.5} />
       </motion.div>
     </motion.button>
   );
