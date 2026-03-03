@@ -249,18 +249,30 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
     // Using a simple time-based animation for wheels and legs
     const time = Date.now() * 0.001;
     const speed = 6;
+    // We want the rotation angle to increase over time
     const angle = time * speed;
+    
+    // The bicycle is facing along the X axis.
+    // In ThreeJS standard orientation, to rotate a wheel that is facing along the Z axis, 
+    // it needs to rotate around the Z axis.
+    // If the bike is oriented along the X axis, wheels need to rotate around Z axis.
+    // Since the wheel is moving forward (towards positive X), the wheels should rotate clockwise (negative Z rotation)
+    // if looking from the right side, or counter-clockwise if looking from the left side depending on axis.
+    // For a standard setup, a positive rotation around Z makes the top of the wheel move towards negative X.
+    // A negative rotation around Z makes the top of the wheel move towards positive X.
     
     // Spin wheels
     if (rearWheelRef.current) rearWheelRef.current.rotation.z = -angle;
     if (frontWheelRef.current) frontWheelRef.current.rotation.z = -angle;
     
-    // Spin crank
+    // Spin crank (should spin in same direction as wheels)
     if (crankGroup.current) crankGroup.current.rotation.z = -angle;
 
     // Inverse Kinematics for legs
     const updateLeg = (thighGroup: THREE.Group, calfGroup: THREE.Group, footGroup: THREE.Group, isRight: boolean) => {
-      const phase = isRight ? angle : angle + Math.PI;
+      // The phase defines where the pedal is in the rotation.
+      // The crank rotates negatively (clockwise). We need to offset the phase depending on the leg.
+      const phase = isRight ? -angle : -angle + Math.PI;
       const pedalX = bb.x + Math.cos(phase) * crankLength;
       const pedalY = bb.y + Math.sin(phase) * crankLength;
       const pedalZ = isRight ? 0.14 : -0.14;
@@ -313,11 +325,11 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
 
   const renderWheel = (ref: any, position: THREE.Vector3) => (
     <group position={position} ref={ref}>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
+      <mesh>
         <torusGeometry args={[0.33, 0.025, 16, 48]} />
         <primitive object={tireMat} attach="material" />
       </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
+      <mesh>
         <torusGeometry args={[0.31, 0.015, 8, 48]} />
         <primitive object={blackMat} attach="material" />
       </mesh>

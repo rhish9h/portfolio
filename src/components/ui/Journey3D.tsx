@@ -87,7 +87,7 @@ const BikeAndRider = () => {
 
     // Inverse Kinematics for legs
     const updateLeg = (thighGroup: THREE.Group, calfGroup: THREE.Group, footGroup: THREE.Group, isRight: boolean) => {
-      const phase = isRight ? angle : angle + Math.PI;
+      const phase = isRight ? -angle : -angle + Math.PI;
       const pedalX = bb.x + Math.cos(phase) * crankLength;
       const pedalY = bb.y + Math.sin(phase) * crankLength;
       const pedalZ = isRight ? 0.14 : -0.14;
@@ -140,11 +140,11 @@ const BikeAndRider = () => {
 
   const renderWheel = (ref: any, position: THREE.Vector3) => (
     <group position={position} ref={ref}>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
+      <mesh>
         <torusGeometry args={[0.33, 0.025, 16, 48]} />
         <primitive object={tireMat} attach="material" />
       </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
+      <mesh>
         <torusGeometry args={[0.31, 0.015, 8, 48]} />
         <primitive object={blackMat} attach="material" />
       </mesh>
