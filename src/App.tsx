@@ -1,7 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './styles/globals.css'
 import { ThemeProvider } from './components/ThemeProvider'
 import { Navbar } from './components/ui/Navbar'
+import { ScrollProgress } from './components/ui/ScrollProgress'
+import { WorldScene } from './components/ui/WorldScene'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X } from 'lucide-react'
+
+// Import sections for popups
 import { HeroSection } from './components/sections/HeroSection'
 import { AboutSection } from './components/sections/AboutSection'
 import { JourneyTimeline } from './components/sections/JourneyTimeline'
@@ -11,13 +17,10 @@ import { CertificationsSection } from './components/sections/CertificationsSecti
 import { AwardsSection } from './components/sections/AwardsSection'
 import { PublicationsSection } from './components/sections/PublicationsSection'
 import { ContactSection } from './components/sections/ContactSection'
-import { ScrollProgress } from './components/ui/ScrollProgress'
-import { WaveDivider } from './components/ui/WaveDivider'
-import { WorldScene } from './components/ui/WorldScene'
-import { motion } from 'framer-motion'
 
 function App() {
   const mainRef = useRef<HTMLDivElement>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = 'smooth';
@@ -26,161 +29,73 @@ function App() {
     };
   }, []);
 
+  const renderPopupContent = () => {
+    switch (activeSection) {
+      case 'hero': return <HeroSection />;
+      case 'about': return <AboutSection />;
+      case 'education': return <EducationJourney />;
+      case 'experience': return <JourneyTimeline />;
+      case 'skills': return <SkillsSection />;
+      case 'achievements': return (
+        <div className="space-y-12">
+          <CertificationsSection />
+          <AwardsSection />
+          <PublicationsSection />
+        </div>
+      );
+      case 'contact': return <ContactSection />;
+      default: return null;
+    }
+  };
+
   return (
     <ThemeProvider>
       <div className="relative min-h-screen w-full overflow-x-hidden bg-background text-foreground">
         <ScrollProgress />
         
-        
-        <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65">
+        <header className="fixed top-0 z-50 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65">
           <Navbar />
         </header>
 
-        <main ref={mainRef} className="relative z-10 flex w-full flex-1 flex-col items-center justify-center pb-16">
-          {/* 3D World with winding road, cyclist, trees, huts */}
-          <WorldScene />
-          {/* Content sections float above the 3D world */}
+        {/* The tall container to allow scrolling */}
+        <div className="h-[500vh] w-full" />
 
-          {/* Hero Section - Full height introduction */}
-          <section id="hero" className="relative w-full">
-            <HeroSection />
-          </section>
-
-          {/* Wave divider */}
-          <div className="relative w-full h-20 overflow-hidden">
-            <WaveDivider />
+        <main ref={mainRef} className="fixed inset-0 z-10 flex w-full flex-1 flex-col items-center justify-center pointer-events-none">
+          {/* 3D World with interactive elements */}
+          <div className="pointer-events-auto w-full h-full">
+            <WorldScene onOpenSection={setActiveSection} />
           </div>
-
-          {/* About Section - The story begins */}
-          <section id="about" className="journey-gradient-1 relative w-full py-24 md:py-32">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
-              className="container mx-auto max-w-6xl px-6 md:px-8"
-            >
-              <div className="journey-shell p-8 md:p-12">
-                <AboutSection />
-              </div>
-            </motion.div>
-          </section>
-
-          {/* Education Journey Section */}
-          <section id="education" className="journey-gradient-2 relative w-full py-24 md:py-32">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
-              className="container mx-auto max-w-6xl px-6 md:px-8"
-            >
-              <div className="journey-shell p-8 md:p-12">
-                <EducationJourney />
-              </div>
-            </motion.div>
-          </section>
-
-          {/* Career Journey Timeline */}
-          <section id="experience" className="journey-gradient-3 relative w-full py-24 md:py-32">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
-              className="container mx-auto max-w-6xl px-6 md:px-8"
-            >
-              <div className="journey-shell p-8 md:p-12">
-                <JourneyTimeline />
-              </div>
-            </motion.div>
-          </section>
-
-          {/* Skills Section */}
-          <section id="skills" className="relative w-full py-24 md:py-32">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
-              className="container mx-auto max-w-6xl px-6 md:px-8"
-            >
-              <div className="journey-shell p-8 md:p-12">
-                <SkillsSection />
-              </div>
-            </motion.div>
-          </section>
-
-          {/* Achievements Section - Combining Awards, Publications, Certifications */}
-          <section id="achievements" className="relative w-full bg-gradient-to-b from-background via-muted/20 to-background py-24 md:py-32">
-            <div className="container mx-auto max-w-6xl space-y-12 px-6 md:px-8">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="journey-shell p-8 md:p-10">
-                  <CertificationsSection />
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                <div className="journey-shell p-8 md:p-10">
-                  <AwardsSection />
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <div className="journey-shell p-8 md:p-10">
-                  <PublicationsSection />
-                </div>
-              </motion.div>
-            </div>
-          </section>
-
-          {/* Contact Section - The journey continues */}
-          <section id="contact" className="relative w-full py-24 md:py-32">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
-              className="container mx-auto max-w-6xl px-6 md:px-8"
-            >
-              <div className="journey-shell p-8 md:p-12">
-                <ContactSection />
-              </div>
-            </motion.div>
-          </section>
         </main>
 
-        <motion.footer
-          className="w-full border-t relative z-10 bg-background/10 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="container mx-auto max-w-6xl px-6 py-8 text-center md:px-8">
-            <p className="mb-4 text-muted-foreground">
-              Let's continue the journey together
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {new Date().getFullYear()} Rhishabh Hattarki. All rights reserved.
-            </p>
-          </div>
-        </motion.footer>
+        <AnimatePresence>
+          {activeSection && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 md:p-12 overflow-y-auto"
+              onClick={() => setActiveSection(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-5xl rounded-2xl border border-border bg-card p-6 md:p-10 shadow-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <button
+                  onClick={() => setActiveSection(null)}
+                  className="absolute right-4 top-4 rounded-full p-2 hover:bg-muted transition-colors z-50"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+                <div className="mt-4">
+                  {renderPopupContent()}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </ThemeProvider>
   )

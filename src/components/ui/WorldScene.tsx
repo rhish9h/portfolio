@@ -2,6 +2,8 @@ import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from 'framer-motion';
 import * as THREE from 'three';
+import { Html, Text, useCursor } from '@react-three/drei';
+import { Search } from 'lucide-react';
 
 // ─── Helpers ───
 function TubeBetweenPoints({ start, end, radius = 0.02, material }: { start: THREE.Vector3, end: THREE.Vector3, radius?: number, material: THREE.Material }) {
@@ -37,15 +39,14 @@ function CapsuleBetweenPoints({ start, end, radius = 0.02, material }: { start: 
 }
 
 // ─── Road Path Definition ───
-// Zigzag from left to right across the "world", going downhill (negative Z)
 function createRoadCurve() {
   const points: THREE.Vector3[] = [];
-  const segments = 7;
+  const segments = 10;
   const zSpacing = 18;
-  const xAmplitude = 12;
+  const xAmplitude = 15;
   for (let i = 0; i <= segments; i++) {
     const t = i / segments;
-    const x = Math.sin(t * Math.PI * 3.5) * xAmplitude;
+    const x = Math.sin(t * Math.PI * 4) * xAmplitude;
     const z = -t * zSpacing * segments;
     const y = (1 - t) * 8; // downhill
     points.push(new THREE.Vector3(x, y, z));
@@ -57,22 +58,22 @@ function createRoadCurve() {
 function Road({ curve }: { curve: THREE.CatmullRomCurve3 }) {
   const mesh = useRef<THREE.Mesh>(null);
   const { geometry, edgeGeo } = useMemo(() => {
-    const roadPts = curve.getPoints(200);
+    const roadPts = curve.getPoints(300);
     const shape = new THREE.Shape();
-    shape.moveTo(-1.2, 0);
-    shape.lineTo(1.2, 0);
-    shape.lineTo(1.2, 0.08);
-    shape.lineTo(-1.2, 0.08);
+    shape.moveTo(-1.5, 0);
+    shape.lineTo(1.5, 0);
+    shape.lineTo(1.5, 0.08);
+    shape.lineTo(-1.5, 0.08);
     shape.closePath();
 
-    const frames = curve.computeFrenetFrames(200);
+    const frames = curve.computeFrenetFrames(300);
     const geo = new THREE.BufferGeometry();
     const vertices: number[] = [];
     const uvs: number[] = [];
     const indices: number[] = [];
-    const width = 1.4;
+    const width = 1.6;
 
-    for (let i = 0; i <= 200; i++) {
+    for (let i = 0; i <= 300; i++) {
       const pt = roadPts[i];
       const binormal = frames.binormals[i];
       // left edge
@@ -84,8 +85,8 @@ function Road({ curve }: { curve: THREE.CatmullRomCurve3 }) {
       const ry = pt.y + binormal.y * width + 0.05;
       const rz = pt.z + binormal.z * width;
       vertices.push(lx, ly, lz, rx, ry, rz);
-      uvs.push(0, i / 200, 1, i / 200);
-      if (i < 200) {
+      uvs.push(0, i / 300, 1, i / 300);
+      if (i < 300) {
         const a = i * 2, b = i * 2 + 1, c = (i + 1) * 2, d = (i + 1) * 2 + 1;
         indices.push(a, c, b, b, c, d);
       }
@@ -97,7 +98,7 @@ function Road({ curve }: { curve: THREE.CatmullRomCurve3 }) {
 
     // Edge lines
     const edgeVerts: number[] = [];
-    for (let i = 0; i <= 200; i++) {
+    for (let i = 0; i <= 300; i++) {
       const pt = roadPts[i];
       const binormal = frames.binormals[i];
       edgeVerts.push(
@@ -105,7 +106,7 @@ function Road({ curve }: { curve: THREE.CatmullRomCurve3 }) {
       );
     }
     const rightEdge: number[] = [];
-    for (let i = 0; i <= 200; i++) {
+    for (let i = 0; i <= 300; i++) {
       const pt = roadPts[i];
       const binormal = frames.binormals[i];
       rightEdge.push(
@@ -119,12 +120,12 @@ function Road({ curve }: { curve: THREE.CatmullRomCurve3 }) {
 
   // Dashed center line
   const centerLine = useMemo(() => {
-    const pts = curve.getPoints(200);
+    const pts = curve.getPoints(300);
     const arr: number[] = [];
     pts.forEach(p => arr.push(p.x, p.y + 0.08, p.z));
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3));
-    const mat = new THREE.LineDashedMaterial({ color: '#fbbf24', dashSize: 0.4, gapSize: 0.3 });
+    const mat = new THREE.LineDashedMaterial({ color: '#fbbf24', dashSize: 0.5, gapSize: 0.4 });
     const line = new THREE.Line(g, mat);
     line.computeLineDistances();
     return line;
@@ -147,6 +148,266 @@ function Road({ curve }: { curve: THREE.CatmullRomCurve3 }) {
   );
 }
 
+// ─── Interactive 3D Objects ───
+
+// Magnifying Glass Icon for click hints
+function MagnifyingGlassIcon({ onClick }: { onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  useCursor(hovered, 'pointer', 'auto');
+  
+  return (
+    <group 
+      position={[0, 0, 0.2]} 
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
+      <mesh position={[0, 0, 0]}>
+        <circleGeometry args={[0.3, 32]} />
+        <meshBasicMaterial color={hovered ? "#3b82f6" : "#ffffff"} transparent opacity={0.8} />
+      </mesh>
+      <Html position={[0, 0, 0.01]} center transform>
+        <div className={`p-2 rounded-full ${hovered ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'} transition-colors shadow-lg cursor-pointer`}>
+          <Search size={24} />
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+// 1. Large Billboard (Hero/About)
+function InteractiveBillboard({ position, rotation, title, subtitle, sectionId, onOpenSection }: { position: [number, number, number], rotation: [number, number, number], title: string, subtitle: string, sectionId: string, onOpenSection: (id: string) => void }) {
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Posts */}
+      <mesh position={[-1.5, 1.5, 0]} castShadow>
+        <cylinderGeometry args={[0.1, 0.1, 3]} />
+        <meshStandardMaterial color="#4b5563" />
+      </mesh>
+      <mesh position={[1.5, 1.5, 0]} castShadow>
+        <cylinderGeometry args={[0.1, 0.1, 3]} />
+        <meshStandardMaterial color="#4b5563" />
+      </mesh>
+      
+      {/* Board */}
+      <mesh position={[0, 3, 0]} castShadow>
+        <boxGeometry args={[4, 2, 0.2]} />
+        <meshStandardMaterial color="#1f2937" />
+      </mesh>
+      <mesh position={[0, 3, 0.11]}>
+        <planeGeometry args={[3.8, 1.8]} />
+        <meshStandardMaterial color="#f8fafc" />
+      </mesh>
+
+      {/* Text Content */}
+      <Text position={[0, 3.4, 0.12]} fontSize={0.3} color="#1e293b" anchorX="center" anchorY="middle" maxWidth={3.5} textAlign="center">
+        {title}
+      </Text>
+      <Text position={[0, 2.8, 0.12]} fontSize={0.15} color="#64748b" anchorX="center" anchorY="middle" maxWidth={3.5} textAlign="center">
+        {subtitle}
+      </Text>
+
+      {/* Interactive Element */}
+      <group position={[0, 2.3, 0.12]}>
+        <MagnifyingGlassIcon onClick={() => onOpenSection(sectionId)} />
+      </group>
+    </group>
+  );
+}
+
+// 2. School Building (Education)
+function SchoolBuilding({ position, rotation, onOpenSection }: { position: [number, number, number], rotation: [number, number, number], onOpenSection: (id: string) => void }) {
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Main Building */}
+      <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
+        <boxGeometry args={[4, 3, 3]} />
+        <meshStandardMaterial color="#b91c1c" />
+      </mesh>
+      
+      {/* Roof */}
+      <mesh position={[0, 3.5, 0]} castShadow>
+        <cylinderGeometry args={[0, 3, 1, 4]} />
+        <meshStandardMaterial color="#1e3a8a" />
+      </mesh>
+
+      {/* Columns */}
+      <mesh position={[-1, 1.5, 1.6]} castShadow>
+        <cylinderGeometry args={[0.2, 0.2, 3]} />
+        <meshStandardMaterial color="#f8fafc" />
+      </mesh>
+      <mesh position={[1, 1.5, 1.6]} castShadow>
+        <cylinderGeometry args={[0.2, 0.2, 3]} />
+        <meshStandardMaterial color="#f8fafc" />
+      </mesh>
+
+      {/* Pediment */}
+      <mesh position={[0, 3.5, 1.6]} rotation={[0, 0, Math.PI/4]} castShadow>
+        <boxGeometry args={[2.2, 2.2, 0.2]} />
+      </mesh>
+      <mesh position={[0, 3.3, 1.6]} castShadow>
+         <boxGeometry args={[3, 0.6, 0.2]} />
+         <meshStandardMaterial color="#f8fafc" />
+      </mesh>
+
+      <Text position={[0, 3.3, 1.72]} fontSize={0.3} color="#1e293b" anchorX="center" anchorY="middle">
+        EDUCATION
+      </Text>
+
+      {/* Interactive Door/Sign */}
+      <group position={[0, 1, 1.6]}>
+        <mesh>
+          <boxGeometry args={[1, 2, 0.1]} />
+          <meshStandardMaterial color="#451a03" />
+        </mesh>
+        <MagnifyingGlassIcon onClick={() => onOpenSection('education')} />
+      </group>
+    </group>
+  );
+}
+
+// 3. Office Skyscraper (Experience)
+function OfficeBuilding({ position, rotation, onOpenSection }: { position: [number, number, number], rotation: [number, number, number], onOpenSection: (id: string) => void }) {
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh position={[0, 4, 0]} castShadow receiveShadow>
+        <boxGeometry args={[3, 8, 3]} />
+        <meshStandardMaterial color="#0f172a" roughness={0.2} metalness={0.8} />
+      </mesh>
+      
+      {/* Windows (Texture approximation) */}
+      <mesh position={[0, 4, 1.51]}>
+        <planeGeometry args={[2.5, 7.5]} />
+        <meshBasicMaterial color="#38bdf8" wireframe />
+      </mesh>
+
+      {/* Sign */}
+      <mesh position={[0, 1.5, 1.6]} castShadow>
+        <boxGeometry args={[2.5, 1, 0.2]} />
+        <meshStandardMaterial color="#f8fafc" />
+      </mesh>
+      
+      <Text position={[0, 1.7, 1.71]} fontSize={0.25} color="#0f172a" anchorX="center" anchorY="middle">
+        CAREER JOURNEY
+      </Text>
+
+      <group position={[0, 1.3, 1.71]}>
+        <MagnifyingGlassIcon onClick={() => onOpenSection('experience')} />
+      </group>
+    </group>
+  );
+}
+
+// 4. Tech Workshop/Garage (Skills)
+function TechWorkshop({ position, rotation, onOpenSection }: { position: [number, number, number], rotation: [number, number, number], onOpenSection: (id: string) => void }) {
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh position={[0, 1.25, 0]} castShadow receiveShadow>
+        <boxGeometry args={[4, 2.5, 3]} />
+        <meshStandardMaterial color="#64748b" />
+      </mesh>
+      <mesh position={[0, 3, 0]} rotation={[0, 0, Math.PI/2]} castShadow>
+        <cylinderGeometry args={[2, 2, 4, 3]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.5} />
+      </mesh>
+
+      {/* Garage Door */}
+      <mesh position={[0, 1, 1.51]}>
+        <planeGeometry args={[2, 2]} />
+        <meshStandardMaterial color="#cbd5e1" />
+      </mesh>
+      <mesh position={[0, 1, 1.52]}>
+        <planeGeometry args={[2, 2]} />
+        <meshBasicMaterial color="#475569" wireframe />
+      </mesh>
+
+      {/* Hanging Sign */}
+      <mesh position={[0, 2.8, 1.6]} castShadow>
+        <boxGeometry args={[2, 0.8, 0.1]} />
+        <meshStandardMaterial color="#f59e0b" />
+      </mesh>
+      <Text position={[0, 2.8, 1.66]} fontSize={0.3} color="#1e293b" anchorX="center" anchorY="middle">
+        SKILLS
+      </Text>
+
+      <group position={[0, 1.5, 1.55]}>
+        <MagnifyingGlassIcon onClick={() => onOpenSection('skills')} />
+      </group>
+    </group>
+  );
+}
+
+// 5. Trophy/Monument (Achievements)
+function TrophyMonument({ position, rotation, onOpenSection }: { position: [number, number, number], rotation: [number, number, number], onOpenSection: (id: string) => void }) {
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh position={[0, 0.5, 0]} castShadow>
+        <cylinderGeometry args={[1.5, 2, 1, 8]} />
+        <meshStandardMaterial color="#1e293b" />
+      </mesh>
+      <mesh position={[0, 2, 0]} castShadow>
+        <cylinderGeometry args={[1, 1.2, 2, 8]} />
+        <meshStandardMaterial color="#1e293b" />
+      </mesh>
+      
+      {/* Golden Star / Trophy */}
+      <mesh position={[0, 4, 0]} castShadow>
+        <octahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.2} />
+      </mesh>
+
+      <mesh position={[0, 1.5, 1.1]} castShadow>
+        <boxGeometry args={[1.5, 1, 0.2]} />
+        <meshStandardMaterial color="#f8fafc" />
+      </mesh>
+      <Text position={[0, 1.7, 1.21]} fontSize={0.2} color="#1e293b" anchorX="center" anchorY="middle">
+        ACHIEVEMENTS
+      </Text>
+      
+      <group position={[0, 1.3, 1.21]}>
+        <MagnifyingGlassIcon onClick={() => onOpenSection('achievements')} />
+      </group>
+    </group>
+  );
+}
+
+// 6. Mailbox/Post Office (Contact)
+function PostOffice({ position, rotation, onOpenSection }: { position: [number, number, number], rotation: [number, number, number], onOpenSection: (id: string) => void }) {
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Post */}
+      <mesh position={[0, 1, 0]} castShadow>
+        <cylinderGeometry args={[0.1, 0.1, 2]} />
+        <meshStandardMaterial color="#4b5563" />
+      </mesh>
+      
+      {/* Mailbox body */}
+      <mesh position={[0, 2, 0]} castShadow>
+        <boxGeometry args={[1, 0.8, 1.5]} />
+        <meshStandardMaterial color="#3b82f6" />
+      </mesh>
+      <mesh position={[0, 2.4, 0]} castShadow rotation={[0, 0, Math.PI/2]}>
+        <cylinderGeometry args={[0.4, 0.4, 1.5, 16]} />
+        <meshStandardMaterial color="#3b82f6" />
+      </mesh>
+      
+      {/* Flag */}
+      <mesh position={[0.55, 2.2, -0.4]} rotation={[0, 0, 0.2]}>
+        <boxGeometry args={[0.05, 0.6, 0.2]} />
+        <meshStandardMaterial color="#ef4444" />
+      </mesh>
+
+      <Text position={[-0.51, 2, 0]} rotation={[0, -Math.PI/2, 0]} fontSize={0.25} color="#f8fafc" anchorX="center" anchorY="middle">
+        CONTACT ME
+      </Text>
+
+      <group position={[0, 2, 0.8]}>
+        <MagnifyingGlassIcon onClick={() => onOpenSection('contact')} />
+      </group>
+    </group>
+  );
+}
+
 // ─── 3D Tree ───
 function Tree({ position, seed = 0 }: { position: [number, number, number]; seed?: number }) {
   const scale = 0.6 + (Math.abs(Math.sin(seed * 127.1)) * 0.6);
@@ -155,7 +416,7 @@ function Tree({ position, seed = 0 }: { position: [number, number, number]; seed
       {/* Trunk */}
       <mesh position={[0, 0.6, 0]} castShadow>
         <cylinderGeometry args={[0.08, 0.12, 1.2, 6]} />
-        <meshStandardMaterial color="#92400e" roughness={0.9} />
+        <meshStandardMaterial color="#78350f" roughness={0.9} />
       </mesh>
       {/* Foliage layers */}
       <mesh position={[0, 1.5, 0]} castShadow>
@@ -174,25 +435,70 @@ function Tree({ position, seed = 0 }: { position: [number, number, number]; seed
   );
 }
 
-// ─── 3D Hut ───
-function Hut({ position, rotation = 0 }: { position: [number, number, number]; rotation?: number }) {
+// ─── Environment: Interactive Landmarks scattered along the road ───
+function Environment({ curve, onOpenSection }: { curve: THREE.CatmullRomCurve3, onOpenSection: (section: string) => void }) {
+  const items = useMemo(() => {
+    const trees: [number, number, number][] = [];
+    const rng = (seed: number) => {
+      let s = seed;
+      return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    };
+    const rand = rng(42);
+
+    for (let i = 0; i < 150; i++) {
+      const t = rand();
+      const pt = curve.getPointAt(t);
+      const offset = (rand() - 0.5) * 2;
+      const side = offset > 0 ? 1 : -1;
+      const dist = 3 + rand() * 12;
+      trees.push([pt.x + side * dist, pt.y - 0.1, pt.z + (rand() - 0.5) * 5]);
+    }
+    return { trees };
+  }, [curve]);
+
+  // Specific locations for interactive sections along the curve
+  // We place them at specific 't' values along the curve (0 to 1)
+  const getPosAndRot = (t: number, sideOffset: number, rotOffset: number) => {
+    const pt = curve.getPointAt(t);
+    const tangent = curve.getTangentAt(t);
+    // Find right vector
+    const up = new THREE.Vector3(0, 1, 0);
+    const right = new THREE.Vector3().crossVectors(tangent, up).normalize();
+    
+    const pos = pt.clone().add(right.multiplyScalar(sideOffset));
+    // Calculate rotation to face the road roughly
+    const angle = Math.atan2(tangent.x, tangent.z) + rotOffset;
+    
+    return { pos: [pos.x, pos.y, pos.z] as [number, number, number], rot: [0, angle, 0] as [number, number, number] };
+  };
+
+  const l1 = getPosAndRot(0.05, 4, Math.PI/2); // Hero/About
+  const l2 = getPosAndRot(0.2, -5, -Math.PI/2); // Education
+  const l3 = getPosAndRot(0.4, 6, Math.PI/2); // Experience
+  const l4 = getPosAndRot(0.6, -5, -Math.PI/2); // Skills
+  const l5 = getPosAndRot(0.8, 5, Math.PI/2); // Achievements
+  const l6 = getPosAndRot(0.95, -3, -Math.PI/2); // Contact
+
   return (
-    <group position={position} rotation={[0, rotation, 0]}>
-      {/* Walls */}
-      <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1.2, 1, 1]} />
-        <meshStandardMaterial color="#fef3c7" roughness={0.9} />
-      </mesh>
-      {/* Roof */}
-      <mesh position={[0, 1.25, 0]} castShadow>
-        <coneGeometry args={[1, 0.7, 4]} />
-        <meshStandardMaterial color="#dc2626" roughness={0.7} />
-      </mesh>
-      {/* Door */}
-      <mesh position={[0, 0.3, 0.51]}>
-        <boxGeometry args={[0.3, 0.6, 0.02]} />
-        <meshStandardMaterial color="#78350f" />
-      </mesh>
+    <group>
+      {items.trees.map((pos, i) => <Tree key={`t${i}`} position={pos} seed={i} />)}
+      
+      <InteractiveBillboard 
+        position={l1.pos} rotation={l1.rot} 
+        title="Rhishabh Hattarki" subtitle="Welcome to my Journey" 
+        sectionId="about" onOpenSection={onOpenSection} 
+      />
+      
+      <SchoolBuilding position={l2.pos} rotation={l2.rot} onOpenSection={onOpenSection} />
+      
+      <OfficeBuilding position={l3.pos} rotation={l3.rot} onOpenSection={onOpenSection} />
+      
+      <TechWorkshop position={l4.pos} rotation={l4.rot} onOpenSection={onOpenSection} />
+      
+      <TrophyMonument position={l5.pos} rotation={l5.rot} onOpenSection={onOpenSection} />
+      
+      <PostOffice position={l6.pos} rotation={l6.rot} onOpenSection={onOpenSection} />
+      
     </group>
   );
 }
@@ -220,62 +526,38 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
   const headTop = useMemo(() => new THREE.Vector3(0.38, 0.92, 0), []);
   const headBottom = useMemo(() => new THREE.Vector3(0.42, 0.7, 0), []);
   
-  // Crank length
   const crankLength = 0.17;
-  
-  // Rider Geometry Points
   const hipPosition = useMemo(() => new THREE.Vector3(-0.25, 1.05, 0), []);
   const shoulderPosition = useMemo(() => new THREE.Vector3(0.28, 1.25, 0), []);
-  
-  // Leg segments lengths
   const thighLength = 0.42;
   const calfLength = 0.42;
 
   useFrame(() => {
     if (!group.current) return;
-    const t = Math.min(Math.max(scrollProgress, 0), 0.999);
+    // Map scroll progress (0-1) to curve progress (0-1)
+    // We add a tiny offset so tangent calculation doesn't fail at exact ends
+    const t = Math.min(Math.max(scrollProgress, 0.001), 0.999);
     const pos = curve.getPointAt(t);
     const tangent = curve.getTangentAt(t);
 
     group.current.position.copy(pos);
     group.current.position.y += 0.45;
 
-    // The lookAt function makes the object's local Z-axis point towards the target.
-    // However, our cyclist is built along the X-axis (facing positive X).
-    // So after calling lookAt, we need to rotate by -Math.PI / 2 around the Y-axis
-    // to align the local X-axis with the tangent direction.
     const lookAt = pos.clone().add(tangent);
     lookAt.y = group.current.position.y;
     group.current.lookAt(lookAt);
     group.current.rotateY(-Math.PI / 2);
 
-    // Speed calculation could be based on scroll delta, but for now we'll just keep it spinning
-    // Using a simple time-based animation for wheels and legs
     const time = Date.now() * 0.001;
-    const speed = 6;
-    // We want the rotation angle to increase over time
+    // Increase speed based on scrolling? For now constant spinning
+    const speed = 8;
     const angle = time * speed;
     
-    // The bicycle is facing along the X axis.
-    // In ThreeJS standard orientation, to rotate a wheel that is facing along the Z axis, 
-    // it needs to rotate around the Z axis.
-    // If the bike is oriented along the X axis, wheels need to rotate around Z axis.
-    // Since the wheel is moving forward (towards positive X), the wheels should rotate clockwise (negative Z rotation)
-    // if looking from the right side, or counter-clockwise if looking from the left side depending on axis.
-    // For a standard setup, a positive rotation around Z makes the top of the wheel move towards negative X.
-    // A negative rotation around Z makes the top of the wheel move towards positive X.
-    
-    // Spin wheels
     if (rearWheelRef.current) rearWheelRef.current.rotation.z = -angle;
     if (frontWheelRef.current) frontWheelRef.current.rotation.z = -angle;
-    
-    // Spin crank (should spin in same direction as wheels)
     if (crankGroup.current) crankGroup.current.rotation.z = -angle;
 
-    // Inverse Kinematics for legs
     const updateLeg = (thighGroup: THREE.Group, calfGroup: THREE.Group, footGroup: THREE.Group, isRight: boolean) => {
-      // The phase defines where the pedal is in the rotation.
-      // The crank rotates negatively (clockwise). We need to offset the phase depending on the leg.
       const phase = isRight ? -angle : -angle + Math.PI;
       const pedalX = bb.x + Math.cos(phase) * crankLength;
       const pedalY = bb.y + Math.sin(phase) * crankLength;
@@ -327,7 +609,7 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
   const shoeMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8 }), []);
   const helmetMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ef4444', roughness: 0.2 }), []);
 
-  const renderWheel = (ref: any, position: THREE.Vector3) => (
+  const renderWheel = (ref: React.RefObject<THREE.Group | null>, position: THREE.Vector3) => (
     <group position={position} ref={ref}>
       <mesh>
         <torusGeometry args={[0.33, 0.025, 16, 48]} />
@@ -435,118 +717,25 @@ function Cyclist({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; scr
 
         {/* Right Arm */}
         <group>
-          <CapsuleBetweenPoints 
-            start={new THREE.Vector3(shoulderPosition.x, shoulderPosition.y, 0.14)} 
-            end={new THREE.Vector3(0.4, 1.1, 0.18)} 
-            radius={0.04} material={jerseyMat} 
-          />
-          <CapsuleBetweenPoints 
-            start={new THREE.Vector3(0.4, 1.1, 0.18)} 
-            end={new THREE.Vector3(0.5, 0.97, 0.18)} 
-            radius={0.035} material={skinMat} 
-          />
-          <mesh position={[0.5, 0.97, 0.18]} rotation={[0, 0, -Math.PI/4]}>
-            <boxGeometry args={[0.05, 0.06, 0.04]} />
-            <primitive object={skinMat} attach="material" />
-          </mesh>
+          <CapsuleBetweenPoints start={new THREE.Vector3(shoulderPosition.x, shoulderPosition.y, 0.14)} end={new THREE.Vector3(0.4, 1.1, 0.18)} radius={0.04} material={jerseyMat} />
+          <CapsuleBetweenPoints start={new THREE.Vector3(0.4, 1.1, 0.18)} end={new THREE.Vector3(0.5, 0.97, 0.18)} radius={0.035} material={skinMat} />
         </group>
         
         {/* Left Arm */}
         <group>
-          <CapsuleBetweenPoints 
-            start={new THREE.Vector3(shoulderPosition.x, shoulderPosition.y, -0.14)} 
-            end={new THREE.Vector3(0.4, 1.1, -0.18)} 
-            radius={0.04} material={jerseyMat} 
-          />
-          <CapsuleBetweenPoints 
-            start={new THREE.Vector3(0.4, 1.1, -0.18)} 
-            end={new THREE.Vector3(0.5, 0.97, -0.18)} 
-            radius={0.035} material={skinMat} 
-          />
-          <mesh position={[0.5, 0.97, -0.18]} rotation={[0, 0, -Math.PI/4]}>
-            <boxGeometry args={[0.05, 0.06, 0.04]} />
-            <primitive object={skinMat} attach="material" />
-          </mesh>
+          <CapsuleBetweenPoints start={new THREE.Vector3(shoulderPosition.x, shoulderPosition.y, -0.14)} end={new THREE.Vector3(0.4, 1.1, -0.18)} radius={0.04} material={jerseyMat} />
+          <CapsuleBetweenPoints start={new THREE.Vector3(0.4, 1.1, -0.18)} end={new THREE.Vector3(0.5, 0.97, -0.18)} radius={0.035} material={skinMat} />
         </group>
 
-        {/* Legs (Animated) */}
-        <group ref={leftThighRef}>
-          <mesh>
-            <capsuleGeometry args={[0.065, thighLength, 8, 16]} />
-            <primitive object={shortsMat} attach="material" />
-          </mesh>
-        </group>
-        <group ref={leftCalfRef}>
-          <mesh>
-            <capsuleGeometry args={[0.045, calfLength, 8, 16]} />
-            <primitive object={skinMat} attach="material" />
-          </mesh>
-        </group>
-        <group ref={leftFootRef}>
-          <mesh position={[0.02, 0, 0]}>
-            <boxGeometry args={[0.14, 0.04, 0.06]} />
-            <primitive object={shoeMat} attach="material" />
-          </mesh>
-        </group>
+        {/* Legs */}
+        <group ref={leftThighRef}><mesh><capsuleGeometry args={[0.065, thighLength, 8, 16]} /><primitive object={shortsMat} attach="material" /></mesh></group>
+        <group ref={leftCalfRef}><mesh><capsuleGeometry args={[0.045, calfLength, 8, 16]} /><primitive object={skinMat} attach="material" /></mesh></group>
+        <group ref={leftFootRef}><mesh position={[0.02, 0, 0]}><boxGeometry args={[0.14, 0.04, 0.06]} /><primitive object={shoeMat} attach="material" /></mesh></group>
 
-        <group ref={rightThighRef}>
-          <mesh>
-            <capsuleGeometry args={[0.065, thighLength, 8, 16]} />
-            <primitive object={shortsMat} attach="material" />
-          </mesh>
-        </group>
-        <group ref={rightCalfRef}>
-          <mesh>
-            <capsuleGeometry args={[0.045, calfLength, 8, 16]} />
-            <primitive object={skinMat} attach="material" />
-          </mesh>
-        </group>
-        <group ref={rightFootRef}>
-          <mesh position={[0.02, 0, 0]}>
-            <boxGeometry args={[0.14, 0.04, 0.06]} />
-            <primitive object={shoeMat} attach="material" />
-          </mesh>
-        </group>
+        <group ref={rightThighRef}><mesh><capsuleGeometry args={[0.065, thighLength, 8, 16]} /><primitive object={shortsMat} attach="material" /></mesh></group>
+        <group ref={rightCalfRef}><mesh><capsuleGeometry args={[0.045, calfLength, 8, 16]} /><primitive object={skinMat} attach="material" /></mesh></group>
+        <group ref={rightFootRef}><mesh position={[0.02, 0, 0]}><boxGeometry args={[0.14, 0.04, 0.06]} /><primitive object={shoeMat} attach="material" /></mesh></group>
       </group>
-    </group>
-  );
-}
-
-// ─── Environment: trees and huts scattered along the road ───
-function Environment({ curve }: { curve: THREE.CatmullRomCurve3 }) {
-  const items = useMemo(() => {
-    const trees: [number, number, number][] = [];
-    const huts: { pos: [number, number, number]; rot: number }[] = [];
-    const rng = (seed: number) => {
-      let s = seed;
-      return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    };
-    const rand = rng(42);
-
-    for (let i = 0; i < 80; i++) {
-      const t = rand();
-      const pt = curve.getPointAt(t);
-      const offset = (rand() - 0.5) * 2;
-      const side = offset > 0 ? 1 : -1;
-      const dist = 2.5 + rand() * 6;
-      trees.push([pt.x + side * dist, pt.y - 0.1, pt.z + (rand() - 0.5) * 3]);
-    }
-
-    // Place huts at a few spots
-    const hutTs = [0.12, 0.3, 0.5, 0.7, 0.88];
-    hutTs.forEach(t => {
-      const pt = curve.getPointAt(t);
-      const side = Math.sin(t * 20) > 0 ? 1 : -1;
-      huts.push({ pos: [pt.x + side * 5, pt.y, pt.z], rot: rand() * Math.PI * 2 });
-    });
-
-    return { trees, huts };
-  }, [curve]);
-
-  return (
-    <group>
-      {items.trees.map((pos, i) => <Tree key={`t${i}`} position={pos} seed={i} />)}
-      {items.huts.map((h, i) => <Hut key={`h${i}`} position={h.pos} rotation={h.rot} />)}
     </group>
   );
 }
@@ -556,10 +745,10 @@ function Ground({ curve }: { curve: THREE.CatmullRomCurve3 }) {
   const endPt = curve.getPointAt(1);
   const startPt = curve.getPointAt(0);
   const centerZ = (startPt.z + endPt.z) / 2;
-  const length = Math.abs(endPt.z - startPt.z) + 40;
+  const length = Math.abs(endPt.z - startPt.z) + 60;
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, centerZ]} receiveShadow>
-      <planeGeometry args={[60, length]} />
+      <planeGeometry args={[100, length]} />
       <meshStandardMaterial color="#86efac" roughness={1} />
     </mesh>
   );
@@ -572,20 +761,22 @@ function CameraRig({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; s
   const targetLook = useRef(new THREE.Vector3());
 
   useFrame(() => {
-    const t = Math.min(Math.max(scrollProgress, 0), 0.995);
+    const t = Math.min(Math.max(scrollProgress, 0.001), 0.999);
     const pt = curve.getPointAt(t);
+    const tangent = curve.getTangentAt(t);
 
-    // Camera follows closer and lower to the cyclist
-    targetPos.current.set(pt.x * 0.3, pt.y + 8, pt.z + 10);
-    targetLook.current.set(pt.x, pt.y, pt.z - 2);
+    // Position camera behind and slightly above the cyclist
+    // Use the tangent to figure out "behind"
+    const backward = tangent.clone().negate().multiplyScalar(12);
+    targetPos.current.copy(pt).add(backward);
+    targetPos.current.y += 6; // height above
+
+    // Look slightly ahead of the cyclist
+    const forward = tangent.clone().multiplyScalar(5);
+    targetLook.current.copy(pt).add(forward);
+    targetLook.current.y += 2;
 
     camera.position.lerp(targetPos.current, 0.05);
-    const currentLook = new THREE.Vector3();
-    currentLook.lerpVectors(
-      camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(20).add(camera.position),
-      targetLook.current,
-      0.05
-    );
     camera.lookAt(targetLook.current);
   });
 
@@ -593,7 +784,7 @@ function CameraRig({ curve, scrollProgress }: { curve: THREE.CatmullRomCurve3; s
 }
 
 // ─── Main Scene (inside Canvas) ───
-function Scene({ scrollProgress }: { scrollProgress: number }) {
+function Scene({ scrollProgress, onOpenSection }: { scrollProgress: number, onOpenSection: (section: string) => void }) {
   const curve = useMemo(() => createRoadCurve(), []);
 
   return (
@@ -604,31 +795,31 @@ function Scene({ scrollProgress }: { scrollProgress: number }) {
         position={[15, 25, 10]}
         intensity={1.2}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-far={200}
-        shadow-camera-left={-30}
-        shadow-camera-right={30}
-        shadow-camera-top={30}
-        shadow-camera-bottom={-80}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-far={250}
+        shadow-camera-left={-50}
+        shadow-camera-right={50}
+        shadow-camera-top={50}
+        shadow-camera-bottom={-100}
       />
       <hemisphereLight args={['#87ceeb', '#86efac', 0.4]} />
 
       {/* Sky color */}
       <color attach="background" args={['#e0f2fe']} />
-      <fog attach="fog" args={['#e0f2fe', 30, 80]} />
+      <fog attach="fog" args={['#e0f2fe', 40, 100]} />
 
       <CameraRig curve={curve} scrollProgress={scrollProgress} />
       <Ground curve={curve} />
       <Road curve={curve} />
-      <Environment curve={curve} />
+      <Environment curve={curve} onOpenSection={onOpenSection} />
       <Cyclist curve={curve} scrollProgress={scrollProgress} />
     </>
   );
 }
 
 // ─── Exported Component ───
-export function WorldScene() {
+export function WorldScene({ onOpenSection }: { onOpenSection: (section: string) => void }) {
   const { scrollYProgress } = useScroll();
   const [progress, setProgress] = useState(0);
 
@@ -638,14 +829,13 @@ export function WorldScene() {
   }, [scrollYProgress]);
 
   return (
-    <div className="fixed inset-0 z-0" style={{ pointerEvents: 'none' }}>
+    <div className="absolute inset-0 z-0">
       <Canvas
         shadows="basic"
-        camera={{ fov: 50, near: 0.1, far: 200, position: [0, 14, 16] }}
-        style={{ pointerEvents: 'none' }}
+        camera={{ fov: 50, near: 0.1, far: 300, position: [0, 14, 16] }}
         gl={{ antialias: true, alpha: false }}
       >
-        <Scene scrollProgress={progress} />
+        <Scene scrollProgress={progress} onOpenSection={onOpenSection} />
       </Canvas>
     </div>
   );
