@@ -11,12 +11,8 @@ function IntroDisplay({ onPrompt }: DisplayProps) {
   return (
     <div className="intro-display">
       <div className="orbital-system">
-        <span className="orbit-path orbit-path--outer" aria-hidden="true" />
-        <span className="orbit-path orbit-path--inner" aria-hidden="true" />
-        <div className="profile-core" aria-label="Rhishabh">
-          <span>R</span>
-          <i aria-hidden="true" />
-        </div>
+        <span className="orbit-path" aria-hidden="true" />
+        <div className="profile-core" aria-label="Rhishabh">R</div>
         {portfolioData.metrics.map((metric, index) => (
           <div className={`planet-track planet-track--${index + 1}`} key={metric.label}>
             <button
@@ -25,13 +21,14 @@ function IntroDisplay({ onPrompt }: DisplayProps) {
               onClick={() => onPrompt?.(metric.prompt)}
               aria-label={`${metric.value}: ${metric.label}. Ask Halo for details.`}
             >
-              <span className="planet-surface"><strong>{metric.value}</strong></span>
-              <span className="planet-label">{metric.label}</span>
+              <span className="planet-body">
+                <span className="planet-surface"><strong>{metric.value}</strong></span>
+                <span className="planet-label">{metric.label}</span>
+              </span>
             </button>
           </div>
         ))}
       </div>
-      <p className="orbit-hint">Choose a planet to ask Halo</p>
     </div>
   )
 }
