@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 
 // Import sections for popups
-import { HeroSection } from './components/sections/HeroSection'
 import { AboutSection } from './components/sections/AboutSection'
 import { JourneyTimeline } from './components/sections/JourneyTimeline'
 import { EducationJourney } from './components/sections/EducationJourney'
@@ -54,7 +53,6 @@ function App() {
 
   const renderPopupContent = () => {
     switch (activeSection) {
-      case 'hero': return <HeroSection />;
       case 'about': return <AboutSection />;
       case 'education': return <EducationJourney />;
       case 'experience': return <JourneyTimeline />;

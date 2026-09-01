@@ -34,6 +34,18 @@ export function AboutSection() {
         transition={{ duration: 0.6 }}
         className="text-center mb-12"
       >
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={isInView ? { scale: 1, opacity: 1 } : {}}
+          transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
+          className="mx-auto mb-6 h-40 w-40 overflow-hidden rounded-full border-4 border-primary/10 shadow-xl"
+        >
+          <img
+            src="/profile.jpeg"
+            alt="Rhishabh Hattarki"
+            className="h-full w-full object-cover"
+          />
+        </motion.div>
         <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary mb-4">
           The Beginning of a Journey
         </span>

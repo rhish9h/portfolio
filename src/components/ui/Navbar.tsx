@@ -20,9 +20,7 @@ const secondaryNavItems = [
   { label: 'Experience', id: 'experience' },
   { label: 'Education', id: 'education' },
   { label: 'Skills', id: 'skills' },
-  { label: 'Certifications', id: 'certifications' },
-  { label: 'Awards', id: 'awards' },
-  { label: 'Publications', id: 'publications' },
+  { label: 'Achievements', id: 'achievements' },
 ];
 
 interface NavbarProps {

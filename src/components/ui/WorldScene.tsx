@@ -1,9 +1,9 @@
 import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useScroll } from 'framer-motion';
+import { useScroll, motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { Html, Text, Stars } from '@react-three/drei';
-import { Search } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 // ─── Helpers ───
@@ -151,15 +151,38 @@ function Road({ curve }: { curve: THREE.CatmullRomCurve3 }) {
 
 // ─── Interactive 3D Objects ───
 
+// Icons fully visible up to this camera distance, fully hidden beyond it —
+// keeps the currently-nearby landmark's hotspot visible while hiding/fading
+// ones that are too far away to plausibly be interacted with (Task A2.1).
+const ICON_FADE_START = 16;
+const ICON_FADE_END = 30;
+
 // Magnifying Glass Icon for click hints
 function MagnifyingGlassIcon({ onClick }: { onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
-  
+  const groupRef = useRef<THREE.Group>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const { camera } = useThree();
+  const worldPos = useRef(new THREE.Vector3()).current;
+
+  useFrame(() => {
+    if (!groupRef.current || !btnRef.current) return;
+    groupRef.current.getWorldPosition(worldPos);
+    const distance = worldPos.distanceTo(camera.position);
+    const opacity = 1 - THREE.MathUtils.clamp(
+      (distance - ICON_FADE_START) / (ICON_FADE_END - ICON_FADE_START), 0, 1
+    );
+    btnRef.current.style.opacity = String(opacity);
+    btnRef.current.style.pointerEvents = opacity < 0.05 ? 'none' : 'auto';
+    btnRef.current.style.visibility = opacity < 0.02 ? 'hidden' : 'visible';
+  });
+
   return (
-    <group position={[0, 0, 0.2]}>
+    <group ref={groupRef} position={[0, 0, 0.2]}>
       {/* We use purely DOM for interaction to ensure it works flawlessly */}
       <Html position={[0, 0, 0]} center zIndexRange={[100, 0]}>
         <button
+          ref={btnRef}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -251,6 +274,7 @@ function SchoolBuilding({ position, rotation, onOpenSection }: { position: [numb
       {/* Pediment */}
       <mesh position={[0, 3.5, 1.6]} rotation={[0, 0, Math.PI/4]} castShadow>
         <boxGeometry args={[2.2, 2.2, 0.2]} />
+        <meshStandardMaterial color="#1e3a8a" />
       </mesh>
       <mesh position={[0, 3.3, 1.6]} castShadow>
          <boxGeometry args={[3, 0.6, 0.2]} />
@@ -273,6 +297,36 @@ function SchoolBuilding({ position, rotation, onOpenSection }: { position: [numb
   );
 }
 
+// Low-poly grid of lit office windows, rendered as a single instanced mesh for performance
+function OfficeWindows({ position, gridWidth, gridHeight, cols, rows }: { position: [number, number, number], gridWidth: number, gridHeight: number, cols: number, rows: number }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const count = cols * rows;
+
+  useEffect(() => {
+    if (!meshRef.current) return;
+    const dummy = new THREE.Object3D();
+    let i = 0;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = -gridWidth / 2 + (c + 0.5) * (gridWidth / cols);
+        const y = -gridHeight / 2 + (r + 0.5) * (gridHeight / rows);
+        dummy.position.set(x, y, 0);
+        dummy.updateMatrix();
+        meshRef.current.setMatrixAt(i, dummy.matrix);
+        i++;
+      }
+    }
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  }, [cols, rows, gridWidth, gridHeight]);
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]} position={position}>
+      <boxGeometry args={[gridWidth / cols - 0.08, gridHeight / rows - 0.08, 0.05]} />
+      <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={0.7} roughness={0.4} metalness={0.1} />
+    </instancedMesh>
+  );
+}
+
 // 3. Office Skyscraper (Experience)
 function OfficeBuilding({ position, rotation, onOpenSection }: { position: [number, number, number], rotation: [number, number, number], onOpenSection: (id: string) => void }) {
   return (
@@ -282,11 +336,8 @@ function OfficeBuilding({ position, rotation, onOpenSection }: { position: [numb
         <meshStandardMaterial color="#0f172a" roughness={0.2} metalness={0.8} />
       </mesh>
       
-      {/* Windows (Texture approximation) */}
-      <mesh position={[0, 4, 1.51]}>
-        <planeGeometry args={[2.5, 7.5]} />
-        <meshBasicMaterial color="#38bdf8" wireframe />
-      </mesh>
+      {/* Windows: low-poly grid of lit rectangular panes, instanced for a single draw call */}
+      <OfficeWindows position={[0, 4, 1.51]} gridWidth={2.5} gridHeight={7.5} cols={4} rows={9} />
 
       {/* Sign */}
       <mesh position={[0, 1.5, 1.6]} castShadow>
@@ -295,7 +346,7 @@ function OfficeBuilding({ position, rotation, onOpenSection }: { position: [numb
       </mesh>
       
       <Text position={[0, 1.7, 1.71]} fontSize={0.25} color="#0f172a" anchorX="center" anchorY="middle">
-        CAREER JOURNEY
+        EXPERIENCE
       </Text>
 
       <group position={[0, 1.3, 1.71]}>
@@ -489,12 +540,15 @@ function Environment({ curve, onOpenSection }: { curve: THREE.CatmullRomCurve3, 
     return { pos: [pos.x, pos.y, pos.z] as [number, number, number], rot: [0, angle, 0] as [number, number, number] };
   };
 
+  // rotOffset values are tuned per-landmark so signs face the camera's default
+  // position at the moment the cyclist is nearest them (see Task A1.3). Only
+  // landmarks confirmed edge-on/hard-to-read were retuned; others were already legible.
   const l1 = getPosAndRot(0.05, 4, 0); // Hero/About
   const l2 = getPosAndRot(0.2, -5, 0); // Education
-  const l3 = getPosAndRot(0.4, 6, 0); // Experience
-  const l4 = getPosAndRot(0.6, -5, 0); // Skills
+  const l3 = getPosAndRot(0.4, 6, 0.432); // Experience
+  const l4 = getPosAndRot(0.6, -5, -0.501); // Skills
   const l5 = getPosAndRot(0.8, 5, 0); // Achievements
-  const l6 = getPosAndRot(0.95, -3, 0); // Contact
+  const l6 = getPosAndRot(0.95, -3, 0.920); // Contact (also compensates PostOffice's sign facing local -X)
 
   return (
     <group>
@@ -841,12 +895,27 @@ function Scene({ scrollProgress, onOpenSection, isDarkMode }: { scrollProgress: 
   );
 }
 
+// Signals `onReady` once the first frame has actually been rendered to the
+// canvas (more reliable than Canvas's `onCreated`, which fires before the
+// scene graph's first draw). Must be rendered as a child of <Canvas>.
+function FirstFrameGate({ onReady }: { onReady: () => void }) {
+  const firedRef = useRef(false);
+  useFrame(() => {
+    if (!firedRef.current) {
+      firedRef.current = true;
+      onReady();
+    }
+  });
+  return null;
+}
+
 // ─── Exported Component ───
 export function WorldScene({ onOpenSection }: { onOpenSection: (section: string) => void }) {
   const { scrollYProgress } = useScroll();
   const [progress, setProgress] = useState(0);
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -857,6 +926,7 @@ export function WorldScene({ onOpenSection }: { onOpenSection: (section: string)
   // Determine current theme
   const currentTheme = theme === 'system' ? systemTheme : theme;
   const isDarkMode = mounted ? currentTheme === 'dark' : false;
+  const skyColor = isDarkMode ? '#0f172a' : '#e0f2fe';
 
   return (
     <div className="absolute inset-0 z-0">
@@ -866,7 +936,23 @@ export function WorldScene({ onOpenSection }: { onOpenSection: (section: string)
         gl={{ antialias: true, alpha: false }}
       >
         <Scene scrollProgress={progress} onOpenSection={onOpenSection} isDarkMode={isDarkMode} />
+        <FirstFrameGate onReady={() => setSceneReady(true)} />
       </Canvas>
+
+      <AnimatePresence>
+        {!sceneReady && (
+          <motion.div
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3"
+            style={{ backgroundColor: skyColor }}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Loading experience…</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

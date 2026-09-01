@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { profileData, Experience } from '../../data/profileData';
 import { Briefcase, Calendar, MapPin } from 'lucide-react';
 
@@ -14,19 +14,9 @@ function TimelineItem({ experience, index, isLeft, totalItems }: TimelineItemPro
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.8, 1, 1, 0.8]);
-  const y = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [50, 0, 0, -50]);
-
   return (
     <motion.div
       ref={ref}
-      style={{ opacity, scale, y }}
       className={`relative flex items-center justify-center w-full mb-12 md:mb-0 ${
         isLeft ? 'md:justify-start' : 'md:justify-end'
       }`}
@@ -53,48 +43,74 @@ function TimelineItem({ experience, index, isLeft, totalItems }: TimelineItemPro
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
           <div className="relative z-10">
-            {/* Header */}
+            {/* Header: company/location shown once per card */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Briefcase className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold leading-tight">{experience.title}</h3>
-                  <p className="text-sm text-muted-foreground">{experience.company}</p>
+                  <h3 className="text-lg font-bold leading-tight">{experience.company}</h3>
+                  {experience.location && (
+                    <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <MapPin className="w-3 h-3" />
+                      {experience.location}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Meta info */}
-            <div className="flex flex-wrap gap-3 mb-4 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted/50">
-                <Calendar className="w-3 h-3" />
-                {experience.startDate} – {experience.endDate}
-              </span>
-              {experience.location && (
-                <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted/50">
-                  <MapPin className="w-3 h-3" />
-                  {experience.location}
-                </span>
-              )}
-            </div>
-
-            {/* Bullets */}
-            <ul className="space-y-2">
-              {experience.bullets.map((bullet, bulletIndex) => (
-                <motion.li
-                  key={bulletIndex}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
-                  transition={{ delay: 0.4 + bulletIndex * 0.1 }}
-                  className="flex items-start gap-2 text-sm text-muted-foreground"
+            {/* Roles at this company */}
+            <div className="space-y-5">
+              {experience.roles.map((role, roleIndex) => (
+                <div
+                  key={roleIndex}
+                  className={roleIndex > 0 ? "pt-5 border-t border-border/50" : ""}
                 >
-                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-                  <span>{bullet}</span>
-                </motion.li>
+                  <h4 className="font-semibold text-sm mb-2">{role.title}</h4>
+                  <div className="flex flex-wrap gap-3 mb-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted/50">
+                      <Calendar className="w-3 h-3" />
+                      {role.startDate} – {role.endDate}
+                    </span>
+                  </div>
+
+                  {/* Bullets */}
+                  <ul className="space-y-2">
+                    {role.bullets.map((bullet, bulletIndex) => (
+                      <motion.li
+                        key={bulletIndex}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
+                        transition={{ delay: 0.4 + bulletIndex * 0.1 }}
+                        className="flex items-start gap-2 text-sm text-muted-foreground"
+                      >
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                        <span>{bullet}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  {/* Skill tags */}
+                  {role.skills && role.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {role.skills.map((skill, skillIndex) => (
+                        <motion.span
+                          key={skill}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                          transition={{ delay: 0.5 + skillIndex * 0.05 }}
+                          className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                        >
+                          {skill}
+                        </motion.span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
 
           {/* Index indicator */}
@@ -109,12 +125,6 @@ function TimelineItem({ experience, index, isLeft, totalItems }: TimelineItemPro
 
 export function JourneyTimeline() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
-  const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   // Reverse to show chronological order (oldest to newest)
   const chronologicalExperience = [...profileData.experiences].reverse();
@@ -129,7 +139,7 @@ export function JourneyTimeline() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">My Journey</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Experience</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             From intern to software engineer, follow my path through roles that shaped my expertise 
             in software development, identity management, and innovation.
@@ -143,7 +153,10 @@ export function JourneyTimeline() {
         <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-primary/20 to-transparent">
           <motion.div
             className="w-full bg-gradient-to-b from-primary via-primary to-primary rounded-full"
-            style={{ height: lineHeight }}
+            initial={{ height: "0%" }}
+            whileInView={{ height: "100%" }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
           />
         </div>
 

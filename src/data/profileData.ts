@@ -1,10 +1,15 @@
-export interface Experience {
-  company: string;
+export interface ExperienceRole {
   title: string;
-  location?: string;
   startDate: string;
   endDate: string;
   bullets: string[];
+  skills?: string[];
+}
+
+export interface Experience {
+  company: string;
+  location?: string;
+  roles: ExperienceRole[];
 }
 
 export interface Education {
@@ -55,9 +60,7 @@ export const profileData: ProfileData = {
   tagline: "Software Engineer | Lifelong Learner | Technology Enthusiast",
   email: "rhish9h@gmail.com",
   linkedIn: "https://www.linkedin.com/in/rhishabh-hattarki",
-  summary: `"I’m a builder of solutions, driven by a relentless curiosity to turn complex challenges into impactful innovations."
-
-At EmpowerID, I thrive at the intersection of cybersecurity and software engineering, creating seamless, secure solutions in Identity and Access Management (IAM) and Identity Governance and Administration (IGA). It’s not just about code—it’s about crafting systems that safeguard identities and enable organizations to thrive. Every project pushes me to think deeper, design smarter, and make an impact that matters.
+  summary: `At EmpowerID, I thrive at the intersection of cybersecurity and software engineering, creating seamless, secure solutions in Identity and Access Management (IAM) and Identity Governance and Administration (IGA). It’s not just about code—it’s about crafting systems that safeguard identities and enable organizations to thrive. Every project pushes me to think deeper, design smarter, and make an impact that matters.
 
 One project that exemplifies my drive for innovation is CycleSafe, a mobile app that enhances cyclist safety. Partnering with the University of Arizona and the Rob Dollar Foundation, we created a solution that connects to a handlebar-mounted device, detects approaching vehicles, captures license plates, and enforces Arizona’s three-foot passing law. The result? Safer roads and empowered cyclists. It was more than a technical achievement—it was a mission to make a difference.
 
@@ -65,79 +68,101 @@ What excites me most is what’s ahead. We’re living in an era where AI, auton
   experiences: [
     {
       company: "EmpowerID",
-      title: "EmpowerID IAM Engineer",
       location: "Dublin, Ohio, United States",
-      startDate: "July 2024",
-      endDate: "Present",
-      bullets: [
-        "Optimized Group Inventory and Export modules for a banking client's integration.",
-        "Enhanced ODBC connector security in a Python FastAPI project.",
-        "Achieved certifications as EmpowerID Identity Orchestration Developer and Operator."
+      roles: [
+        {
+          title: "EmpowerID IAM Engineer",
+          startDate: "July 2024",
+          endDate: "Present",
+          bullets: [
+            "Optimized Group Inventory and Export modules for a banking client's integration.",
+            "Enhanced ODBC connector security in a Python FastAPI project.",
+            "Achieved certifications as EmpowerID Identity Orchestration Developer and Operator."
+          ],
+          skills: ["Python", "FastAPI", "IAM", "ODBC"]
+        }
       ]
     },
     {
       company: "Arizona State University",
-      title: "Graduate Services Assistant - Instructional Assistant",
-      startDate: "Aug 2023",
-      endDate: "May 2024",
-      bullets: [
-        "Assisted grading for SER 232 Fall course and supported students' learning.",
-        "Handled grading concerns and escalated complex issues to supervisors."
-      ]
-    },
-    {
-      company: "Arizona State University",
-      title: "Graduate Services Assistant - Grader",
-      startDate: "May 2023",
-      endDate: "July 2023",
-      bullets: [
-        "Graded assignments for 66 students in SER 232 and resolved auto-grader issues."
-      ]
-    },
-    {
-      company: "Arizona State University",
-      title: "Parking Assistant Student Worker III",
-      startDate: "April 2023",
-      endDate: "August 2023",
-      bullets: [
-        "Maintained parking operations, addressing machine malfunctions and assisting users."
+      roles: [
+        {
+          title: "Parking Assistant Student Worker III",
+          startDate: "April 2023",
+          endDate: "August 2023",
+          bullets: [
+            "Maintained parking operations, addressing machine malfunctions and assisting users."
+          ]
+        },
+        {
+          title: "Graduate Services Assistant - Grader",
+          startDate: "May 2023",
+          endDate: "July 2023",
+          bullets: [
+            "Graded assignments for 66 students in SER 232 and resolved auto-grader issues."
+          ]
+        },
+        {
+          title: "Graduate Services Assistant - Instructional Assistant",
+          startDate: "Aug 2023",
+          endDate: "May 2024",
+          bullets: [
+            "Assisted grading for SER 232 Fall course and supported students' learning.",
+            "Handled grading concerns and escalated complex issues to supervisors."
+          ]
+        }
       ]
     },
     {
       company: "Persistent Systems",
-      title: "Software Engineer",
-      startDate: "January 2021",
-      endDate: "July 2022",
-      bullets: [
-        "Developed a scalable configuration management microservice with Spring Boot.",
-        "Led a front-end redesign team and mentored interns."
+      roles: [
+        {
+          title: "Software Engineer",
+          startDate: "January 2021",
+          endDate: "July 2022",
+          bullets: [
+            "Developed a scalable configuration management microservice with Spring Boot.",
+            "Led a front-end redesign team and mentored interns."
+          ],
+          skills: ["Spring Boot", "Java", "REST APIs"]
+        }
       ]
     },
     {
       company: "Mithi Software Technologies",
-      title: "Trainee Software Engineer",
-      startDate: "June 2020",
-      endDate: "January 2021",
-      bullets: [
-        "Enhanced system security by implementing RSA encryption for login systems."
-      ]
-    },
-    {
-      company: "Mithi Software Technologies",
-      title: "Intern - Trainee Software Engineer",
-      startDate: "January 2020",
-      endDate: "June 2020",
-      bullets: [
-        "Implemented salted hashing authentication for secure login systems."
+      roles: [
+        {
+          title: "Intern - Trainee Software Engineer",
+          startDate: "January 2020",
+          endDate: "June 2020",
+          bullets: [
+            "Implemented salted hashing authentication for secure login systems."
+          ],
+          skills: ["Authentication", "Password Hashing"]
+        },
+        {
+          title: "Trainee Software Engineer",
+          startDate: "June 2020",
+          endDate: "January 2021",
+          bullets: [
+            "Enhanced system security by implementing RSA encryption for login systems."
+          ],
+          skills: ["RSA Encryption", "Security"]
+        }
       ]
     },
     {
       company: "Apace Apparels and Equipment Pvt. Ltd.",
-      title: "Intern - Full-Stack Developer",
-      startDate: "June 2019",
-      endDate: "July 2019",
-      bullets: [
-        "Built a web-based inventory management system using Vue.js, PHP, and MySQL."
+      roles: [
+        {
+          title: "Intern - Full-Stack Developer",
+          startDate: "June 2019",
+          endDate: "July 2019",
+          bullets: [
+            "Built a web-based inventory management system using Vue.js, PHP, and MySQL."
+          ],
+          skills: ["Vue.js", "PHP", "MySQL"]
+        }
       ]
     }
   ],
