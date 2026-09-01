@@ -5,7 +5,7 @@ import { FACE_CANVAS, POSES, type Expression, type FacePose, type Shape } from '
 import { SpringRecord, damp } from './spring'
 
 const GAZE_RANGE = { x: 26, y: 17 }
-const MOUTH_GAZE_RANGE = { x: 7, y: 4 }
+const MOUTH_GAZE_RANGE = { x: 1.5, y: 0.75 }
 const BLINK_CLOSE = 0.07
 const BLINK_HOLD = 0.03
 const BLINK_OPEN = 0.12

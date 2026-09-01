@@ -2,16 +2,26 @@
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
-import { MeshStandardMaterial, type Group, type Mesh, type Object3D } from 'three'
+import {
+  MeshStandardMaterial,
+  Quaternion,
+  Vector3,
+  type Group,
+  type Mesh,
+  type Object3D,
+} from 'three'
 
 import { POSES, type Expression } from './expressions'
 import { FaceScreen } from './faceScreen'
 import { SpringRecord } from './spring'
 
-export const HALO_MODEL_URL = `${import.meta.env.BASE_URL}halo.glb`
+export const HALO_MODEL_URL = `${import.meta.env.BASE_URL}halo-improved.glb`
 
 const HEAD_RANGE = { yaw: 0.42, pitch: 0.26, roll: 0.1 }
 const PROPELLER_RPS = 2.2
+const FIN_EXCITEMENT_RANGE = Math.PI * (25 / 180)
+const FIN_WIGGLE_RANGE = Math.PI * (2 / 180)
+const FIN_AXIS = new Vector3(0, 0, 1)
 
 export type Vec2 = { x: number; y: number }
 export type HeadRotation = { yaw?: number; pitch?: number; roll?: number }
@@ -31,7 +41,9 @@ export type HaloProps = {
   modelUrl?: string
 }
 
-type HeadSpring = Record<'yaw' | 'pitch' | 'roll' | 'propeller', number>
+type MotionSpring = Record<'yaw' | 'pitch' | 'roll' | 'propeller' | 'fins', number>
+type FinPair = { left: Object3D | null; right: Object3D | null }
+type FinRest = { left: Quaternion | null; right: Quaternion | null }
 
 export function Halo({
   expression = 'neutral',
@@ -68,9 +80,19 @@ export function Halo({
     return root
   }, [scene, faceMaterial])
   const bladesRef = useRef<Object3D | null>(null)
+  const finsRef = useRef<FinPair>({ left: null, right: null })
+  const finRestRef = useRef<FinRest>({ left: null, right: null })
+  const finTurnsRef = useRef({ left: new Quaternion(), right: new Quaternion() })
 
   useEffect(() => {
+    const left = model.getObjectByName('SideFin.L') ?? null
+    const right = model.getObjectByName('SideFin.R') ?? null
     bladesRef.current = model.getObjectByName('PropellerBlades') ?? null
+    finsRef.current = { left, right }
+    finRestRef.current = {
+      left: left?.quaternion.clone() ?? null,
+      right: right?.quaternion.clone() ?? null,
+    }
   }, [model])
 
   useEffect(
@@ -85,8 +107,8 @@ export function Halo({
   const headRef = useRef<Group>(null)
   const clock = useRef(0)
   const spin = useRef(0)
-  const headSpring = useRef(
-    new SpringRecord<HeadSpring>({ yaw: 0, pitch: 0, roll: 0, propeller: 1 }),
+  const motionSpring = useRef(
+    new SpringRecord<MotionSpring>({ yaw: 0, pitch: 0, roll: 0, propeller: 1, fins: 0 }),
   )
 
   useFrame((_state, rawDelta) => {
@@ -97,7 +119,7 @@ export function Halo({
     const look = lookAt ?? { x: 0, y: 0 }
     face.update(dt, { expression, gaze: gaze ? look : { x: 0, y: 0 }, blink })
     const track = turnHead ? look : { x: 0, y: 0 }
-    const target: HeadSpring = {
+    const target: MotionSpring = {
       yaw: headRotation?.yaw ?? pose.head.yaw + track.x * HEAD_RANGE.yaw + Math.sin(time * 0.37) * 0.03,
       pitch:
         headRotation?.pitch ??
@@ -106,23 +128,36 @@ export function Halo({
         headRotation?.roll ??
         pose.head.roll - track.x * HEAD_RANGE.roll + Math.sin(time * 0.29 + 0.6) * 0.02,
       propeller: pose.propeller,
+      fins: pose.fins,
     }
-    const head = headSpring.current.step(target, dt, 110, 15)
+    const motion = motionSpring.current.step(target, dt, 110, 15)
     const jitter = pose.jitter
 
     if (headRef.current) {
       headRef.current.rotation.set(
-        head.pitch + (jitter ? Math.sin(time * 47) * jitter : 0),
-        head.yaw + (jitter ? Math.sin(time * 39) * jitter : 0),
-        head.roll + (jitter ? Math.sin(time * 53) * jitter : 0),
+        motion.pitch + (jitter ? Math.sin(time * 47) * jitter : 0),
+        motion.yaw + (jitter ? Math.sin(time * 39) * jitter : 0),
+        motion.roll + (jitter ? Math.sin(time * 53) * jitter : 0),
       )
     }
     if (rootRef.current) {
       const amplitude = hover ? pose.bob.amplitude * hoverAmount : 0
       rootRef.current.position.y = position[1] + Math.sin(time * pose.bob.speed * 2) * amplitude
     }
-    spin.current += dt * head.propeller * propellerSpeed * PROPELLER_RPS * Math.PI * 2
+    spin.current += dt * motion.propeller * propellerSpeed * PROPELLER_RPS * Math.PI * 2
     if (bladesRef.current) bladesRef.current.rotation.y = spin.current
+
+    const finAmount =
+      motion.fins * FIN_EXCITEMENT_RANGE + Math.sin(time * 7) * pose.finWiggle * FIN_WIGGLE_RANGE
+    const { left, right } = finsRef.current
+    const rest = finRestRef.current
+    const turns = finTurnsRef.current
+    if (left && rest.left) {
+      left.quaternion.copy(rest.left).multiply(turns.left.setFromAxisAngle(FIN_AXIS, -finAmount))
+    }
+    if (right && rest.right) {
+      right.quaternion.copy(rest.right).multiply(turns.right.setFromAxisAngle(FIN_AXIS, finAmount))
+    }
   })
 
   return (
