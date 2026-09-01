@@ -79,7 +79,7 @@ function EducationDisplay() {
       <div>
         <p>Education</p>
         <h3>{portfolioData.education.degree}</h3>
-        <span>{portfolioData.education.school}</span>
+        <span>{portfolioData.education.school} · {portfolioData.education.dates}</span>
       </div>
     </article>
   )

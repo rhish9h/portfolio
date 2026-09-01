@@ -72,7 +72,6 @@ export function HaloStage({ expression, status }: HaloStageProps) {
         <div className="halo-shadow" />
       </div>
       <div className="halo-introduction">
-        <p className="eyebrow">YOUR PORTFOLIO GUIDE</p>
         <h1>Hi, I’m <span>Halo.</span></h1>
         <p>I can tell you anything about Rhishabh.</p>
         <div className="voice-line" aria-hidden="true"><span /></div>
