@@ -15,16 +15,22 @@ const responses: Record<string, ChatResponse> = {
     suggestions: ['What has he worked on?', 'Where has he worked?'],
   },
   experience: {
-    answer: 'He has more than four years of software engineering experience, focused primarily on backend systems. His most recent role at EmpowerID included identity-focused microservices and integrations.',
+    answer: 'He has more than five years of experience spanning secure backend systems, identity platforms, product interfaces, and technical mentorship.',
     emotion: 'neutral',
     display: { type: 'experience' },
     suggestions: ['Show me his projects', 'What are his skills?'],
   },
   education: {
-    answer: 'He earned an M.S. in Software Engineering from Arizona State University in 2024, where he also worked as a Graduate Services Assistant.',
+    answer: 'He earned an M.S. in Software Engineering from Arizona State University and a B.E. in Computer Engineering from Savitribai Phule Pune University.',
     emotion: 'happy',
     display: { type: 'education' },
     suggestions: ['Tell me about CycleSafe', 'Show me his experience'],
+  },
+  contact: {
+    answer: 'The best ways to connect with Rhishabh are email, LinkedIn, and GitHub.',
+    emotion: 'happy',
+    display: { type: 'contact' },
+    suggestions: ['Show me his experience', 'What has he worked on?'],
   },
   halo: {
     answer: 'That is me. Halo is an expressive 3D portfolio guide built to make learning about Rhishabh feel less like reading a résumé and more like meeting a character.',
@@ -43,6 +49,7 @@ const responses: Record<string, ChatResponse> = {
 export function getMockResponse(message: string): ChatResponse {
   const question = message.toLowerCase()
   if (question.includes('halo') || question.includes('robot')) return responses.halo
+  if (question.includes('contact') || question.includes('email') || question.includes('reach')) return responses.contact
   if (question.includes('skill') || question.includes('technology') || question.includes('tech')) return responses.skills
   if (question.includes('educat') || question.includes('school') || question.includes('asu')) return responses.education
   if (question.includes('experience') || question.includes('career') || question.includes('year') || question.includes('recent role')) return responses.experience
