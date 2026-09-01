@@ -15,7 +15,7 @@ const responses: Record<string, ChatResponse> = {
     suggestions: ['What has he worked on?', 'Where has he worked?'],
   },
   experience: {
-    answer: 'He has more than five years of experience spanning secure backend systems, identity platforms, product interfaces, and technical mentorship.',
+    answer: 'He has more than four years of experience spanning secure backend systems, identity platforms, product interfaces, and technical mentorship.',
     emotion: 'neutral',
     display: { type: 'experience' },
     suggestions: ['Show me his projects', 'What are his skills?'],

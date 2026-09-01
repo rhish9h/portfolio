@@ -10,7 +10,7 @@ export const portfolioData = {
     email: 'mailto:rhish9h@gmail.com',
   },
   metrics: [
-    { value: '5+', label: 'Years of experience', prompt: 'Tell me about his experience' },
+    { value: '4+', label: 'Years of experience', prompt: 'Tell me about his experience' },
     { value: 'Backend', label: 'APIs and systems', prompt: 'What are his backend skills?' },
     { value: 'ASU', label: 'M.S. Software Engineering', prompt: 'Tell me about his education' },
   ],
