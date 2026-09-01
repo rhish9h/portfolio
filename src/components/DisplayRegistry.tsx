@@ -4,24 +4,34 @@ import type { ChatResponse, DisplayType } from '../types'
 
 type DisplayProps = {
   itemIds?: string[]
+  onPrompt?: (prompt: string) => void
 }
 
-function IntroDisplay() {
+function IntroDisplay({ onPrompt }: DisplayProps) {
   return (
     <div className="intro-display">
-      <div className="profile-orbit" aria-hidden="true">
-        <span className="orbit-ring orbit-ring--one" />
-        <span className="orbit-ring orbit-ring--two" />
-        <span className="profile-core">R</span>
-      </div>
-      <div className="metric-grid">
+      <div className="orbital-system">
+        <span className="orbit-path orbit-path--outer" aria-hidden="true" />
+        <span className="orbit-path orbit-path--inner" aria-hidden="true" />
+        <div className="profile-core" aria-label="Rhishabh">
+          <span>R</span>
+          <i aria-hidden="true" />
+        </div>
         {portfolioData.metrics.map((metric, index) => (
-          <article className={`metric-card metric-card--${index + 1}`} key={metric.label}>
-            <strong>{metric.value}</strong>
-            <span>{metric.label}</span>
-          </article>
+          <div className={`planet-track planet-track--${index + 1}`} key={metric.label}>
+            <button
+              className="orbit-planet"
+              type="button"
+              onClick={() => onPrompt?.(metric.prompt)}
+              aria-label={`${metric.value}: ${metric.label}. Ask Halo for details.`}
+            >
+              <span className="planet-surface"><strong>{metric.value}</strong></span>
+              <span className="planet-label">{metric.label}</span>
+            </button>
+          </div>
         ))}
       </div>
+      <p className="orbit-hint">Choose a planet to ask Halo</p>
     </div>
   )
 }
@@ -99,7 +109,12 @@ const displays: Record<DisplayType, (props: DisplayProps) => React.ReactNode> = 
   none: EmptyDisplay,
 }
 
-export function DisplayRegistry({ display }: { display: ChatResponse['display'] }) {
+type DisplayRegistryProps = {
+  display: ChatResponse['display']
+  onPrompt?: (prompt: string) => void
+}
+
+export function DisplayRegistry({ display, onPrompt }: DisplayRegistryProps) {
   const Display = displays[display.type]
-  return <Display itemIds={display.itemIds} />
+  return <Display itemIds={display.itemIds} onPrompt={onPrompt} />
 }

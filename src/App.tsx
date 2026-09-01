@@ -42,7 +42,7 @@ function App() {
       <div className="ambient ambient--two" aria-hidden="true" />
       <div className="experience-stage">
         <HaloStage expression={expressionFor(state, response)} status={state} />
-        <ResponseStage response={response} state={state} />
+        <ResponseStage response={response} state={state} onPrompt={askHalo} />
       </div>
       <QuestionComposer
         busy={state === 'thinking'}

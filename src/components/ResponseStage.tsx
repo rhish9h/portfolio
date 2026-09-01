@@ -8,9 +8,10 @@ const initialDisplay: ChatResponse['display'] = { type: 'intro' }
 type ResponseStageProps = {
   response: ChatResponse | null
   state: InteractionState
+  onPrompt: (prompt: string) => void
 }
 
-export function ResponseStage({ response, state }: ResponseStageProps) {
+export function ResponseStage({ response, state, onPrompt }: ResponseStageProps) {
   const thinking = state === 'thinking'
 
   return (
@@ -26,7 +27,7 @@ export function ResponseStage({ response, state }: ResponseStageProps) {
             <span /><span /><span />
           </div>
         ) : (
-          <DisplayRegistry display={response?.display ?? initialDisplay} />
+          <DisplayRegistry display={response?.display ?? initialDisplay} onPrompt={onPrompt} />
         )}
       </div>
     </section>

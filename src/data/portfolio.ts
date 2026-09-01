@@ -9,9 +9,9 @@ export const portfolioData = {
     github: 'https://github.com/rhish9h',
   },
   metrics: [
-    { value: '4+', label: 'Years of software engineering experience' },
-    { value: 'Backend', label: 'APIs, services, and data systems' },
-    { value: 'ASU', label: 'M.S. Software Engineering' },
+    { value: '4+', label: 'Years of experience', prompt: 'Tell me about his experience' },
+    { value: 'Backend', label: 'APIs and systems', prompt: 'What are his backend skills?' },
+    { value: 'ASU', label: 'M.S. Software Engineering', prompt: 'Tell me about his education' },
   ],
   projects: [
     {
