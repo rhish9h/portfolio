@@ -10,6 +10,14 @@ interface GridDot {
   vy: number;
   hoverEnergy: number;
   noiseOffset: number;
+  clearance: number;
+}
+
+interface MaskBox {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
 }
 
 export function AnimatedBackground() {
@@ -41,24 +49,81 @@ export function AnimatedBackground() {
       lastMovedAt: -9999,
     };
 
+    const getMaskBoxes = (): MaskBox[] => {
+      const section = canvas.closest('section');
+      if (!section) return [];
+      const canvasRect = canvas.getBoundingClientRect();
+      const maskedEls = section.querySelectorAll('[data-dot-mask]');
+      const boxes: MaskBox[] = [];
+
+      maskedEls.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        boxes.push({
+          left: r.left - canvasRect.left - 12,
+          top: r.top - canvasRect.top - 8,
+          right: r.right - canvasRect.left + 12,
+          bottom: r.bottom - canvasRect.top + 8,
+        });
+      });
+
+      return boxes;
+    };
+
+    const computeClearance = (x: number, y: number, boxes: MaskBox[]): number => {
+      if (boxes.length === 0) return 1;
+      const feather = 42;
+      let minClearance = 1;
+
+      for (let i = 0; i < boxes.length; i++) {
+        const b = boxes[i];
+        const dx = Math.max(b.left - x, 0, x - b.right);
+        const dy = Math.max(b.top - y, 0, y - b.bottom);
+        const dist = Math.hypot(dx, dy);
+
+        if (dist <= 0) {
+          return 0.04;
+        }
+        if (dist < feather) {
+          const t = dist / feather;
+          const smooth = t * t * (3 - 2 * t);
+          const c = 0.04 + smooth * 0.96;
+          if (c < minClearance) minClearance = c;
+        }
+      }
+
+      return minClearance;
+    };
+
+    const updateClearances = () => {
+      const boxes = getMaskBoxes();
+      for (let i = 0; i < dots.length; i++) {
+        const d = dots[i];
+        d.clearance = computeClearance(d.gx, d.gy, boxes);
+      }
+    };
+
     const buildGrid = () => {
       dots = [];
       const cols = Math.ceil(width / spacing) + 1;
       const rows = Math.ceil(height / spacing) + 1;
       const offsetX = (width - (cols - 1) * spacing) * 0.5;
       const offsetY = (height - (rows - 1) * spacing) * 0.5;
+      const boxes = getMaskBoxes();
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
+          const gx = offsetX + c * spacing;
+          const gy = offsetY + r * spacing;
           dots.push({
-            gx: offsetX + c * spacing,
-            gy: offsetY + r * spacing,
+            gx,
+            gy,
             ox: 0,
             oy: 0,
             vx: 0,
             vy: 0,
             hoverEnergy: 0,
             noiseOffset: (r * 0.37 + c * 0.23) % (Math.PI * 2),
+            clearance: computeClearance(gx, gy, boxes),
           });
         }
       }
@@ -110,6 +175,9 @@ export function AnimatedBackground() {
     };
 
     handleResize();
+    // Re-measure text bounds once entrance animations settle
+    const settleTimer = window.setTimeout(updateClearances, 600);
+
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave);
@@ -121,11 +189,11 @@ export function AnimatedBackground() {
 
       const isDark = document.documentElement.classList.contains('dark');
 
-      // Base resting dot color (charcoal ink on warm paper in light mode; muted zinc in dark mode)
+      // Base resting dot color
       const baseR = isDark ? 160 : 28;
       const baseG = isDark ? 160 : 28;
       const baseB = isDark ? 170 : 32;
-      const baseAlpha = isDark ? 0.32 : 0.42;
+      const baseAlpha = isDark ? 0.28 : 0.34;
 
       // Active wave / hover highlight color (warm vermilion-red like the Opus showreel inspiration)
       const activeR = isDark ? 239 : 218;
@@ -138,15 +206,14 @@ export function AnimatedBackground() {
 
       // Autonomous S-curved wave ("school") gliding freely across the grid
       const waveCenterX =
-        width * 0.5 +
-        Math.cos(time * 0.42) * (width * 0.24) +
+        width * 0.52 +
+        Math.cos(time * 0.42) * (width * 0.25) +
         Math.sin(time * 0.95) * (width * 0.06);
       const waveCenterY =
-        height * 0.48 +
+        height * 0.46 +
         Math.sin(time * 0.55) * (height * 0.18) +
         Math.cos(time * 1.1) * (height * 0.05);
 
-      // Diagonal orientation angle that slowly rocks as the wave swims
       const waveAngle = -0.95 + Math.sin(time * 0.35) * 0.28;
       const cosA = Math.cos(waveAngle);
       const sinA = Math.sin(waveAngle);
@@ -155,7 +222,6 @@ export function AnimatedBackground() {
       const bandWidth = 95;
       const hoverRadius = 135;
 
-      // Decay mouse velocity smoothly
       mouse.vx *= 0.9;
       mouse.vy *= 0.9;
 
@@ -166,11 +232,9 @@ export function AnimatedBackground() {
         const relX = d.gx - waveCenterX;
         const relY = d.gy - waveCenterY;
 
-        // Rotate into wave's local coordinate system (u = along spine, v = across spine)
         const u = relX * cosA + relY * sinA;
         const v = -relX * sinA + relY * cosA;
 
-        // S-curve bend along the spine
         const sCurveOffset =
           Math.sin(u * 0.0085 - time * 1.6) * 68 +
           Math.cos(u * 0.015 + time * 1.1) * 22;
@@ -190,8 +254,7 @@ export function AnimatedBackground() {
             0.82 + 0.18 * Math.sin(u * 0.025 - time * 2.8 + d.noiseOffset);
           waveIntensity = falloff * ripple;
 
-          // Subtle organic displacement along the wave crest (like fish rippling in formation)
-          const dispMag = waveIntensity * 6.5;
+          const dispMag = waveIntensity * 6.5 * d.clearance;
           const dispAngle =
             waveAngle + Math.cos(u * 0.012 - time * 1.8) * 0.6;
           wavePushX = Math.cos(dispAngle) * dispMag;
@@ -210,27 +273,26 @@ export function AnimatedBackground() {
 
           if (mDist < hoverRadius) {
             const prox = 1 - mDist / hoverRadius;
-            targetHover = prox * prox * (3 - 2 * prox); // smoothstep
+            targetHover = prox * prox * (3 - 2 * prox);
 
             if (mDist > 0.1) {
-              const push = targetHover * 5.5;
+              const push = targetHover * 5.5 * d.clearance;
               mousePushX = (mdx / mDist) * push + mouse.vx * targetHover * 0.45;
               mousePushY = (mdy / mDist) * push + mouse.vy * targetHover * 0.45;
             }
           }
         }
 
-        // Charge up fast on hover, leave a smooth trailing glow as mouse moves
         const hoverLerp = targetHover > d.hoverEnergy ? 0.28 : 0.055;
         d.hoverEnergy += (targetHover - d.hoverEnergy) * hoverLerp;
 
-        // Combine autonomous wave and mouse hover energy
-        const totalEnergy = Math.min(
+        // Attenuate energy behind text blocks so typography stays 100% crisp and legible
+        const rawEnergy = Math.min(
           Math.max(waveIntensity, d.hoverEnergy * 1.15),
           1
         );
+        const totalEnergy = rawEnergy * d.clearance;
 
-        // Spring physics returning dot offset (ox, oy) to target displacement
         const targetOx = wavePushX + mousePushX;
         const targetOy = wavePushY + mousePushY;
         d.vx = (d.vx + (targetOx - d.ox) * 0.14) * 0.78;
@@ -241,21 +303,22 @@ export function AnimatedBackground() {
         const drawX = d.gx + d.ox;
         const drawY = d.gy + d.oy;
 
-        // Radius scales smoothly from small grid dot (1.65px) to bold showreel dot (5.2px)
-        const baseRadius = 1.65;
-        const radius = baseRadius + ( totalEnergy ** 1.15 ) * 3.55;
+        const baseRadius = 1.6 * (0.4 + 0.6 * d.clearance);
+        const radius = baseRadius + (totalEnergy ** 1.15) * 3.55;
 
-        // Color & brightness interpolation
         const colorMix = Math.min(totalEnergy * 1.1, 1);
         const r = Math.round(baseR + (activeR - baseR) * colorMix);
         const g = Math.round(baseG + (activeG - baseG) * colorMix);
         const b = Math.round(baseB + (activeB - baseB) * colorMix);
-        const alpha = Math.min(baseAlpha + totalEnergy * 0.58, 0.96);
+        const alpha =
+          Math.min(baseAlpha + totalEnergy * 0.58, 0.96) * d.clearance;
 
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        ctx.beginPath();
-        ctx.arc(drawX, drawY, radius, 0, Math.PI * 2);
-        ctx.fill();
+        if (alpha > 0.015) {
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          ctx.beginPath();
+          ctx.arc(drawX, drawY, radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
 
       if (!prefersReducedMotion) {
@@ -266,6 +329,7 @@ export function AnimatedBackground() {
     render();
 
     return () => {
+      window.clearTimeout(settleTimer);
       window.cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
