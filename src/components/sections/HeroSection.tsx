@@ -34,7 +34,7 @@ export function HeroSection() {
   ];
 
   return (
-    <section className="relative w-full overflow-hidden pt-10 pb-16 md:pt-20 md:pb-24">
+    <section className="relative isolate w-full overflow-hidden pt-10 pb-16 md:pt-20 md:pb-24">
       <AnimatedBackground />
 
       <div className="mx-auto max-w-6xl px-6">
@@ -90,7 +90,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.25 }}
-              className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg"
+              className="mt-4 -mx-3 max-w-2xl rounded-xl bg-background/75 px-3 py-2 text-base leading-relaxed text-muted-foreground backdrop-blur-[2px] sm:text-lg"
             >
               {profileData.headline} Currently building software at{' '}
               <span className="font-medium text-foreground">
