@@ -1,48 +1,52 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted ? resolvedTheme === "dark" : true;
 
   return (
     <motion.button
+      type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      // Use classes that adjust background based on theme:
-      // Default (light): bg-zinc-100/90 and hover:bg-zinc-200/90
-      // Dark mode: bg-zinc-800/90 and hover:bg-zinc-700/90
-      className="relative h-10 w-10 rounded-lg bg-zinc-100/90 p-2 ring-1 ring-zinc-900/5 transition-all hover:bg-zinc-200/90 dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:bg-zinc-700/90"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      aria-label="Toggle theme"
+      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-secondary/60 text-muted-foreground backdrop-blur-sm transition-colors hover:border-foreground/25 hover:bg-secondary hover:text-foreground"
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.96 }}
+      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      title={isDark ? "Switch to light theme" : "Switch to dark theme"}
     >
-      {/* Sun Icon Container */}
       <motion.div
-        className="relative flex h-full w-full items-center justify-center"
+        className="flex items-center justify-center"
         initial={false}
         animate={{
           scale: isDark ? 0 : 1,
-          rotate: isDark ? 45 : 0,
+          rotate: isDark ? 90 : 0,
           opacity: isDark ? 0 : 1,
         }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
-        <Sun className="h-full w-full stroke-amber-500" strokeWidth={2.5} />
+        <Sun className="h-4 w-4" />
       </motion.div>
 
-      {/* Moon Icon Container */}
       <motion.div
-        className="absolute inset-0 flex h-full w-full items-center justify-center"
+        className="absolute inset-0 flex items-center justify-center"
         initial={false}
         animate={{
           scale: isDark ? 1 : 0,
-          rotate: isDark ? 0 : -45,
+          rotate: isDark ? 0 : -90,
           opacity: isDark ? 1 : 0,
         }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
-        <Moon className="h-full w-full fill-sky-100" strokeWidth={0} />
+        <Moon className="h-4 w-4" />
       </motion.div>
     </motion.button>
   );
