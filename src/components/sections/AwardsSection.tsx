@@ -3,24 +3,45 @@ import { Trophy } from 'lucide-react';
 
 export function AwardsSection() {
   return (
-    <div className="mx-auto max-w-4xl">
-      <h2 className="mb-6 text-3xl font-bold">Honors & Awards</h2>
-      <div className="grid gap-4 sm:grid-cols-2">
+    <div>
+      <div className="mb-6 flex items-center gap-2.5">
+        <div className="rounded-lg border border-border bg-secondary/70 p-2 text-foreground">
+          <Trophy className="h-4 w-4" />
+        </div>
+        <h3 className="font-display text-2xl font-bold tracking-tight text-foreground">
+          Honors &amp; Awards
+        </h3>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
         {profileData.awards.map((award, index) => (
           <div
             key={index}
-            className="flex items-start gap-4 rounded-lg border bg-card p-6 shadow-sm"
+            className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 transition-colors hover:border-foreground/25"
           >
-            <div className="rounded-full bg-primary/10 p-2">
-              <Trophy className="h-6 w-6 text-primary" />
-            </div>
             <div>
-              <h3 className="font-semibold">{award.title}</h3>
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <div className="rounded-lg border border-border bg-secondary/70 p-2 text-foreground">
+                  <Trophy className="h-4 w-4" />
+                </div>
+                {award.date && (
+                  <span className="rounded-md border border-border bg-secondary/60 px-2.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                    {award.date}
+                  </span>
+                )}
+              </div>
+              <h4 className="font-display text-base font-semibold text-foreground">
+                {award.title}
+              </h4>
               {award.issuer && (
-                <p className="text-sm text-muted-foreground">{award.issuer}</p>
+                <p className="mt-1 text-xs font-medium text-foreground/80">
+                  {award.issuer}
+                </p>
               )}
-              {award.date && (
-                <p className="text-sm text-muted-foreground">{award.date}</p>
+              {award.description && (
+                <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
+                  {award.description}
+                </p>
               )}
             </div>
           </div>

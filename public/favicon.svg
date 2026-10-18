@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="14" fill="#111114"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" stroke="#2A2A32" stroke-width="3"/>
+  <!-- Bold geometric R -->
+  <path d="M13 19H23.5C28.2 19 31.2 21.6 31.2 25.8C31.2 29 29.3 31.3 26.2 32.1L32.2 45H26.4L21.1 32.8H18.2V45H13V19ZM18.2 28.6H22.9C25.1 28.6 26.2 27.5 26.2 25.8C26.2 24.1 25.1 23.1 22.9 23.1H18.2V28.6Z" fill="#F4F4F5"/>
+  <!-- Bold geometric H -->
+  <path d="M35.5 19H40.7V29.4H48.8V19H54V45H48.8V33.8H40.7V45H35.5V19Z" fill="#F4F4F5"/>
+  <!-- Signature showreel vermilion dot accent -->
+  <circle cx="53.5" cy="12.5" r="4" fill="#EF5344"/>
+</svg>
