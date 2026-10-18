@@ -56,7 +56,7 @@ export function PublicationsSection() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
                 >
-                  <span>Read Paper on IEEE Xplore</span>
+                  <span>View Publication</span>
                   <ExternalLink className="h-3 w-3 text-muted-foreground" />
                 </a>
               </div>

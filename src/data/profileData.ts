@@ -116,21 +116,27 @@ export const profileData: ProfileData = {
   currentCompany: "Path Robotics",
   currentCompanyUrl: "https://www.linkedin.com/company/path-robotics",
   location: "Columbus, Ohio",
-  tagline: "Software Engineer at Path Robotics · Backend Systems, Distributed Integrations & AI Tooling",
+  tagline: "Software Engineer at Path Robotics",
   headline:
-    "Building reliable backend systems, high-throughput data pipelines, and intelligent software for real-world autonomous and enterprise platforms.",
+    "Software Engineer with 4+ years of experience building backend systems, APIs, integrations, data pipelines, and full-stack applications using Python, C#, JavaScript, TypeScript, SQL, and related technologies.",
   email: "rhish9h@gmail.com",
   linkedIn: "https://www.linkedin.com/in/rhishabh-hattarki/",
   github: "https://github.com/rhish9h",
-  summary: `Software Engineer with 4+ years of experience building backend systems, APIs, integrations, data pipelines, and full-stack applications using Python, C#, JavaScript, TypeScript, SQL, and related technologies. I hold an M.S. in Software Engineering from Arizona State University and currently work as a Software Engineer at Path Robotics in Columbus, Ohio.
+  summary: `Software Engineer with 4+ years of experience building backend systems, APIs, integrations, data pipelines, and full-stack applications using Python, C#, JavaScript, TypeScript, SQL, and related technologies. I hold an MS in Software Engineering from Arizona State University and currently work as a Software Engineer at Path Robotics.
 
-My experience spans backend services, distributed systems, integrations, data processing, developer tooling, cybersecurity, and full-stack development. Previously at EmpowerID, I worked on Identity and Access Management (IAM) and Identity Governance systems—developing REST, SCIM, ODBC, and database integrations, FastAPI microservices, C#/.NET connectors, T-SQL synchronization pipelines, and multi-agent AI engineering workflows. Earlier in my career at Persistent Systems, I developed Spring Boot REST APIs, revamped React frontends, and mentored engineering interns.
+My experience spans backend services, distributed systems, integrations, data processing, developer tooling, cybersecurity, and full-stack development. Previously at EmpowerID, I worked on Identity and Access Management and Identity Governance systems, developing REST, SCIM, ODBC, and database integrations, FastAPI microservices, and C#/.NET connectors. I also worked on data ingestion and synchronization pipelines, SQL performance optimization, validation tooling, and debugging production systems. Earlier in my career at Persistent Systems, I developed REST APIs, contributed to frontend applications, and mentored interns.
 
-I enjoy understanding systems end to end, breaking down ambiguous technical problems, debugging difficult issues, and building solutions that are reliable, maintainable, and practical.`,
+I enjoy understanding systems end to end, breaking down ambiguous technical problems, debugging difficult issues, and building solutions that are reliable, maintainable, and practical. I’m particularly interested in backend engineering, distributed systems, APIs, data-intensive applications, developer platforms, robotics software, and AI-enabled products.
+
+I also enjoy building technology around real-world problems. One project I worked on was CycleSafe, a cyclist safety application developed in collaboration with the University of Arizona and the Rob Dollar Foundation. The system connected to a handlebar-mounted device to detect approaching vehicles, capture license plates, and help address unsafe passing incidents.
+
+Outside of work, I continue to explore software architecture, AI, generative technologies, product development, and systems engineering. I enjoy learning how complex systems work and turning that understanding into software people can actually use.`,
   bioParagraphs: [
-    "I’m a Software Engineer with 4+ years of experience designing and scaling backend services, APIs, enterprise integrations, data pipelines, and full-stack applications across Python, C#/.NET, TypeScript, Java/Spring Boot, and SQL. I hold an M.S. in Software Engineering from Arizona State University and currently work as a Software Engineer at Path Robotics in Columbus, Ohio.",
-    "Prior to joining Path Robotics, I spent over two years at EmpowerID building mission-critical Identity and Access Management (IAM) and Identity Governance infrastructure. My work ranged from architecting a 3-stage T-SQL synchronization and 5-level deduplication pipeline processing 50K+ worker records against 1M+ accounts (cutting execution time by 69.2%) to designing a 10-subagent AI documentation workflow that reduced generation cost by 87%, alongside FastAPI microservices and C#/.NET connectors.",
-    "I’m drawn to problems where software meets physical and high-reliability systems—from autonomous robotic manufacturing at Path Robotics to CycleSafe, an IoT and computer-vision cyclist safety system built with the University of Arizona and the Rob Dollar Foundation. Whether optimizing database internals or shipping end-to-end product features, I focus on clarity, resilience, and measurable engineering impact."
+    "Software Engineer with 4+ years of experience building backend systems, APIs, integrations, data pipelines, and full-stack applications using Python, C#, JavaScript, TypeScript, SQL, and related technologies. I hold an MS in Software Engineering from Arizona State University and currently work as a Software Engineer at Path Robotics.",
+    "My experience spans backend services, distributed systems, integrations, data processing, developer tooling, cybersecurity, and full-stack development. Previously at EmpowerID, I worked on Identity and Access Management and Identity Governance systems, developing REST, SCIM, ODBC, and database integrations, FastAPI microservices, and C#/.NET connectors. I also worked on data ingestion and synchronization pipelines, SQL performance optimization, validation tooling, and debugging production systems. Earlier in my career at Persistent Systems, I developed REST APIs, contributed to frontend applications, and mentored interns.",
+    "I enjoy understanding systems end to end, breaking down ambiguous technical problems, debugging difficult issues, and building solutions that are reliable, maintainable, and practical. I’m particularly interested in backend engineering, distributed systems, APIs, data-intensive applications, developer platforms, robotics software, and AI-enabled products.",
+    "I also enjoy building technology around real-world problems. One project I worked on was CycleSafe, a cyclist safety application developed in collaboration with the University of Arizona and the Rob Dollar Foundation. The system connected to a handlebar-mounted device to detect approaching vehicles, capture license plates, and help address unsafe passing incidents.",
+    "Outside of work, I continue to explore software architecture, AI, generative technologies, product development, and systems engineering. I enjoy learning how complex systems work and turning that understanding into software people can actually use."
   ],
   highlights: [
     {
@@ -165,8 +171,7 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
       endDate: "Present",
       current: true,
       bullets: [
-        "Engineering software systems, backend services, and developer tooling supporting autonomous robotic welding platforms and intelligent manufacturing workflows.",
-        "Collaborating across systems, data, and application teams to deliver reliable, production-grade software for industrial robotics operations."
+        "Working as a Software Engineer building backend services, systems, and software for autonomous robotic manufacturing platforms."
       ],
       skills: ["Python", "Backend Systems", "Robotics Software", "Distributed Systems", "APIs", "TypeScript"],
       roles: [
@@ -176,8 +181,7 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
           endDate: "Present",
           location: "Columbus, Ohio, United States",
           bullets: [
-            "Engineering software systems, backend services, and developer tooling supporting autonomous robotic welding platforms and intelligent manufacturing workflows.",
-            "Collaborating across systems, data, and application teams to deliver reliable, production-grade software for industrial robotics operations."
+            "Working as a Software Engineer building backend services, systems, and software for autonomous robotic manufacturing platforms."
           ],
           skills: ["Python", "Backend Systems", "Robotics Software", "Distributed Systems", "APIs", "TypeScript"]
         }
@@ -186,17 +190,18 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
     {
       company: "EmpowerID",
       companyUrl: "https://www.linkedin.com/company/empowerid",
-      industry: "Enterprise Identity & Access Management (IAM / IGA)",
+      industry: "Identity and Access Management (IAM) & Identity Governance",
       title: "Software Engineer",
       location: "Dublin, Ohio, United States",
       startDate: "Jul 2024",
       endDate: "Aug 2026",
       bullets: [
-        "Architected a multi-agent AI documentation pipeline in Cursor for an SAP Fieldglass enterprise connector, replacing a single 1M-context monolith with 10 domain-specialized Composer 2.5 subagents orchestrated in parallel SME → merge → doc-writer phases; cut full regeneration cost by 87% ($40 → ~$5) while preserving code-verified accuracy across 3 deliverables.",
-        "Designed and implemented a 3-stage T-SQL data integration pipeline (JSON parsing → deduplication → Account sync) with atomic transaction semantics and microsecond-precision batch IDs to safely ingest SAP Fieldglass worker records into a 1M+ row enterprise identity table.",
-        "Reduced pipeline execution time by 69.2% (13 min → 4 min for 50K records) via HASHBYTES-based change detection across 68 columns, a single-scan caching pattern on a 1M+ row table, and targeted temp table indexing.",
-        "Engineered a 5-level cross-worker deduplication algorithm with custom priority ranking across Access Type, Assignment Status, and Worker Completeness, plus LogonName conflict detection within batches and against 1M+ existing accounts.",
-        "Implemented SAP Fieldglass worker inventory using DataCollector (attribute mapping and inventory strategy) across multi-tenant environments (Dev, UAT, UAT2, Prod), and refactored shared utilities into a centralized Python common_utils package with automated CI testing."
+        "Architected a multi-agent AI documentation pipeline in Cursor for an SAP Fieldglass enterprise connector, replacing a single Opus 1M-context monolith with 10 domain-specialized Composer 2.5 subagents (SQL pipeline, inbox, DataCollector, R10 config, tests) orchestrated in parallel SME → merge → doc-writer phases; cut full documentation regeneration cost 87% ($40 → ~$5) while preserving code-verified accuracy across 3 deliverables.",
+        "Designed and implemented a 3-stage T-SQL data integration pipeline (JSON parsing → deduplication → Account sync) with atomic transaction semantics and microsecond-precision batch IDs to safely process SAP Fieldglass worker records into a 1M+ row table in the enterprise identity management system.",
+        "Reduced pipeline execution time by 69.2% (13 min → 4 min for 50K records) by implementing HASHBYTES-based change detection across 68 columns, a single-scan caching pattern on a 1M+ row table, and targeted temp table indexing to eliminate redundant I/O.",
+        "Engineered a 5-level cross-worker deduplication algorithm with custom priority ranking across Access Type, Assignment Status, and Worker Completeness to consolidate multiple work assignments per worker into a single winner record, and also error mitigation LogonName conflict detection within batches and against 1M+ existing accounts.",
+        "Implemented the SAP Fieldglass worker inventory using our internal tool, DataCollector, including attribute mapping and inventory strategy design. Delivered cross-tenant and multi-environment deployments (Dev, UAT, UAT2, Prod), enabling reliable and scalable client data integration.",
+        "Refactored common classes and utilities into a centralized common_utils library, reducing code duplication and standardizing functionality across Python microservices. Implemented an automated CI testing pipeline to improve code reliability."
       ],
       skills: ["Python", "FastAPI", "C# / .NET", "T-SQL", "SCIM & REST", "ODBC", "Multi-Agent AI", "CI/CD", "IAM / IGA"],
       roles: [
@@ -206,11 +211,12 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
           endDate: "Aug 2026",
           location: "Ohio, United States",
           bullets: [
-            "Architected a multi-agent AI documentation pipeline in Cursor for an SAP Fieldglass enterprise connector, replacing a single Opus 1M-context monolith with 10 domain-specialized subagents (SQL pipeline, inbox, DataCollector, R10 config, tests) orchestrated in parallel SME → merge → doc-writer phases; cut full regeneration cost by 87% ($40 → ~$5) while preserving code-verified accuracy across 3 deliverables.",
-            "Designed and implemented a 3-stage T-SQL data integration pipeline (JSON parsing → deduplication → Account sync) with atomic transaction semantics and microsecond-precision batch IDs to safely process SAP Fieldglass worker records into a 1M+ row identity table.",
+            "Architected a multi-agent AI documentation pipeline in Cursor for an SAP Fieldglass enterprise connector, replacing a single Opus 1M-context monolith with 10 domain-specialized Composer 2.5 subagents (SQL pipeline, inbox, DataCollector, R10 config, tests) orchestrated in parallel SME → merge → doc-writer phases; cut full documentation regeneration cost 87% ($40 → ~$5) while preserving code-verified accuracy across 3 deliverables.",
+            "Designed and implemented a 3-stage T-SQL data integration pipeline (JSON parsing → deduplication → Account sync) with atomic transaction semantics and microsecond-precision batch IDs to safely process SAP Fieldglass worker records into a 1M+ row table in the enterprise identity management system.",
             "Reduced pipeline execution time by 69.2% (13 min → 4 min for 50K records) by implementing HASHBYTES-based change detection across 68 columns, a single-scan caching pattern on a 1M+ row table, and targeted temp table indexing to eliminate redundant I/O.",
-            "Engineered a 5-level cross-worker deduplication algorithm with custom priority ranking across Access Type, Assignment Status, and Worker Completeness to consolidate multiple work assignments per worker into a single winner record, alongside LogonName conflict detection against 1M+ existing accounts.",
-            "Implemented SAP Fieldglass worker inventory via internal DataCollector tooling across Dev, UAT, UAT2, and Prod environments, and refactored shared microservice logic into a centralized Python common_utils library with automated CI testing."
+            "Engineered a 5-level cross-worker deduplication algorithm with custom priority ranking across Access Type, Assignment Status, and Worker Completeness to consolidate multiple work assignments per worker into a single winner record, and also error mitigation LogonName conflict detection within batches and against 1M+ existing accounts.",
+            "Implemented the SAP Fieldglass worker inventory using our internal tool, DataCollector, including attribute mapping and inventory strategy design. Delivered cross-tenant and multi-environment deployments (Dev, UAT, UAT2, Prod), enabling reliable and scalable client data integration.",
+            "Refactored common classes and utilities into a centralized common_utils library, reducing code duplication and standardizing functionality across Python microservices. Implemented an automated CI testing pipeline to improve code reliability."
           ],
           skills: ["Python", "FastAPI", "T-SQL", "C# / .NET", "SCIM", "Multi-Agent AI", "Data Pipelines", "CI/CD"]
         },
@@ -220,9 +226,9 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
           endDate: "Dec 2024",
           location: "Dublin, Ohio, United States",
           bullets: [
-            "Optimized the Group Inventory and Export modules of the Universal Flat File Connector for a banking client integration, enabling reliable synchronization with C#-based IAM systems.",
-            "Enhanced the ODBC connector in a Python FastAPI microservice, implementing security hardening that strengthened defenses against SQL injection attacks and improved overall robustness.",
-            "Achieved certifications as a Certified EmpowerID Identity Orchestration Developer and Certified EmpowerID Operator."
+            "Optimized the Group Inventory and Export modules of the Universal Flat File Connector for a client-facing project, enabling seamless integration between a banking client's systems and the C# based IAM software using flat files.",
+            "Enhanced the ODBC connector in a Python FastAPI based internal project, implementing security improvements that strengthened defenses against SQL injection attacks and increased overall system robustness.",
+            "Achieved Certified EmpowerID Identity Orchestration Developer and Certified EmpowerID Operator certifications, demonstrating a solid foundation in Identity and Access Management."
           ],
           skills: ["C#", "Python", "FastAPI", "ODBC", "SQL Security", "IAM"]
         }
@@ -231,37 +237,55 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
     {
       company: "Arizona State University",
       companyUrl: "https://www.linkedin.com/school/arizona-state-university",
-      industry: "Higher Education · Ira A. Fulton Schools of Engineering",
-      title: "Graduate Services Assistant — Instructional Assistant & Grader",
+      industry: "Higher Education",
+      title: "Graduate Services Assistant - Instructional Assistant",
       location: "Tempe, Arizona, United States",
       startDate: "Apr 2023",
       endDate: "May 2024",
       bullets: [
-        "Supported SER 232 (Computer Systems Fundamentals) across Summer and Fall sessions by mentoring students, leading office hours, and resolving grading inquiries with faculty supervisors.",
-        "Collaborated with instructional teams to evaluate assignments, quizzes, and exams for 66+ students per cohort, maintaining rubric consistency and debugging automated grading workflows."
+        "Assisted in the grading process, including coordinating grading efforts and resolving routine grading inquiries for the SER 232 Fall course.",
+        "Provided instructional support by engaging with students, addressing their questions, and fostering a conducive learning environment.",
+        "Collaborated with a grading team of two members to review assignments and quizzes for 66 students in SER 232 Computer Systems Fundamentals."
       ],
-      skills: ["Computer Systems", "Instructional Support", "Code Review", "Academic Mentorship"],
+      skills: ["SER 232", "Computer Systems Fundamentals", "Instructional Support", "Grading & Assessment"],
       roles: [
         {
-          title: "Graduate Services Assistant — Instructional Assistant & Grader",
+          title: "Graduate Services Assistant - Instructional Assistant",
           startDate: "Aug 2023",
           endDate: "May 2024",
           location: "Tempe, Arizona, United States",
           bullets: [
-            "Coordinated grading workflows, resolved student inquiries, and provided instructional support for SER 232 (Computer Systems Fundamentals) in collaboration with faculty supervisors.",
-            "Evaluated coursework, quizzes, and exams with rubric-driven feedback while upholding academic integrity standards."
+            "Assisted in the grading process, including coordinating grading efforts and resolving routine grading inquiries for the SER 232 Fall course.",
+            "Escalated complex issues to the faculty supervisor or Instructional Oversight Representative (IOR).",
+            "Provided instructional support by engaging with students, addressing their questions, and fostering a conducive learning environment.",
+            "Collaborated with faculty supervisor/IOR to handle various tasks such as resolving grading concerns and contributing to the smooth functioning of the instructional process."
           ],
-          skills: ["Computer Systems", "Mentorship", "Assessment"]
+          skills: ["Instructional Support", "SER 232", "Student Mentorship"]
         },
         {
-          title: "Graduate Services Assistant — Summer Grader (GR1)",
+          title: "Graduate Services Assistant - Grader",
+          startDate: "Aug 2023",
+          endDate: "May 2024",
+          location: "Tempe, Arizona, United States",
+          bullets: [
+            "Supported testing and grading for the SER 232 Fall course, aiding the professor in various tasks.",
+            "Evaluated and graded assignments, homework, lecture activities, quizzes, and exams, providing timely feedback to students.",
+            "Monitored online platforms and requested removal of unauthorized materials like assignments and exams on platforms such as Chegg, Course Hero, etc.",
+            "Applied grading templates to assess accuracy and completeness of short answer and essay responses, and collaborated with the Instructor to accurately record and manage student grades."
+          ],
+          skills: ["Assessment", "Academic Integrity", "SER 232"]
+        },
+        {
+          title: "Graduate Services Assistant GR1",
           startDate: "May 2023",
           endDate: "Jul 2023",
           location: "Tempe, Arizona, United States",
           bullets: [
-            "Reviewed assignments and quizzes for 66 students in SER 232 Session C and implemented a structured regrading workflow to resolve auto-grader edge cases."
+            "Summer Grader for SER 232 Computer Systems Fundamentals - Session C.",
+            "Collaborated with a grading team of two members to review assignments and quizzes for 66 students, ensuring adherence to the provided rubric and maintaining consistent grading standards.",
+            "Implemented a comprehensive regrading process to address inaccuracies caused by the auto grader, resulting in fair assessment and accurate grading of student submissions."
           ],
-          skills: ["Auto-Grader Debugging", "SER 232"]
+          skills: ["Auto-Grader Debugging", "Computer Systems Fundamentals"]
         },
         {
           title: "Parking Assistant Student Worker III",
@@ -269,7 +293,8 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
           endDate: "Aug 2023",
           location: "Tempe, Arizona, United States",
           bullets: [
-            "Maintained uninterrupted campus gate operations, diagnosed hardware malfunctions, and assisted university visitors."
+            "Proactively addressed gate machine malfunctions at the parking facility, ensuring uninterrupted operations, inspecting machines, and reporting issues to dispatch for prompt resolution.",
+            "Provided customer service at the gates, assisting parking facility users."
           ]
         }
       ]
@@ -277,16 +302,16 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
     {
       company: "Persistent Systems",
       companyUrl: "https://www.linkedin.com/company/persistent-systems",
-      industry: "Digital Engineering & Enterprise Banking Systems",
+      industry: "IT Services and IT Consulting",
       title: "Software Engineer",
-      location: "Pune, Maharashtra, India (Client: Standard Chartered Bank)",
+      location: "Pune, Maharashtra, India",
       startDate: "Jan 2021",
       endDate: "Jul 2022",
       bullets: [
-        "Spearheaded the development of a scalable configuration management microservice for an Escrow Payment System (Standard Chartered Bank), designing 13 REST APIs using Spring Boot, Hibernate, and PostgreSQL.",
-        "Revamped the configuration service front-end using React.js and react-d3-tree, introducing interactive tree visualizations and significantly improving operator usability.",
-        "Mentored and led a team of 5 interns through the architecture and delivery of a vault management React.js front-end, overseeing project setup, design reviews, and issue resolution.",
-        "Conducted 7 technical interviews (internal and external) for Java, Spring Boot, and React.js engineering candidates."
+        "Spearheaded the development of a configuration management microservice for an Escrow Payment System, consisting of 13 REST APIs and leveraging Spring Boot, Hibernate, and PostgreSQL that made the existing system scalable.",
+        "Revamped the front-end interface of the configuration service using React.js and React-d3-tree, resulting in a high-quality user experience and aesthetic enhancement.",
+        "Mentored and led a team of 5 creative interns through the redesign and development of a vault management front-end using React.js, overseeing project setup, design, and issue resolution.",
+        "Conducted 7 technical interviews for Java, Spring Boot, and React JS roles, both internal and external."
       ],
       skills: ["Java", "Spring Boot", "PostgreSQL", "Hibernate", "React.js", "REST APIs", "Team Leadership"],
       roles: [
@@ -294,29 +319,30 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
           title: "Software Engineer",
           startDate: "Jan 2021",
           endDate: "Jul 2022",
-          location: "Pune & Bengaluru, India",
+          location: "Pune, Maharashtra, India",
           bullets: [
-            "Spearheaded the development of a scalable configuration management microservice for an Escrow Payment System (Standard Chartered Bank), designing 13 REST APIs using Spring Boot, Hibernate, and PostgreSQL.",
-            "Revamped the configuration service front-end using React.js and react-d3-tree, introducing interactive tree visualizations and significantly improving operator usability.",
-            "Mentored and led a team of 5 interns through the architecture and delivery of a vault management React.js front-end, overseeing project setup, design reviews, and issue resolution.",
-            "Conducted 7 technical interviews (internal and external) for Java, Spring Boot, and React.js engineering candidates."
+            "Spearheaded the development of a configuration management microservice for an Escrow Payment System, consisting of 13 REST APIs and leveraging Spring Boot, Hibernate, and PostgreSQL that made the existing system scalable.",
+            "Revamped the front-end interface of the configuration service using React.js and React-d3-tree, resulting in a high-quality user experience and aesthetic enhancement.",
+            "Mentored and led a team of 5 creative interns through the redesign and development of a vault management front-end using React.js, overseeing project setup, design, and issue resolution.",
+            "Conducted 7 technical interviews for Java, Spring Boot, and React JS roles, both internal and external."
           ],
-          skills: ["Java", "Spring Boot", "PostgreSQL", "Hibernate", "React.js", "REST APIs", "Technical Leadership"]
+          skills: ["Java", "Spring Boot", "PostgreSQL", "Hibernate", "React.js", "REST APIs", "Team Leadership"]
         }
       ]
     },
     {
       company: "Mithi Software Technologies",
       companyUrl: "https://www.linkedin.com/company/mithi",
-      industry: "Cloud Collaboration & Enterprise Security",
+      industry: "IT Services and IT Consulting",
       title: "Trainee Software Engineer",
       location: "Pune, Maharashtra, India",
       startDate: "Jan 2020",
       endDate: "Jan 2021",
       bullets: [
-        "Designed and implemented an RSA-encrypted login workflow and expanded the salted-hash authentication system protecting SkyConnect.",
-        "Identified and remediated 5 production security vulnerabilities across web authentication services.",
-        "Implemented salted hashing authentication for the Roundcube login system using PHP and worked across Jenkins, Docker, Linux, and Bash CI/CD pipelines."
+        "Enhanced the salted hash-based login system that was initiated during my internship.",
+        "Designed and implemented a secure login system using RSA encryption.",
+        "Identified and remediated 5 security bugs to enhance system security.",
+        "Implemented salted hashing authentication for the Roundcube login system using PHP to enhance security and add a second layer of protection to Skyconnect."
       ],
       skills: ["RSA Encryption", "Authentication Security", "PHP", "Docker", "Jenkins", "Linux", "Bash"],
       roles: [
@@ -326,46 +352,47 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
           endDate: "Jan 2021",
           location: "Pune, Maharashtra, India",
           bullets: [
-            "Enhanced the salted-hash login architecture initiated during my internship and designed an end-to-end secure login system using RSA encryption.",
-            "Identified and remediated 5 production security bugs to harden application security."
+            "Enhanced the salted hash-based login system that was initiated during my internship.",
+            "Designed and implemented a secure login system using RSA encryption.",
+            "Identified and remediated 5 security bugs to enhance system security."
           ],
           skills: ["RSA Encryption", "Application Security", "Authentication"]
         },
         {
-          title: "Intern — Trainee Software Engineer",
+          title: "Trainee Software Engineer (Intern)",
           startDate: "Jan 2020",
           endDate: "Jun 2020",
           location: "Pune, Maharashtra, India",
           bullets: [
-            "Implemented salted hashing authentication for the Roundcube login system in PHP to add a second layer of protection to SkyConnect.",
-            "Contributed production code within agile SDLC workflows using Jenkins, Docker, Linux, Bash, and cloud tooling."
+            "Implemented salted hashing authentication for the Roundcube login system using PHP to enhance security and add a second layer of protection to Skyconnect.",
+            "Demonstrated proficiency in SDLC processes, writing clean and maintainable production code, and working with tools such as Jenkins, Docker, Linux, Bash, and cloud technologies."
           ],
-          skills: ["PHP", "Salted Hashing", "Docker", "Jenkins", "Linux"]
+          skills: ["PHP", "Salted Hashing", "Docker", "Jenkins", "Linux", "Bash"]
         }
       ]
     },
     {
       company: "Apace Apparels and Equipment Pvt. Ltd.",
       companyUrl: "https://www.linkedin.com/company/keepapace",
-      industry: "E-Commerce & Operations Software",
-      title: "Intern — Full-Stack Developer",
+      industry: "Cycling · Triathlon · Activewear",
+      title: "Intern - Full-Stack Developer",
       location: "Pune, Maharashtra, India",
       startDate: "Jun 2019",
       endDate: "Jul 2019",
       bullets: [
-        "Modernized inventory operations by migrating from manual Google Sheets workflows to a full-stack web application built with Vue.js, PHP, and MySQL.",
-        "Improved data privacy and scalability by decoupling inventory storage from the presentation layer."
+        "Modernized an inventory management system by transitioning from Google Sheets to a secure web application built with Vue.js, PHP, and MySQL.",
+        "Improved data privacy and system scalability by separating the inventory data from its presentation layer, resulting in enhanced performance and usability."
       ],
       skills: ["Vue.js", "PHP", "MySQL", "Full-Stack Development"],
       roles: [
         {
-          title: "Intern — Full-Stack Developer",
+          title: "Intern - Full-Stack Developer",
           startDate: "Jun 2019",
           endDate: "Jul 2019",
           location: "Pune, Maharashtra, India",
           bullets: [
-            "Modernized inventory operations by migrating from manual Google Sheets workflows to a full-stack web application built with Vue.js, PHP, and MySQL.",
-            "Improved data privacy and scalability by decoupling inventory storage from the presentation layer."
+            "Modernized an inventory management system by transitioning from Google Sheets to a secure web application built with Vue.js, PHP, and MySQL.",
+            "Improved data privacy and system scalability by separating the inventory data from its presentation layer, resulting in enhanced performance and usability."
           ],
           skills: ["Vue.js", "PHP", "MySQL"]
         }
@@ -374,90 +401,92 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
   ],
   projects: [
     {
-      title: "CycleSafe — Smart Cyclist Safety & ALPR System",
-      subtitle: "Cross-Platform Mobile App & IoT Proximity System",
+      title: "Cycle Safe",
+      subtitle: "Cross-Platform Mobile Application & Cyclist Proximity System",
       period: "Jan 2024 – Apr 2024",
       association: "Arizona State University · University of Arizona · Rob Dollar Foundation",
       badge: "Featured Innovation Showcase Project",
       featured: true,
       description:
-        "Built a cross-platform iOS and Android companion app connected via Wi-Fi to a handlebar-mounted proximity radar and camera unit to detect vehicles passing within Arizona's 3-foot safety zone and automatically recognize license plates.",
+        "Developed CycleSafe, a cross-platform mobile application that connects to a handlebar-mounted device to enhance cyclist safety by detecting the proximity of vehicles and capturing license plate images.",
       highlights: [
-        "Engineered real-time Wi-Fi telemetry and image transfer between the embedded handlebar hardware and mobile client.",
-        "Integrated Automatic License Plate Recognition (ALPR) with optimal frame selection to identify close-passing vehicles.",
-        "Selected as the sole featured Software Engineering capstone project among 35+ teams (250+ students) at the ASU Polytechnic Innovation Showcase."
+        "Addressed the safety issue of over 130,000 annual cyclist injuries in the U.S. caused by car accidents, targeting enforcement of Arizona's law requiring vehicles to maintain a 3-foot distance from cyclists.",
+        "Developed a complementary smartphone app for Android and iOS, enabling Wi-Fi connectivity with the CycleSafe device to facilitate image transfer, display, and analysis.",
+        "Implemented automatic license plate recognition and optimal image selection in the app in partnership with the University of Arizona and the Rob Dollar Foundation."
       ],
-      tags: ["Mobile Development", "Computer Vision / ALPR", "IoT Wi-Fi Telemetry", "iOS & Android"],
+      tags: ["iOS & Android", "Wi-Fi Connectivity", "License Plate Recognition", "Mobile Development"],
       link: "https://www.linkedin.com/posts/rhishabh-hattarki_our-capstone-project-cycle-safe-was-presented-activity-7190122897691029506-09_w",
-      linkLabel: "Showcase Case Study"
+      linkLabel: "Innovation Showcase Post"
     },
     {
-      title: "Enterprise SAP Fieldglass Sync & Multi-Agent AI Pipeline",
-      subtitle: "High-Throughput T-SQL Engine & 10-Agent Orchestration",
-      period: "2025 – 2026",
-      association: "EmpowerID",
-      badge: "69.2% Faster · 87% Cost Reduction",
-      featured: true,
-      description:
-        "Designed an atomic 3-stage T-SQL identity ingestion pipeline and a 10-subagent AI documentation architecture for enterprise workforce synchronization at million-account scale.",
-      highlights: [
-        "Cut 50K-record synchronization time from 13 minutes to 4 minutes (-69.2%) using 68-column HASHBYTES delta detection and single-scan caching over 1M+ rows.",
-        "Built a 5-level cross-worker deduplication algorithm resolving complex multi-assignment priority rules and batch LogonName collisions.",
-        "Replaced a single-context LLM workflow with 10 specialized subagents (SME → merge → writer), slashing regeneration cost by 87% ($40 → ~$5)."
-      ],
-      tags: ["T-SQL", "Python", "Data Pipelines", "Multi-Agent AI", "Enterprise IAM", "Performance Optimization"]
-    },
-    {
-      title: "Real-Time Intrusion Detection System for IoT Networks",
-      subtitle: "Machine Learning Network Security Platform",
+      title: "Real Time Intrusion Detection System for IoT Networks using Random Forest",
+      subtitle: "Full-Stack IoT Security Platform & ML Classifier",
       period: "Mar 2019 – Jun 2020",
-      association: "Savitribai Phule Pune University · Published in IEEE I2CT",
-      badge: "IEEE Published · 1st Prize Winner",
+      association: "Savitribai Phule Pune University",
+      badge: "IEEE Published · 1st Prize Techno Spark",
       featured: true,
       description:
-        "Led a 4-person engineering team to build a full-stack intrusion detection platform using a Random Forest classifier trained on live IoT network traffic from physical sensor nodes.",
+        "Led a team of 4 to build a full-stack web application created with a React front end and Django back end that detected 5 cyber attacks performed in a dummy IoT network.",
       highlights: [
-        "Configured a live IoT testbed (Arduino UNO, NodeMCU, Ultrasonic sensor, Apache server) and captured custom real-time packet telemetry across 5 cyber-attack vectors.",
-        "Built a React dashboard and Django backend streaming 10,000+ network records over WebSockets with instant anomaly alerts.",
-        "Published in IEEE Xplore (14+ citations) and won 1st Prize among 36+ teams at Techno Spark 2020."
+        "Set up the IoT network consisting of a node (Arduino UNO, NodeMCU, Ultrasonic sensor) and an Apache server.",
+        "Integrated WebSockets for real-time communication between the Apache server and Django backend capable of handling 10,000+ records.",
+        "Built a Random Forest machine learning core in the backend to detect cyber attacks on live IoT node traffic and notify users in real time."
       ],
-      tags: ["Python", "Django", "React", "Random Forest ML", "WebSockets", "IoT Security"],
+      tags: ["React", "Django", "Random Forest ML", "WebSockets", "Arduino / NodeMCU", "IoT Security"],
       link: "https://github.com/s3r-be/be-project",
       linkLabel: "GitHub Repository"
     },
     {
-      title: "Escrow Configuration Microservice & Tree Visualizer",
-      subtitle: "Distributed Banking Configuration Platform",
-      period: "2021 – 2022",
-      association: "Persistent Systems (Standard Chartered Bank)",
+      title: "YouTube Video Data Analysis and Like Count Predictor",
+      subtitle: "Machine Learning Desktop Application",
+      period: "Jan 2019 – Jun 2019",
+      association: "Academic Project",
       description:
-        "Architected a configuration management microservice and interactive hierarchical visualization UI for an enterprise escrow payment platform.",
+        "Built a desktop machine learning tool for predicting YouTube video like counts trained on a dataset of ~200,000 videos.",
       highlights: [
-        "Designed and shipped 13 scalable REST APIs using Spring Boot, Hibernate ORM, and PostgreSQL.",
-        "Redesigned the operator frontend with React.js and react-d3-tree to visualize nested payment configurations."
+        "Trained a Random Forest regression/prediction model on a large dataset of ~200,000 YouTube videos.",
+        "Applied feature engineering, data cleaning, and feature selection pipelines to improve prediction accuracy.",
+        "Built the interactive desktop application using Python 3.7, PyQt5, Pandas, NumPy, Scikit-learn, and Matplotlib."
       ],
-      tags: ["Spring Boot", "Java", "PostgreSQL", "Hibernate", "React.js", "D3.js"]
+      tags: ["Python", "Scikit-learn", "Random Forest", "Pandas", "NumPy", "PyQt5", "Matplotlib"],
+      link: "https://github.com/rhish9h/Youtube-data-analysis-and-like-count-prediction",
+      linkLabel: "GitHub Repository"
+    },
+    {
+      title: "Apace Inventory Management System",
+      subtitle: "Full-Stack Web ERP Application",
+      period: "Jun 2019 – Jul 2019",
+      association: "Apace Apparels and Equipment Pvt. Ltd.",
+      description:
+        "Mini ERP web application built to manage Masters, Orders, and Raw Material inventory workflows.",
+      highlights: [
+        "Transitioned company inventory operations from Google Sheets to a secure web application built with Vue.js, PHP, and MySQL.",
+        "Separated inventory data storage from the presentation layer across Masters, Orders, and Materials modules."
+      ],
+      tags: ["Vue.js", "PHP", "MySQL", "JavaScript", "Bootstrap-Vue"],
+      link: "https://github.com/rhish9h/apaceInventory",
+      linkLabel: "GitHub Repository"
     }
   ],
   education: [
     {
       school: "Arizona State University",
-      degree: "Master of Science in Software Engineering",
+      degree: "Master of Science - MS, Software Engineering",
       duration: "Aug 2022 – Apr 2024",
       location: "Tempe, Arizona, United States",
       highlights: [
-        "Ira A. Fulton Schools of Engineering · Graduate Services Assistant for SER 232 (Computer Systems Fundamentals)",
-        "Capstone Featured Project Winner at the Spring 2024 Polytechnic Innovation Showcase (CycleSafe)"
+        "Graduate Services Assistant (Instructional Assistant & Grader) for SER 232 Computer Systems Fundamentals",
+        "Featured Project at the Polytechnic Innovation Showcase Spring 2024 (CycleSafe — only team selected from the Software Engineering department among 35+ teams)"
       ]
     },
     {
       school: "Savitribai Phule Pune University",
-      degree: "Bachelor of Engineering in Computer Engineering",
+      degree: "Bachelor of Engineering - BE, Computer Engineering",
       duration: "2016 – 2020",
       location: "Pune, Maharashtra, India",
       highlights: [
-        "Published 2 IEEE research papers on Machine Learning Intrusion Detection Systems for IoT Networks",
-        "Won Best Poster at IEEE ESCI 2020 and First Prize at state-level competition Techno Spark 2020"
+        "Published 2 research papers on Intrusion Detection Systems in IoT Networks (IEEE I2CT 2021 & IERJ NCIET 2020)",
+        "Won First Prize at Techno Spark 2020 and Best Poster Award at IEEE Conference ESCI 2020"
       ]
     }
   ],
@@ -490,62 +519,65 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
       },
       {
         name: "Backend & Distributed Systems",
-        description: "Service architecture, APIs, and high-reliability connectors",
+        description: "Service architecture, APIs, and enterprise integrations",
         skills: [
           "FastAPI",
           ".NET / C#",
           "Spring Boot",
           "Django",
-          "RESTful APIs",
+          "REST APIs",
           "SCIM & ODBC Integrations",
           "Microservices",
           "WebSockets",
-          "Hibernate ORM"
+          "Hibernate"
         ]
       },
       {
-        name: "Data Engineering, Security & IAM",
-        description: "Large-scale data ingestion, SQL optimization, and identity governance",
+        name: "Data Pipelines, Security & IAM",
+        description: "Data ingestion, SQL optimization, and identity governance",
         skills: [
           "Data Ingestion & Sync Pipelines",
-          "SQL Query & Index Optimization",
-          "Deduplication Algorithms",
+          "SQL Performance Optimization",
           "Identity & Access Management (IAM / IGA)",
-          "RSA & Authentication Security",
-          "Random Forest / ML Classification"
+          "RSA & Salted-Hash Authentication",
+          "Random Forest / Scikit-learn"
         ]
       },
       {
         name: "Frontend, Cloud & Developer Tooling",
-        description: "Modern web interfaces, cloud infrastructure, and AI-assisted automation",
+        description: "Web interfaces, cloud certifications, and engineering tools",
         skills: [
           "React.js",
           "Vue.js",
-          "Tailwind CSS",
-          "AWS (Cloud Practitioner)",
+          "AWS (Certified Cloud Practitioner)",
           "Microsoft Azure (AZ-900)",
           "Docker",
           "Jenkins & CI/CD",
           "Linux",
           "Git",
-          "Multi-Agent AI Orchestration"
+          "Multi-Agent AI Workflows"
         ]
       }
     ],
     languages: [
-      { name: "English", proficiency: "Full Professional" },
-      { name: "Marathi", proficiency: "Native / Bilingual" },
-      { name: "Hindi", proficiency: "Working Proficiency" },
-      { name: "Kannada", proficiency: "Elementary" }
+      { name: "English", proficiency: "Full professional proficiency" },
+      { name: "Marathi", proficiency: "Native or bilingual proficiency" },
+      { name: "Hindi", proficiency: "Limited working proficiency" },
+      { name: "Kannada", proficiency: "Elementary proficiency" }
     ]
   },
   certifications: [
     {
-      name: "AWS Certified Cloud Practitioner",
-      issuer: "Amazon Web Services (AWS)",
-      date: "Issued Apr 2024 · Expires Apr 2027",
-      credentialId: "a416d9b059364a468d56f0e5b40d0872",
-      url: "https://www.credly.com/badges/b5c417f3-89d6-4221-886b-a2326e7f241f/linked_in_profile"
+      name: "Certified EmpowerID Operator",
+      issuer: "EmpowerID",
+      date: "Issued Sep 2024",
+      credentialId: "OPR2024-009"
+    },
+    {
+      name: "Certified EmpowerID Identity Orchestration Developer",
+      issuer: "EmpowerID",
+      date: "Issued Aug 2024",
+      credentialId: "DEV2024-006"
     },
     {
       name: "Microsoft Certified: Azure Fundamentals",
@@ -555,39 +587,34 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
       url: "https://learn.microsoft.com/api/credentials/share/en-us/RhishabhSuhasHattarki-3296/A93EDC54FB6111F0"
     },
     {
-      name: "Certified EmpowerID Identity Orchestration Developer",
-      issuer: "EmpowerID",
-      date: "Issued Aug 2024",
-      credentialId: "DEV2024-006"
-    },
-    {
-      name: "Certified EmpowerID Operator",
-      issuer: "EmpowerID",
-      date: "Issued Sep 2024",
-      credentialId: "OPR2024-009"
+      name: "AWS Certified Cloud Practitioner",
+      issuer: "Amazon Web Services (AWS)",
+      date: "Issued Apr 2024 · Expires Apr 2027",
+      credentialId: "a416d9b059364a468d56f0e5b40d0872",
+      url: "https://www.credly.com/badges/b5c417f3-89d6-4221-886b-a2326e7f241f/linked_in_profile"
     }
   ],
   awards: [
     {
-      title: "Featured Project — Polytechnic Innovation Showcase Spring 2024",
-      issuer: "Arizona State University (The Polytechnic School)",
+      title: "Featured Project - Polytechnic Innovation Showcase Spring 2024",
+      issuer: "Arizona State University - The Polytechnic School",
       date: "Apr 2024",
       description:
-        "Selected as the sole featured project from the Software Engineering department among 35+ capstone teams and 250+ students for CycleSafe."
+        "Featured project at the Polytechnic Innovation Showcase Spring 2024. Only team picked to be featured from the Software Engineering department among 35+ teams including 250+ students."
     },
     {
-      title: "First Prize — Techno Spark 2020",
-      issuer: "Pimpri Chinchwad College of Engineering & Research (PCCoE&R)",
+      title: "First Prize Techno Spark 2020",
+      issuer: "PCCoE&R",
       date: "May 2020",
       description:
-        "Won 1st Place among 36+ competing teams in the state-level project competition for 'Anomaly-Based Intrusion Detection System for IoT Networks using Random Forest'."
+        "Won the online state level project competition Techno Spark 2020 organized by PCCoE&R, where we presented our BE project 'Anomaly based intrusion detection system for IoT networks using Random Forest', competing against over 36 teams."
     },
     {
-      title: "Best Poster Award — IEEE Conference ESCI 2020",
-      issuer: "IEEE International Conference on Emerging Smart Computing and Informatics",
+      title: "Best Poster IEEE Conference ESCI2020",
+      issuer: "AISSMS IOIT",
       date: "Mar 2020",
       description:
-        "Awarded Best Poster presentation for research on anomaly-based intrusion detection architectures in IoT environments."
+        "Participated in the Poster Presentation Competition at the IEEE Conference ESCI2020 and won the Best Poster Award for 'Survey on anomaly based intrusion detection system for IoT networks'."
     }
   ],
   publications: [
@@ -598,14 +625,15 @@ I enjoy understanding systems end to end, breaking down ambiguous technical prob
       citations: "14+ Citations",
       url: "https://doi.org/10.1109/i2ct51068.2021.9417815",
       summary:
-        "Presents a real-time Random Forest intrusion detection system tested against live network traffic from an IoT sensor node (Arduino UNO, NodeMCU, Ultrasonic sensor) rather than static non-IoT benchmarks."
+        "Presents a Real Time Intrusion Detection System based on the Random Forest machine learning model set up for an IoT node consisting of Arduino, NodeMCU, and an Ultrasonic sensor, tested with real-time network traffic monitored from our custom IoT network."
     },
     {
       title: "Survey on Anomaly-Based Intrusion Detection Systems in IoT Networks",
-      conference: "2020 International Conference on Emerging Smart Computing and Informatics (ESCI) · IEEE",
-      date: "Mar 2020",
+      conference: "International Engineering Research Journal (IERJ) · NCIET-2020",
+      date: "2020",
+      url: "http://www.ierjournal.org/pupload/NCIET-2020/154-159-converted.pdf",
       summary:
-        "Comprehensive evaluation of anomaly-based intrusion detection methodologies, network telemetry features, and machine learning classifiers for resource-constrained IoT networks."
+        "Discusses anomaly-based intrusion detection systems built for low-power IoT environments to detect newer unregistered attacks not filtered by firewalls, comparing methods, limitations, and an ensemble-based detection architecture."
     }
   ]
 };
